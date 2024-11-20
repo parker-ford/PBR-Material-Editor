@@ -32,6 +32,12 @@ Shader "Parker/Lambertian"
                 float3 worldPos: TEXCOORD2;
             };
 
+            struct brdf
+            {
+                float3 diffuse;
+                float3 specular;
+            };
+
             sampler2D _MainTex;
             float4 _MainTex_ST;
             
@@ -41,6 +47,7 @@ Shader "Parker/Lambertian"
 
             float4 _DiffuseColor;
             float _SpecularHardness;
+            float _SpecularStrength;
 
             v2f vert (appdata v)
             {
@@ -56,13 +63,20 @@ Shader "Parker/Lambertian"
                 return max(dot(a, b), 0.00001);
             }
 
-            float3 LambertianBRDF(float3 l, float3 v, float3 n){
-                return (1.0/PI) * _DiffuseColor.rgb;
+            brdf LambertianBRDF(float3 l, float3 v, float3 n){
+                brdf result;
+                result.specular = 0.0;
+                result.diffuse = 1.0;
+                return result;
             }
-            float3 BlinnPhongBRDF(float3 l, float3 v, float3 n){
+
+            brdf BlinnPhongBRDF(float3 l, float3 v, float3 n){
+                brdf result;
                 float3 h = normalize(l + v);
                 float ndoth = clampedDot(n, h);
-                return pow(ndoth, _SpecularHardness) * _LightColor;
+                result.specular = pow(ndoth, _SpecularHardness) * _SpecularStrength;
+                result.diffuse = 1.0;
+                return result;
             }
 
 
@@ -70,10 +84,10 @@ Shader "Parker/Lambertian"
             {
                 float3 l = normalize(_LightDirection.xyz);
                 float3 v = normalize(_WorldSpaceCameraPos - i.worldPos);
-                float ndotl = clampedDot(l, i.worldNormal);
-                float3 f = BlinnPhongBRDF(l, v, i.worldNormal);
+                float ndotl = clampedDot(l, normalize(i.worldNormal));
+                brdf f = BlinnPhongBRDF(l, v, normalize(i.worldNormal));
                 float3 Li =  _LightColor.rgb * _LightIntensity; 
-                float3 Lo = f * Li * ndotl;
+                float3 Lo = Li * (f.specular + f.diffuse * _DiffuseColor) * ndotl;
                 return float4(Lo, 1.0);
             }
             ENDCG

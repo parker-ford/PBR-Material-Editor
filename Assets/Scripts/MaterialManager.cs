@@ -8,6 +8,8 @@ public class MaterialManager : MonoBehaviour
     public Light sun;
     public Color diffuseColor;
     public float specularHardness = 1.0f;
+    public float specularStrength = 1.0f;
+
     void Start()
     {
 
@@ -26,5 +28,6 @@ public class MaterialManager : MonoBehaviour
         setLightValues();
         Shader.SetGlobalColor("_DiffuseColor", diffuseColor);
         Shader.SetGlobalFloat("_SpecularHardness", specularHardness);
+        Shader.SetGlobalFloat("_SpecularStrength", specularStrength);
     }
 }
