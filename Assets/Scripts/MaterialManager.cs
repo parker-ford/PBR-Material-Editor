@@ -12,12 +12,19 @@ public class MaterialManager : MonoBehaviour
         GGX = 2,
     }
 
+    public enum GeometryAttenuationFunction
+    {
+        Beckman = 0,
+        GGX = 1,
+        SchlickGGX = 2
+    }
+
     public enum DebugView
     {
-        None,
-        NormalDistributionFunction,
-        GeometryAttenuation,
-        Fresnel
+        None = 0,
+        NormalDistributionFunction = 1,
+        GeometryAttenuation = 2,
+        Fresnel = 3
     }
 
     public Light sun;
@@ -27,6 +34,7 @@ public class MaterialManager : MonoBehaviour
     [Range(0, 1)]
     public float roughness = 0.0f;
     public NormalDistributionFunction ndf;
+    public GeometryAttenuationFunction geo;
     public DebugView debugView;
 
     void Start()
@@ -50,6 +58,7 @@ public class MaterialManager : MonoBehaviour
         Shader.SetGlobalFloat("_SpecularStrength", specularStrength);
         Shader.SetGlobalFloat("_Roughness", roughness);
         Shader.SetGlobalInt("_NDF", (int)ndf);
+        Shader.SetGlobalInt("_GEO", (int)geo);
         Shader.SetGlobalInt("_DebugView", (int)debugView);
     }
 }

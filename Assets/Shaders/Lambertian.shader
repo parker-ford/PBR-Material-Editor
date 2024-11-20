@@ -22,6 +22,10 @@ Shader "Parker/Lambertian"
             #define NDF_BECKMAN 1
             #define NDF_GGX 2
 
+            #define GEO_BECKMAN 0
+            #define GEO_GGX 1
+            #define GEO_GGXSCHLICK 2
+
             #define DEBUG_VIEW_NDF 1
             #define DEBUG_VIEW_GEO_ATTEN 2
             #define DEBUG_VIEW_FRESNEL 3
@@ -60,6 +64,7 @@ Shader "Parker/Lambertian"
             float _Roughness;
 
             int _NDF;
+            int _GEO;
             int _DebugView;
 
             v2f vert (appdata v)
@@ -94,7 +99,7 @@ Shader "Parker/Lambertian"
 
             float3 SchlickFresnel(float3 v, float3 n){
                 //TODO: Figure out how to determine f0
-                float3 F0 = float3(0.04,0.04,0.04);
+                float3 F0 = 0.06;
                 return F0 + (1 - F0) * pow((1 - (clampedDot(v,n))),5);
             }
 
@@ -133,6 +138,14 @@ Shader "Parker/Lambertian"
                 return result;
             }
 
+            float GgxGeometry(float3 n, float3 v, float alpha){
+                float ndotv = clampedDot(n,v);
+                float ndotv2 = pow(ndotv,2);
+                float alpha2 = pow(alpha, 2);
+                
+                return (2 * ndotv) / (ndotv + sqrt(alpha2 + (1-alpha2)*ndotv2));
+            }
+
 
             brdf PBR_BRDF(float3 n, float3 l, float3 v){
                 brdf result;
@@ -158,8 +171,16 @@ Shader "Parker/Lambertian"
                 }
 
                 //Gemoetry Term
-                float3 geometryAttenuation = BeckmanGeometry(n, v, alpha) * BeckmanGeometry(n, l, alpha);
+                float3 geometryAttenuation = 0;
+                if(_GEO == GEO_BECKMAN){
+                    geometryAttenuation = BeckmanGeometry(n, v, alpha) * BeckmanGeometry(n, l, alpha);
+                }
+                else if(_GEO == GEO_GGX){
+                    geometryAttenuation = GgxGeometry(n, v, alpha) * GgxGeometry(n, l, alpha);
+                }
+                else if(_GEO == GEO_GGXSCHLICK){
 
+                }
 
                  if(_DebugView == DEBUG_VIEW_FRESNEL){
                     result.specular = fresnel;
