@@ -19,12 +19,21 @@ public class MaterialManager : MonoBehaviour
         SchlickGGX = 2
     }
 
+    public enum Diffuse
+    {
+        Lambert = 0,
+        Hammon = 1,
+        Disney = 2
+    }
+
     public enum DebugView
     {
         None = 0,
         NormalDistributionFunction = 1,
         GeometryAttenuation = 2,
-        Fresnel = 3
+        Fresnel = 3,
+        Diffuse = 4,
+        Specular = 5,
     }
 
     public Light sun;
@@ -33,8 +42,11 @@ public class MaterialManager : MonoBehaviour
     public float specularStrength = 1.0f;
     [Range(0, 1)]
     public float roughness = 0.0f;
+    [Range(0, 1)]
+    public float reflectance = 0.5f;
     public NormalDistributionFunction ndf;
     public GeometryAttenuationFunction geo;
+    public Diffuse diffuse;
     public DebugView debugView;
 
     void Start()
@@ -60,5 +72,8 @@ public class MaterialManager : MonoBehaviour
         Shader.SetGlobalInt("_NDF", (int)ndf);
         Shader.SetGlobalInt("_GEO", (int)geo);
         Shader.SetGlobalInt("_DebugView", (int)debugView);
+        Shader.SetGlobalInt("_Diffuse", (int)diffuse);
+        Shader.SetGlobalFloat("_Reflectance", reflectance);
+
     }
 }
