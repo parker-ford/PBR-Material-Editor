@@ -69,6 +69,7 @@ Shader "Parker/Lambertian"
             float _SpecularStrength;
             float _Roughness;
             float _Reflectance;
+            float _Subsurface;
 
             int _NDF;
             int _GEO;
@@ -85,8 +86,8 @@ Shader "Parker/Lambertian"
                 return o;
             }
 
-            float clampedDot(float3 a, float3 b){
-                return max(dot(a, b), 0);
+            float clampedDot(float3 a, float3 b) {
+                return max(dot(a, b), 0.0001);
             }
 
             float epsilonDot(float3 a, float3 b){
@@ -114,7 +115,7 @@ Shader "Parker/Lambertian"
             }
 
             float3 SchlickFresnel(float3 v, float3 n){
-                //TODO: Figure out how to determine f0
+                //TODO: Figure out how to do metallic
                 float3 F0 = (0.16 * (_Reflectance * _Reflectance));
                 F0 = lerp(F0, _DiffuseColor, 0);
                 return F0 + (1 - F0) * pow((1 - (clampedDot(v,n))),5);
@@ -197,6 +198,35 @@ Shader "Parker/Lambertian"
 
             }
 
+            float3 DisneyDiffuse(float3 n, float3 l, float3 v, float alpha){
+                float3 h = normalize(l + v);
+
+                float hdotl = clampedDot(h,l); //theta d
+                float ndotl = clampedDot(n,l); //theta l
+                float ndotv = clampedDot(n,v); //theta v
+
+                ndotl = max(ndotl, 0.001);
+                ndotv = max(ndotv, 0.001);
+
+                float invNdotL = 1.0 - ndotl;
+                float invNdotV = 1.0 - ndotv;
+
+                float invNdotL5 = invNdotL * invNdotL * invNdotL * invNdotL * invNdotL;
+                float invNdotV5 = invNdotV * invNdotV * invNdotV * invNdotV * invNdotV;
+
+                float hdotl2 = hdotl * hdotl;
+
+                float FSS90 = sqrt(alpha) * hdotl2;
+                float FD90 = 0.5 + 2.0 * FSS90;
+
+                float fd = (1.0 + (FD90 - 1.0) * invNdotL5) * (1.0 + (FD90 - 1.0) * invNdotV5);
+                
+                float FSS = (1.0 + (FSS90 - 1.0) * invNdotL5) * (1.0 + (FSS90 - 1.0) * invNdotV5);
+                float fss = (1.0 / (ndotl + ndotv) - 0.5f) * FSS + 0.5;
+
+                return (1.0 / PI) * (1.0 - _Subsurface) * fd + 1.25 * _Subsurface * fss;
+            }
+
 
             brdf PBR_BRDF(float3 n, float3 l, float3 v){
                 brdf result;
@@ -247,12 +277,14 @@ Shader "Parker/Lambertian"
                  }
 
                  //Diffuse
-
                 if(_Diffuse == DIFF_LAMBERT){
                     result.diffuse = (1.0 - fresnel) * LambertianDiffuse();
                 }
                 else if(_Diffuse == DIFF_HAMMON){
                     result.diffuse = HammonDiffuse(n, l, v, h, alpha);
+                }
+                else if(_Diffuse == DIFF_DISNEY){
+                    result.diffuse = DisneyDiffuse(n, l, v, alpha);
                 }
 
                 if(_DebugView == DEBUG_VIEW_DIFFUSE){
@@ -271,9 +303,12 @@ Shader "Parker/Lambertian"
             fixed4 frag (v2f i) : SV_Target
             {
                 float3 n = normalize(i.worldNormal);
-                float3 l = normalize(_LightDirection.xyz);
+                // float3 l = normalize(_WorldSpaceLightPos0.xyz);
+                float3 l = normalize(_LightDirection);
                 float3 v = normalize(_WorldSpaceCameraPos - i.worldPos);
+
                 brdf f = PBR_BRDF(n,l,v);
+
                 float ndotl = clampedDot(l, normalize(i.worldNormal));
                 float3 Li =  _LightColor.rgb * _LightIntensity; 
                 float3 Lo = Li * (f.specular + f.diffuse * _DiffuseColor) * ndotl;

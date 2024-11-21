@@ -44,6 +44,8 @@ public class MaterialManager : MonoBehaviour
     public float roughness = 0.0f;
     [Range(0, 1)]
     public float reflectance = 0.5f;
+    [Range(0, 1)]
+    public float subsurface = 0.5f;
     public NormalDistributionFunction ndf;
     public GeometryAttenuationFunction geo;
     public Diffuse diffuse;
@@ -74,6 +76,7 @@ public class MaterialManager : MonoBehaviour
         Shader.SetGlobalInt("_DebugView", (int)debugView);
         Shader.SetGlobalInt("_Diffuse", (int)diffuse);
         Shader.SetGlobalFloat("_Reflectance", reflectance);
+        Shader.SetGlobalFloat("_Subsurface", subsurface);
 
     }
 }
