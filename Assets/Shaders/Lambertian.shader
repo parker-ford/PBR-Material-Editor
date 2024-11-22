@@ -2,7 +2,8 @@ Shader "Parker/Lambertian"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+        _DiffuseTex ("Diffuse Texture", 2D) = "white" {}
+        _NormalTex ("Normal Texture", 2D) = "white" {}
     }
     SubShader
     {
@@ -59,6 +60,10 @@ Shader "Parker/Lambertian"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+
+            float4 _DiffuseTex_ST;
+            sampler2D _DiffuseTex;
+            sampler2D _NormalTex;
             
             float4 _LightColor;
             float3 _LightDirection;
@@ -81,7 +86,7 @@ Shader "Parker/Lambertian"
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.uv = TRANSFORM_TEX(v.uv, _DiffuseTex);
                 o.worldNormal = normalize(UnityObjectToWorldNormal(v.normal));
                 return o;
             }
@@ -303,9 +308,11 @@ Shader "Parker/Lambertian"
             fixed4 frag (v2f i) : SV_Target
             {
                 float3 n = normalize(i.worldNormal);
-                // float3 l = normalize(_WorldSpaceLightPos0.xyz);
                 float3 l = normalize(_LightDirection);
                 float3 v = normalize(_WorldSpaceCameraPos - i.worldPos);
+
+                return tex2D(_DiffuseTex, i.uv);
+                // return float4(i.uv, 0, 1);
 
                 brdf f = PBR_BRDF(n,l,v);
 

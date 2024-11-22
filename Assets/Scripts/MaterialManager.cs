@@ -38,6 +38,8 @@ public class MaterialManager : MonoBehaviour
 
     public Light sun;
     public Color diffuseColor;
+    public Texture2D diffuseTexture;
+    public Texture2D normalTexture;
     public float specularHardness = 1.0f;
     public float specularStrength = 1.0f;
     [Range(0, 1)]
@@ -61,6 +63,8 @@ public class MaterialManager : MonoBehaviour
         Shader.SetGlobalVector("_LightDirection", -sun.transform.forward);
         Shader.SetGlobalColor("_LightColor", sun.color);
         Shader.SetGlobalFloat("_LightIntensity", sun.intensity);
+        Shader.SetGlobalTexture("_DiffuseTex", diffuseTexture);
+        Shader.SetGlobalTexture("_NormalTexture", normalTexture);
     }
 
     // Update is called once per frame

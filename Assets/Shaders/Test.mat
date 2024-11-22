@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Lambertian
-  m_Shader: {fileID: 4800000, guid: f6d1a7f279a55ba449b5367e20803726, type: 3}
+  m_Name: Test
+  m_Shader: {fileID: 4800000, guid: 0c28fb6445449b54884f1dcbe8f7b3b9, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -24,15 +24,15 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _DiffuseTex:
-        m_Texture: {fileID: 2800000, guid: 86d5a5e03062a434bb04e6785dd4c883, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: 6348fbb2daa77d942a00136ce437d70f, type: 3}
+        m_Scale: {x: 2, y: 2}
         m_Offset: {x: 0, y: 0}
-    - _MainTex:
-        m_Texture: {fileID: 0}
+    - _DisplacementTex:
+        m_Texture: {fileID: 2800000, guid: 1524ef1259bbc334f95dad72dad30a2d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalTex:
-        m_Texture: {fileID: 2800000, guid: e9128553630499a48935b178bbca709b, type: 3}
+        m_Texture: {fileID: 2800000, guid: 6eb3e4ebca7896644b5179890c89cf77, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
