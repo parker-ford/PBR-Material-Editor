@@ -1,0 +1,41 @@
+
+.container{
+    width: auto;
+    height: auto;
+    color: black;
+}
+
+.material-menu {
+    background-color: #99ff99;
+    width: 30%;
+}
+
+.property-group {
+    background-color: red;
+}
+
+/*
+*   Material Slider
+*/
+.material-slider {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.material-slider > * {
+    flex-shrink: 0; /* Prevent shrinking if space is limited */
+}
+
+.material-slider .unity-label {
+    flex-basis: auto;
+}
+
+.material-slider .unity-slider {
+    flex-grow: 1;
+}
+
+.material-slider .unity-float-field {
+    flex-basis: auto;
+    width: 17.5%;
+}
