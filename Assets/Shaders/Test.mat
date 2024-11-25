@@ -25,7 +25,7 @@ Material:
     m_TexEnvs:
     - _DiffuseTex:
         m_Texture: {fileID: 2800000, guid: 6348fbb2daa77d942a00136ce437d70f, type: 3}
-        m_Scale: {x: 2, y: 2}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DisplacementTex:
         m_Texture: {fileID: 2800000, guid: 1524ef1259bbc334f95dad72dad30a2d, type: 3}

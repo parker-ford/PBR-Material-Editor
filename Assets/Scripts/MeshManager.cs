@@ -10,14 +10,16 @@ public class MeshManager : MonoBehaviour
     public float specularHardness;
     public float specularStrength;
     public bool useNormalMap = true;
+    public int meshSize = 100;
     public float normalStrength = 1.0f;
+    public float displacementStrength = 1.0f;
     void Start()
     {
         MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        meshFilter.mesh = ProceduralMesh.Plane(10, 10);
+        meshFilter.mesh = ProceduralMesh.Plane(meshSize, meshSize);
         meshRenderer.material = material;
-        transform.localScale = new Vector3(1.0f / 10.0f, 1.0f, 1.0f / 10.0f);
+        transform.localScale = new Vector3(1.0f / meshSize, 1.0f, 1.0f / meshSize);
         // transform.Rotate(new Vector3(-90, 0, 0));
 
     }
@@ -30,5 +32,6 @@ public class MeshManager : MonoBehaviour
         Shader.SetGlobalFloat("_SpecularStrength", specularStrength);
         Shader.SetGlobalInt("_UseNormalMap", useNormalMap ? 1 : 0);
         Shader.SetGlobalFloat("_NormalStrength", normalStrength);
+        Shader.SetGlobalFloat("_DisplacementStrength", displacementStrength);
     }
 }

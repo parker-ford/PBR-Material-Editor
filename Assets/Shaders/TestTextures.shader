@@ -57,6 +57,7 @@ Shader "Unlit/TestTextures"
             float _SpecularStrength;
 
             float _NormalStrength;
+            float _DisplacementStrength;
 
             int _UseNormalMap;
 
@@ -76,6 +77,8 @@ Shader "Unlit/TestTextures"
             v2f vert (appdata v)
             {
                 v2f o;
+                // float displacement = tex2Dlod(_DisplacementTex, float4(v.uv, 0, 1)).r;
+                // v.vertex.xyz += v.normal * displacement * _DisplacementStrength;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _DiffuseTex);
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
@@ -84,20 +87,53 @@ Shader "Unlit/TestTextures"
                 return o;
             }
 
+            //TODO: Blue noise offset?
+            //TODO: Try these: https://github.com/panthuncia/webgl_test/blob/main/index.html
+            // https://developer.nvidia.com/gpugems/gpugems2/part-i-geometric-complexity/chapter-8-pixel-displacement-mapping-distance-functions
+            float2 ParallaxMap(float2 uv, float3 viewDirection){
+                const int minSteps = 128;
+                const int maxSteps = 128;
+                viewDirection = normalize(viewDirection);
+                int numSteps = lerp(maxSteps, minSteps, clampedDot(float3(0,0,1), viewDirection));
+                float depthPerStep = 1.0 / (float)numSteps;
+                float2 uvDelta = (viewDirection.xy * _DisplacementStrength) / (float)numSteps;
+
+                float2 currUV = uv;
+                float currDepth = 1.0 - tex2D(_DisplacementTex, currUV).r; //Inversed for depth rather than height
+                float currStep = 0.0;
+
+                [unroll(maxSteps)]
+                while(currStep < currDepth){
+                    currUV -= uvDelta;
+                    currDepth = 1.0 - tex2D(_DisplacementTex, currUV).r;
+                    currStep += depthPerStep;
+                }
+
+                float2 prevUV = currUV + uvDelta;
+
+                float afterStep = currDepth - currStep;
+                float beforeStep = 1.0 - tex2D(_DisplacementTex, prevUV).r - currStep + depthPerStep;
+
+                return lerp(currUV, prevUV, afterStep / (afterStep - beforeStep));
+
+            }
+
             fixed4 frag (v2f i) : SV_Target
             {
 
-
+                float3 l = normalize(_LightDirection);
+                float3 v = normalize(_WorldSpaceCameraPos - i.worldPos);
                 
                 float3 normal = normalize(i.normal);
                 float3 tangent = normalize(i.tangent);
+                float3 bitangent = cross(normal, tangent) * i.tangent.w * unity_WorldTransformParams.w;
+                
+                float2 uv = ParallaxMap(i.uv, mul(v, float3x3(tangent, bitangent, normal)));
 
                 float3 tangentSpaceNormal = 0;
-                tangentSpaceNormal.xy = tex2D(_NormalTex, i.uv).wy * 2 - 1;
+                tangentSpaceNormal.xy = tex2D(_NormalTex, uv).wy * 2 - 1;
                 tangentSpaceNormal.xy *= _NormalStrength;
                 tangentSpaceNormal.z = sqrt(1 - saturate(dot(tangentSpaceNormal.xy, tangentSpaceNormal.xy)));
-
-                float3 bitangent = cross(normal, tangent) * i.tangent.w * unity_WorldTransformParams.w;
 
                 float3 n = 0;
                 if(_UseNormalMap){
@@ -107,13 +143,9 @@ Shader "Unlit/TestTextures"
                     n = normal;
                 }
 
-
-                float3 l = normalize(_LightDirection);
-                float3 v = normalize(_WorldSpaceCameraPos - i.worldPos);
-
                 brdf result = BlinnPhongBRDF(l, v, n);
                 float ndotl = max(dot(n,l), 0.00001);
-                float3 col = (result.specular + tex2D(_DiffuseTex, i.uv) * result.diffuse);
+                float3 col = (result.specular + tex2D(_DiffuseTex, uv) * result.diffuse);
                 return float4(col * ndotl + col * 0.0, 1.0);
             }
             ENDCG
