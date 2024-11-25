@@ -13,7 +13,7 @@ public class MaterialColorPickerRGB : VisualElement
 
     private Color currentColor;
 
-    public event Action<Color> OnColorChanged;
+    public event Action<Color> OnColorChanged = delegate { };
 
     public MaterialColorPickerRGB()
     {
@@ -21,23 +21,26 @@ public class MaterialColorPickerRGB : VisualElement
 
         currentColor = new Color(1, 1, 1);
 
-        label = this.CreateChild<Label>();
+        var upper = this.CreateChild("upper");
+        var lower = this.CreateChild("lower");
+
+        label = upper.CreateChild<Label>();
         label.text = "Color";
 
-        colorView = this.CreateChild<Box>();
+        colorView = upper.CreateChild<Box>();
         colorView.style.backgroundColor = currentColor;
 
-        rSlider = this.CreateChild<MaterialSlider>();
+        rSlider = lower.CreateChild<MaterialSlider>();
         rSlider.label.text = "R";
         rSlider.SetCurrentValue(1);
         rSlider.OnMaterialSliderChanged += UpdateColorValueRed;
 
-        gSlider = this.CreateChild<MaterialSlider>();
+        gSlider = lower.CreateChild<MaterialSlider>();
         gSlider.label.text = "G";
         gSlider.SetCurrentValue(1);
         gSlider.OnMaterialSliderChanged += UpdateColorValueGreen;
 
-        bSlider = this.CreateChild<MaterialSlider>();
+        bSlider = lower.CreateChild<MaterialSlider>();
         bSlider.label.text = "B";
         bSlider.SetCurrentValue(1);
         bSlider.OnMaterialSliderChanged += UpdateColorValueBlue;

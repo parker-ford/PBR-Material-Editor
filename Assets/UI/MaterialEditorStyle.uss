@@ -46,8 +46,20 @@
 .material-color-picker-rgb {
 
 }
+.material-color-picker-rgb .upper {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+}
+
+.material-color-picker-rgb .lower {
+    padding-left: 15px;
+}
+
 
 .material-color-picker-rgb .unity-box {
-    width: 20%;
+    flex-grow: 1;
     height: 20px;
+    margin-right: 5px;
 }
