@@ -34,6 +34,8 @@ namespace MaterialUI
 
             var testSlider = diffuseProperties.CreateChild<MaterialSlider>();
 
+            var testColor = diffuseProperties.CreateChild<MaterialColorPickerRGB>();
+
             // var diffuseProperties = materialEditorMenu.CreateChild("property-group");
             // var diffuseLabel = diffuseProperties.CreateChild<Label>();
             // diffuseLabel.text = "Diffuse Properties";

@@ -39,3 +39,15 @@
     flex-basis: auto;
     width: 17.5%;
 }
+
+/*
+*   Material Color Picker RGB
+*/
+.material-color-picker-rgb {
+
+}
+
+.material-color-picker-rgb .unity-box {
+    width: 20%;
+    height: 20px;
+}

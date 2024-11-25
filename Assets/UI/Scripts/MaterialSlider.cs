@@ -2,6 +2,7 @@ using MaterialUI;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System;
 
 public class MaterialSlider : VisualElement
 {
@@ -9,6 +10,9 @@ public class MaterialSlider : VisualElement
     public Slider slider;
     public FloatField floatField;
     private float currentValue;
+
+    public event Action<float> OnMaterialSliderChanged = delegate { };
+
     public MaterialSlider()
     {
         this.AddClass("material-slider");
@@ -31,6 +35,7 @@ public class MaterialSlider : VisualElement
     private void OnSliderChanged(ChangeEvent<float> evt)
     {
         currentValue = evt.newValue;
+        OnMaterialSliderChanged.Invoke(currentValue);
 
         floatField.UnregisterValueChangedCallback(OnFloatFieldChanged);
         floatField.value = currentValue;
@@ -40,10 +45,30 @@ public class MaterialSlider : VisualElement
     private void OnFloatFieldChanged(ChangeEvent<float> evt)
     {
         currentValue = evt.newValue;
+        OnMaterialSliderChanged.Invoke(currentValue);
 
         slider.UnregisterValueChangedCallback(OnSliderChanged);
         slider.value = Mathf.Clamp(currentValue, 0.0f, 1.0f);
         slider.RegisterValueChangedCallback(OnSliderChanged);
+    }
+
+    public float GetCurrentValue()
+    {
+        return currentValue;
+    }
+
+    public void SetCurrentValue(float newValue)
+    {
+        currentValue = newValue;
+
+        slider.UnregisterValueChangedCallback(OnSliderChanged);
+        floatField.UnregisterValueChangedCallback(OnFloatFieldChanged);
+
+        slider.value = Mathf.Clamp(newValue, 0.0f, 1.0f);
+        floatField.value = newValue;
+
+        slider.RegisterValueChangedCallback(OnSliderChanged);
+        floatField.RegisterValueChangedCallback(OnFloatFieldChanged);
     }
 
 }
