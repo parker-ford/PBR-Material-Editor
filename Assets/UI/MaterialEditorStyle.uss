@@ -15,8 +15,17 @@
     /* -unity-font-definition: url("/Assets/UI/Fonts/Inter/Inter.ttf"); */
     /* -unity-font-definition: url("/Assets/UI/Fonts/Exo_2/Exo2.ttf"); */
     -unity-font-definition: url("/Assets/UI/Fonts/Montserrat/Montserrat.ttf");
+    -unity-text-outline-color: white;
+    -unity-text-outline-width: 0.05px;
      
 }
+
+.unity_toggle:selected {
+    background-color:red;
+}
+/* .unity-foldout__toggle {
+    background-color: red;
+} */
 
 .material-menu > * {
     margin-left: 5px;
@@ -151,6 +160,13 @@
     margin-bottom: 2px;
 }
 
+.material-dropdown .unity-base-field:hover {
+    color: black;
+    -unity-text-outline-color: black;
+    -unity-text-outline-width: 0.5;
+    /* -unity-font-style: bold; */
+}
+
 .material-dropdown .unity-base-popup-field__arrow {
     width: 7.5px;
     height: 7.5px;
@@ -161,8 +177,13 @@
     background-color: red;
 } */
 
-.unity-base-dropdown{
-    background-color: red;
+/* .unity-base-dropdown{
+    background-color: green;
+} */
+
+.unity-base-dropdown__container-inner{
+    background-color: rgba(20, 20, 20, 0.99);
+    color: white;
 }
 
 .material-dropdown .unity-popup-field {
