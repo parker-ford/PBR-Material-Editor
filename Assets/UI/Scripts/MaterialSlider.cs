@@ -15,17 +15,20 @@ public class MaterialSlider : VisualElement
 
     public MaterialSlider()
     {
-        this.AddClass("material-slider");
+        this.AddClass("material-slider", "material-property");
 
-        label = this.CreateChild<Label>();
+        var left = this.CreateChild("left");
+        var right = this.CreateChild("right");
+
+        label = left.CreateChild<Label>();
         label.text = "Property name";
 
-        slider = this.CreateChild<Slider>();
+        slider = right.CreateChild<Slider>();
         slider.lowValue = 0;
         slider.highValue = 1;
         slider.RegisterValueChangedCallback(OnSliderChanged);
 
-        floatField = this.CreateChild<FloatField>();
+        floatField = right.CreateChild<FloatField>();
         floatField.maxLength = 4;
         floatField.isDelayed = true;
         floatField.RegisterValueChangedCallback(OnFloatFieldChanged);

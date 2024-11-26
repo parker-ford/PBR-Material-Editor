@@ -20,9 +20,11 @@ namespace MaterialUI
 
         private void GenerateUI()
         {
+
             root = document.rootVisualElement;
             root.Clear();
             root.styleSheets.Add(style);
+
 
             container = root.CreateChild("container");
 
@@ -40,6 +42,9 @@ namespace MaterialUI
 
             var diffuseModel = diffuseProperties.CreateChild<MaterialDropdown>();
             diffuseModel.label.text = "Diffuse Model";
+
+            var baseColor = diffuseProperties.CreateChild<MaterialColorPickerRGB>();
+            baseColor.label.text = "Base Color";
 
             var subsurface = diffuseProperties.CreateChild<MaterialSlider>();
             subsurface.label.text = "Subsurface";
@@ -70,8 +75,6 @@ namespace MaterialUI
 
             var debugViewType = debugView.CreateChild<MaterialDropdown>();
             debugViewType.label.text = "Type";
-
-
 
 
         }

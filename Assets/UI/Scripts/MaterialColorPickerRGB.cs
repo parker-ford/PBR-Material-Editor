@@ -24,10 +24,13 @@ public class MaterialColorPickerRGB : VisualElement
         var upper = this.CreateChild("upper");
         var lower = this.CreateChild("lower");
 
-        label = upper.CreateChild<Label>();
+        var left = upper.CreateChild("left");
+        var right = upper.CreateChild("right");
+
+        label = left.CreateChild<Label>();
         label.text = "Color";
 
-        colorView = upper.CreateChild<Box>();
+        colorView = right.CreateChild<Box>();
         colorView.style.backgroundColor = currentColor;
 
         rSlider = lower.CreateChild<MaterialSlider>();

@@ -11,10 +11,13 @@ public class MaterialDropdown : VisualElement
     {
         this.AddClass("material-dropdown");
 
-        label = this.CreateChild<Label>();
+        var left = this.CreateChild("left");
+        var right = this.CreateChild("right");
+
+        label = left.CreateChild<Label>();
         label.text = "Property Name";
 
-        dropdown = this.CreateChild<DropdownField>();
-        dropdown.choices = new List<string> { "options 1" };
+        dropdown = right.CreateChild<DropdownField>();
+        dropdown.choices = new List<string> { "options 1", "options 2", "options 3" };
     }
 }
