@@ -2,12 +2,18 @@
 .container{
     width: auto;
     height: auto;
+    height: 4000px; /* Set a fixed height or max-height */
     color: black;
 }
 
 .material-menu {
-    background-color: #99ff99;
+    background-color: rgba(0, 0, 0, 0.95);
     width: 30%;
+    margin: 5px;
+    color: white;
+    max-height: 100%; /* Ensure the menu doesn't exceed the container */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Disable horizontal scrolling */
 }
 
 .property-group {
@@ -24,7 +30,7 @@
 }
 
 .material-slider > * {
-    flex-shrink: 0; /* Prevent shrinking if space is limited */
+    flex-shrink: 0; 
 }
 
 .material-slider .unity-label {
@@ -62,4 +68,18 @@
     flex-grow: 1;
     height: 20px;
     margin-right: 5px;
+}
+
+/*
+*   Material Dropdown
+*/
+
+.material-dropdown{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.material-dropdown .unity-popup-field {
+    flex-grow: 1;
 }

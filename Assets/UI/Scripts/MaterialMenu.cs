@@ -29,21 +29,47 @@ namespace MaterialUI
             var materialEditorMenu = container.CreateChild<Foldout>("material-menu");
             materialEditorMenu.text = "Material Properties";
 
-            var diffuseProperties = materialEditorMenu.CreateChild<MaterialPropertyGroup>();
+            var materialScrollView = materialEditorMenu.CreateChild<ScrollView>();
+
+
+            /*
+            *   Diffuse Properties
+            */
+            var diffuseProperties = materialScrollView.CreateChild<MaterialPropertyGroup>();
             diffuseProperties.label.text = "Diffuse Properties";
 
-            var testSlider = diffuseProperties.CreateChild<MaterialSlider>();
+            var diffuseModel = diffuseProperties.CreateChild<MaterialDropdown>();
+            diffuseModel.label.text = "Diffuse Model";
 
-            var testColor = diffuseProperties.CreateChild<MaterialColorPickerRGB>();
-            testColor.label.text = "Diffuse Color";
+            var subsurface = diffuseProperties.CreateChild<MaterialSlider>();
+            subsurface.label.text = "Subsurface";
 
-            // var diffuseProperties = materialEditorMenu.CreateChild("property-group");
-            // var diffuseLabel = diffuseProperties.CreateChild<Label>();
-            // diffuseLabel.text = "Diffuse Properties";
-            // var diffuseBaseColor = diffuseProperties.CreateChild<ColorField>("color-picker");
-            // diffuseBaseColor.value = new Color(0.0f, 1.0f, 0.0f, 1.0f);
-            // diffuseBaseColor.showAlpha = true;
-            // diffuseBaseColor.showEyeDropper = true;
+            /*
+            *   Specular Properties
+            */
+            var specularProperties = materialScrollView.CreateChild<MaterialPropertyGroup>();
+            specularProperties.label.text = "Specular Properties";
+
+            var normalDistributionModel = specularProperties.CreateChild<MaterialDropdown>();
+            normalDistributionModel.label.text = "Normal Distribution Model";
+
+            var geometryAttenuationModel = specularProperties.CreateChild<MaterialDropdown>();
+            geometryAttenuationModel.label.text = "Geometry Attenuation Model";
+
+            var roughness = specularProperties.CreateChild<MaterialSlider>();
+            roughness.label.text = "Roughness";
+
+            var reflectance = specularProperties.CreateChild<MaterialSlider>();
+            reflectance.label.text = "Reflectance";
+
+            /*
+            *   Debug Views
+            */
+            var debugView = materialScrollView.CreateChild<MaterialPropertyGroup>();
+            debugView.label.text = "Debug View";
+
+            var debugViewType = debugView.CreateChild<MaterialDropdown>();
+            debugViewType.label.text = "Type";
 
 
 
