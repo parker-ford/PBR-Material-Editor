@@ -6,8 +6,9 @@ public class MaterialMenu : VisualElement
 {
     public MaterialMenu()
     {
+        this.AddClass("material-menu");
 
-        var materialEditorMenu = this.CreateChild<Foldout>("material-menu");
+        var materialEditorMenu = this.CreateChild<Foldout>("material-menu-foldout");
         materialEditorMenu.text = "Material Properties";
 
         var materialScrollView = materialEditorMenu.CreateChild<ScrollView>();

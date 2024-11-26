@@ -1,17 +1,50 @@
 
 .container{
     width: auto;
-    height: auto;
+    height: 100%;
     color: black;
 }
 
-.material-menu {
+.buttons-holder {
+    display: flex;
+    flex-direction: row;
+}
+
+/*
+*    PBR View
+*/
+
+.pbr-button {
+    margin: 6px;
+    height: 25px;
+    width: 15%;
     background-color: rgba(0, 0, 0, 0.95);
+    border-color: rgba(0, 0, 0, 0.95);
+    color: white;
+    font-size: 10px;
+    /* -unity-font-definition: url("/Assets/UI/Fonts/Inter/Inter.ttf"); */
+    /* -unity-font-definition: url("/Assets/UI/Fonts/Exo_2/Exo2.ttf"); */
+    -unity-font-definition: url("/Assets/UI/Fonts/Montserrat/Montserrat.ttf");
+    -unity-text-outline-color: white;
+    -unity-text-outline-width: 0.05px;
+    -unity-text-align: middle-left;
+
+}
+
+/*
+*   Material Menu
+*/
+
+.material-menu {
     width: 35%;
+}
+
+.material-menu-foldout {
+    flex-shrink: 0;
+    background-color: rgba(0, 0, 0, 0.95);
     margin: 5px;
     color: white;
     font-size: 10px;
-
     /* -unity-font-definition: url("/Assets/UI/Fonts/Inter/Inter.ttf"); */
     /* -unity-font-definition: url("/Assets/UI/Fonts/Exo_2/Exo2.ttf"); */
     -unity-font-definition: url("/Assets/UI/Fonts/Montserrat/Montserrat.ttf");
@@ -23,25 +56,22 @@
 .unity_toggle:selected {
     background-color:red;
 }
-/* .unity-foldout__toggle {
-    background-color: red;
-} */
 
-.material-menu > * {
+.material-menu-foldout > * {
     margin-left: 5px;
 }
 
-.material-menu .material-property {
+.material-menu-foldout .material-property {
     display: flex;
     flex-direction: row;
     padding-bottom: 5px;
 }
 
-.material-menu .left {
+.material-menu-foldout .left {
     width: 40%;
 }
 
-.material-menu .right {
+.material-menu-foldout .right {
     flex-grow: 1;
 }
 
@@ -62,10 +92,9 @@
 }
 
 .material-property-group .header {
-    /* font-weight: 100; */
-    /* color: red; */
     -unity-font-style: bold;
 }
+
 
 /*
 *   Material Slider
@@ -111,6 +140,7 @@
     height: 4px;
 }
 
+
 /*
 *   Material Color Picker RGB
 */
@@ -129,12 +159,12 @@
     padding-left: 15px;
 }
 
-
 .material-color-picker-rgb .unity-box {
     height: 20px;
     margin-left: 5px;
     margin-right: 5px;
 }
+
 
 /*
 *   Material Dropdown
@@ -164,7 +194,6 @@
     color: black;
     -unity-text-outline-color: black;
     -unity-text-outline-width: 0.5;
-    /* -unity-font-style: bold; */
 }
 
 .material-dropdown .unity-base-popup-field__arrow {
@@ -173,14 +202,6 @@
     margin-right: 5px;
 }
 
-/* .material-dropdown .unity-scroll-view {
-    background-color: red;
-} */
-
-/* .unity-base-dropdown{
-    background-color: green;
-} */
-
 .unity-base-dropdown__container-inner{
     background-color: rgba(20, 20, 20, 0.99);
     color: white;
@@ -188,4 +209,17 @@
 
 .material-dropdown .unity-popup-field {
     flex-grow: 1;
+}
+
+/*
+*   PBR Overlay
+*/
+.pbr-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.96); /* Semi-transparent black */
+    z-index: 1000; /* Ensure it appears above other UI elements */
 }

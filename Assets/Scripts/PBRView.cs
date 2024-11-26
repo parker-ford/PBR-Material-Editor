@@ -24,12 +24,18 @@ public class PBRView : MonoBehaviour
 
         container = root.CreateChild("container");
 
-        var materialMenu = container.CreateChild<MaterialMenu>();
+        var buttonsHolder = container.CreateChild("buttons-holder");
+
+        var materialMenu = buttonsHolder.CreateChild<MaterialMenu>("material-menu");
+
+        var modelButton = buttonsHolder.CreateChild<Button>("models-button", "pbr-button");
+        modelButton.text = "Model: Sphere";
+
+        var environmentButton = buttonsHolder.CreateChild<Button>("environment-butotn", "pbr-button");
+        environmentButton.text = "Environment: Default";
+
+        container.CreateChild("pbr-overlay");
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 }
