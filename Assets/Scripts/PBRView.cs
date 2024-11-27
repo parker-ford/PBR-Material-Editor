@@ -25,10 +25,15 @@ public class PBRView : MonoBehaviour
 
         var modelButton = buttonsHolder.CreateChild<Button>("models-button", "pbr-button");
         modelButton.text = "Model: Sphere";
+        // var modelOverlay = container.CreateChild<PBROverlaySelector>();
+
+        var textureButton = buttonsHolder.CreateChild<Button>("texture-button", "pbr-button");
+        textureButton.text = "Texture: None";
 
         var environmentButton = buttonsHolder.CreateChild<Button>("environment-butotn", "pbr-button");
         environmentButton.text = "Environment: Default";
 
-        // var modelOverlay = container.CreateChild<PBROverlaySelector>();
+        var presetsButton = buttonsHolder.CreateChild<Button>("presets-button", "pbr-button");
+        presetsButton.text = "Presets";
     }
 }

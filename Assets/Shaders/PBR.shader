@@ -2,7 +2,9 @@ Shader "Parker/PBR"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+        _DiffuseMap ("Diffuse Map", 2D) = "white" {}
+        _NormalMap ("Normal Map", 2D) = "white" {}
+        _DisplacementMap ("Displacement Map", 2D) = "white" {}
     }
     SubShader
     {
@@ -17,6 +19,7 @@ Shader "Parker/PBR"
 
             #include "UnityCG.cginc"
             #include "./ParkerPBR.cginc"
+            #include "./ParkerUtils.cginc"
 
             struct appdata
             {
@@ -33,8 +36,12 @@ Shader "Parker/PBR"
                 float3 worldPos: TEXCOORD2;
             };
 
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
+            sampler2D _DiffuseMap;
+            sampler2D _NormalMap;
+            sampler2D _DisplacementMap;
+
+            float _NormalStrength;
+            float _DisplacementStrength;
 
             float4 _LightColor;
             float3 _LightDirection;

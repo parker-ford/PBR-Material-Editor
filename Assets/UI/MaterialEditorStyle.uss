@@ -181,7 +181,8 @@
 
 .material-dropdown .unity-popup-field__input {
     background-color: rgba(20, 20, 20, 0.8);
-    border-color: rgba(50, 50, 50, 0.8);
+    /* border-color: rgba(50, 50, 50, 0.8); */
+    border-color: rgba(0,0,0,0.5);
     padding: 0;
     padding-left: 5px;
     height: 25px;
