@@ -2,11 +2,14 @@ using MaterialUI;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
+using System.Linq;
+using System;
 
 public class MaterialDropdown : VisualElement
 {
     public Label label;
     public DropdownField dropdown;
+    public Action<int> OnChoiceChanged = delegate { };
     public MaterialDropdown()
     {
         this.AddClass("material-dropdown");
@@ -18,6 +21,16 @@ public class MaterialDropdown : VisualElement
         label.text = "Property Name";
 
         dropdown = right.CreateChild<DropdownField>();
-        dropdown.choices = new List<string> { "options 1", "options 2", "options 3" };
+        dropdown.RegisterValueChangedCallback(evt => OnChoiceChanged(dropdown.choices.IndexOf(evt.newValue)));
+    }
+
+    public void SetDropdownChoices(string[] choices)
+    {
+        dropdown.choices = choices.ToList();
+    }
+
+    public void SetCurrentValue(int choice)
+    {
+        dropdown.value = dropdown.choices[choice];
     }
 }

@@ -4,6 +4,16 @@ using UnityEngine.UIElements;
 
 public class MaterialMenu : VisualElement
 {
+    public MaterialDropdown diffuseModelDropdown;
+    public MaterialDropdown normalDistributionModelDropdown;
+    public MaterialDropdown geometryAttenuationModelDropdown;
+    public MaterialDropdown debugViewTypeDropdown;
+    public MaterialColorPickerRGB diffuseColorPicker;
+    public MaterialSlider subsurfaceSlider;
+    public MaterialSlider roughnessSlider;
+    public MaterialSlider reflectanceSlider;
+
+
     public MaterialMenu()
     {
         this.AddClass("material-menu");
@@ -20,14 +30,14 @@ public class MaterialMenu : VisualElement
         var diffuseProperties = materialScrollView.CreateChild<MaterialPropertyGroup>();
         diffuseProperties.label.text = "Diffuse Properties";
 
-        var diffuseModel = diffuseProperties.CreateChild<MaterialDropdown>();
-        diffuseModel.label.text = "Diffuse Model";
+        diffuseModelDropdown = diffuseProperties.CreateChild<MaterialDropdown>();
+        diffuseModelDropdown.label.text = "Diffuse Model";
 
-        var baseColor = diffuseProperties.CreateChild<MaterialColorPickerRGB>();
-        baseColor.label.text = "Base Color";
+        diffuseColorPicker = diffuseProperties.CreateChild<MaterialColorPickerRGB>();
+        diffuseColorPicker.label.text = "Diffuse Color";
 
-        var subsurface = diffuseProperties.CreateChild<MaterialSlider>();
-        subsurface.label.text = "Subsurface";
+        subsurfaceSlider = diffuseProperties.CreateChild<MaterialSlider>();
+        subsurfaceSlider.label.text = "Subsurface";
 
         /*
         *   Specular Properties
@@ -35,17 +45,17 @@ public class MaterialMenu : VisualElement
         var specularProperties = materialScrollView.CreateChild<MaterialPropertyGroup>();
         specularProperties.label.text = "Specular Properties";
 
-        var normalDistributionModel = specularProperties.CreateChild<MaterialDropdown>();
-        normalDistributionModel.label.text = "Normal Distribution Model";
+        normalDistributionModelDropdown = specularProperties.CreateChild<MaterialDropdown>();
+        normalDistributionModelDropdown.label.text = "Normal Distribution Model";
 
-        var geometryAttenuationModel = specularProperties.CreateChild<MaterialDropdown>();
-        geometryAttenuationModel.label.text = "Geometry Attenuation Model";
+        geometryAttenuationModelDropdown = specularProperties.CreateChild<MaterialDropdown>();
+        geometryAttenuationModelDropdown.label.text = "Geometry Attenuation Model";
 
-        var roughness = specularProperties.CreateChild<MaterialSlider>();
-        roughness.label.text = "Roughness";
+        roughnessSlider = specularProperties.CreateChild<MaterialSlider>();
+        roughnessSlider.label.text = "Roughness";
 
-        var reflectance = specularProperties.CreateChild<MaterialSlider>();
-        reflectance.label.text = "Reflectance";
+        reflectanceSlider = specularProperties.CreateChild<MaterialSlider>();
+        reflectanceSlider.label.text = "Reflectance";
 
         /*
         *   Debug Views
@@ -53,9 +63,31 @@ public class MaterialMenu : VisualElement
         var debugView = materialScrollView.CreateChild<MaterialPropertyGroup>();
         debugView.label.text = "Debug View";
 
-        var debugViewType = debugView.CreateChild<MaterialDropdown>();
-        debugViewType.label.text = "Type";
+        debugViewTypeDropdown = debugView.CreateChild<MaterialDropdown>();
+        debugViewTypeDropdown.label.text = "Type";
     }
+
+    public void SetValues(
+        float reflectance,
+        float roughness,
+        float subsurface,
+        Color diffuseColor,
+        int ndf,
+        int geometry,
+        int diffuse,
+        int debug
+    )
+    {
+        reflectanceSlider.SetCurrentValue(reflectance);
+        roughnessSlider.SetCurrentValue(roughness);
+        subsurfaceSlider.SetCurrentValue(subsurface);
+        diffuseColorPicker.SetCurrentValue(diffuseColor);
+        normalDistributionModelDropdown.SetCurrentValue(ndf);
+        geometryAttenuationModelDropdown.SetCurrentValue(geometry);
+        diffuseModelDropdown.SetCurrentValue(diffuse);
+        debugViewTypeDropdown.SetCurrentValue(debug);
+    }
+
 
 }
 

@@ -9,14 +9,9 @@ public class PBRView : MonoBehaviour
 
     private VisualElement root;
     private VisualElement container;
+    public MaterialMenu materialMenu;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        GenerateUI();
-    }
-
-    private void GenerateUI()
+    public void GenerateUI()
     {
         root = document.rootVisualElement;
         root.Clear();
@@ -26,7 +21,7 @@ public class PBRView : MonoBehaviour
 
         var buttonsHolder = container.CreateChild("buttons-holder");
 
-        var materialMenu = buttonsHolder.CreateChild<MaterialMenu>("material-menu");
+        materialMenu = buttonsHolder.CreateChild<MaterialMenu>("material-menu");
 
         var modelButton = buttonsHolder.CreateChild<Button>("models-button", "pbr-button");
         modelButton.text = "Model: Sphere";
@@ -35,7 +30,5 @@ public class PBRView : MonoBehaviour
         environmentButton.text = "Environment: Default";
 
         // var modelOverlay = container.CreateChild<PBROverlaySelector>();
-
     }
-
 }

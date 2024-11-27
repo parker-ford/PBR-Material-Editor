@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PBRController : MonoBehaviour
@@ -37,14 +38,22 @@ public class PBRController : MonoBehaviour
     public PBRView view;
     public Shader pbrShader;
     public Mesh defaultMesh;
+    public NormalDistributionFunction defaultNDF;
+    public GeometryAttenuationFunction defaultGeometry;
+    public Diffuse defaultDiffuse;
+    public DebugView defaultDebug;
+    [Range(0, 1)] public float defaultReflectance;
+    [Range(0, 1)] public float defaultRoughness;
+    [Range(0, 1)] public float defaultSubsurface;
+    public Color defaultDiffuseColor;
 
     private GameObject model;
     private Material material;
     private Mesh mesh;
-    private float reflectance = 0.0f;
-    private float roughness = 0.0f;
-    private float subsurface = 0.0f;
-    private Color diffuseColor = new Color(1, 1, 1);
+    private float reflectance;
+    private float roughness;
+    private float subsurface;
+    private Color diffuseColor;
     private NormalDistributionFunction ndf;
     private GeometryAttenuationFunction geometry;
     private Diffuse diffuse;
@@ -53,10 +62,83 @@ public class PBRController : MonoBehaviour
 
     void Start()
     {
+        roughness = defaultRoughness;
+        reflectance = defaultReflectance;
+        subsurface = defaultSubsurface;
+        diffuseColor = defaultDiffuseColor;
         mesh = defaultMesh;
         material = new Material(pbrShader);
+        ndf = defaultNDF;
+        geometry = defaultGeometry;
+        diffuse = defaultDiffuse;
+        debug = defaultDebug;
+
         InstantiateModel();
         UpdateMaterialParameters();
+        InstantiateUI();
+
+    }
+
+    void InstantiateUI()
+    {
+        view.GenerateUI();
+
+        view.materialMenu.diffuseModelDropdown.SetDropdownChoices(Enum.GetNames(typeof(Diffuse)));
+        view.materialMenu.normalDistributionModelDropdown.SetDropdownChoices(Enum.GetNames(typeof(NormalDistributionFunction)));
+        view.materialMenu.geometryAttenuationModelDropdown.SetDropdownChoices(Enum.GetNames(typeof(GeometryAttenuationFunction)));
+        view.materialMenu.debugViewTypeDropdown.SetDropdownChoices(Enum.GetNames(typeof(DebugView)));
+
+        view.materialMenu.SetValues(
+            reflectance,
+            roughness,
+            subsurface,
+            diffuseColor,
+            (int)ndf,
+            (int)geometry,
+            (int)diffuse,
+            (int)debug
+        );
+
+        view.materialMenu.diffuseColorPicker.OnColorChanged += newColor =>
+        {
+            diffuseColor = newColor;
+            UpdateMaterialParameters();
+        };
+        view.materialMenu.reflectanceSlider.OnMaterialSliderChanged += newValue =>
+        {
+            reflectance = newValue;
+            UpdateMaterialParameters();
+        };
+        view.materialMenu.roughnessSlider.OnMaterialSliderChanged += newValue =>
+        {
+            roughness = newValue;
+            UpdateMaterialParameters();
+        };
+        view.materialMenu.subsurfaceSlider.OnMaterialSliderChanged += newValue =>
+        {
+            subsurface = newValue;
+            UpdateMaterialParameters();
+        };
+        view.materialMenu.normalDistributionModelDropdown.OnChoiceChanged += newValue =>
+        {
+            ndf = (NormalDistributionFunction)newValue;
+            UpdateMaterialParameters();
+        };
+        view.materialMenu.geometryAttenuationModelDropdown.OnChoiceChanged += newValue =>
+        {
+            geometry = (GeometryAttenuationFunction)newValue;
+            UpdateMaterialParameters();
+        };
+        view.materialMenu.diffuseModelDropdown.OnChoiceChanged += newValue =>
+        {
+            diffuse = (Diffuse)newValue;
+            UpdateMaterialParameters();
+        };
+        view.materialMenu.debugViewTypeDropdown.OnChoiceChanged += newValue =>
+        {
+            debug = (DebugView)newValue;
+            UpdateMaterialParameters();
+        };
     }
 
     void InstantiateModel()
@@ -83,12 +165,6 @@ public class PBRController : MonoBehaviour
         material.SetInt("_GEO", (int)geometry);
         material.SetInt("_Diffuse", (int)diffuse);
         material.SetInt("_DebugView", (int)debug);
-
-    }
-
-    void Update()
-    {
-
     }
 
     void OnDisable()

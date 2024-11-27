@@ -80,5 +80,14 @@ public class MaterialColorPickerRGB : VisualElement
         OnColorChanged.Invoke(currentColor);
     }
 
+    public void SetCurrentValue(Color newColor)
+    {
+        currentColor = newColor;
+        rSlider.SetCurrentValue(newColor.r);
+        bSlider.SetCurrentValue(newColor.b);
+        gSlider.SetCurrentValue(newColor.g);
+        UpdateColorView();
+    }
+
 
 }
