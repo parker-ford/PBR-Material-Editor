@@ -34,7 +34,7 @@ public class PBRView : MonoBehaviour
         var environmentButton = buttonsHolder.CreateChild<Button>("environment-butotn", "pbr-button");
         environmentButton.text = "Environment: Default";
 
-        container.CreateChild("pbr-overlay");
+        // var modelOverlay = container.CreateChild<PBROverlaySelector>();
 
     }
 

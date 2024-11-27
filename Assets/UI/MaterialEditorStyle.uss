@@ -223,3 +223,20 @@
     background-color: rgba(0, 0, 0, 0.96); /* Semi-transparent black */
     z-index: 1000; /* Ensure it appears above other UI elements */
 }
+
+.pbr-overlay .center {
+    flex-grow: 1;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-shrink: 0;
+    padding: 80px;
+}
+
+.pbr-overlay .image-container {
+    width: 200px;
+    height: 175px;
+    background-color: white;
+    margin: 5px;
+}
