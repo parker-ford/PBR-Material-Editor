@@ -5,6 +5,8 @@ using UnityEngine.UIElements;
 public class PBROverlaySelector : VisualElement
 {
     public Label label;
+
+    private VisualElement center;
     public PBROverlaySelector()
     {
         this.AddClass("pbr-overlay");
@@ -20,14 +22,14 @@ public class PBROverlaySelector : VisualElement
         label = this.CreateChild<Label>();
         label.text = "Container";
 
-        var center = this.CreateChild("center");
+        center = this.CreateChild("center");
+    }
 
-        int numImages = 7;
-
-        for (int i = 0; i < numImages; i++)
+    public void setImages(string[] paths)
+    {
+        foreach (string path in paths)
         {
-            var imageContainer = center.CreateChild("image-container");
-            var image = imageContainer.CreateChild<Image>();
+
         }
     }
 }
