@@ -40,7 +40,7 @@ public class PBRController : MonoBehaviour
     public PBRView view;
     public Shader pbrShader;
     public Light sun;
-    public Mesh defaultMesh;
+    public ModelObject defaultModelObject;
     public NormalDistributionFunction defaultNDF;
     public GeometryAttenuationFunction defaultGeometry;
     public Diffuse defaultDiffuse;
@@ -52,7 +52,7 @@ public class PBRController : MonoBehaviour
 
     private GameObject model;
     private Material material;
-    private Mesh mesh;
+    private ModelObject modelObject;
     private float reflectance;
     private float roughness;
     private float subsurface;
@@ -73,7 +73,7 @@ public class PBRController : MonoBehaviour
         reflectance = defaultReflectance;
         subsurface = defaultSubsurface;
         diffuseColor = defaultDiffuseColor;
-        mesh = defaultMesh;
+        modelObject = defaultModelObject;
         material = new Material(pbrShader);
         ndf = defaultNDF;
         geometry = defaultGeometry;
@@ -83,6 +83,11 @@ public class PBRController : MonoBehaviour
         InstantiateModel();
         UpdateMaterialParameters();
         InstantiateUI();
+
+    }
+
+    void test(int i)
+    {
 
     }
 
@@ -96,6 +101,11 @@ public class PBRController : MonoBehaviour
         view.materialMenu.debugViewTypeDropdown.SetDropdownChoices(Enum.GetNames(typeof(DebugView)));
 
         view.modelOverlay.SetImages(modelObjects.Select(obj => obj.GetPath()).ToList());
+        view.modelOverlay.OnOverlaySelection += (index) =>
+        {
+            modelObject = modelObjects[index];
+            InstantiateModel();
+        };
 
         view.materialMenu.SetValues(
             reflectance,
@@ -152,8 +162,10 @@ public class PBRController : MonoBehaviour
 
     void InstantiateModel()
     {
+        Destroy(model);
         model = new GameObject("Model");
-        model.AddComponent<MeshFilter>().mesh = mesh;
+        model.AddComponent<MeshFilter>().mesh = modelObject.GetMesh();
+        modelObject.SetToTransform(model.transform);
         model.AddComponent<MeshRenderer>().material = material;
     }
 

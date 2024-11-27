@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using MaterialUI;
 using UnityEditor;
@@ -7,8 +8,8 @@ using UnityEngine.UIElements;
 public class PBROverlaySelector : VisualElement
 {
     public Label label;
-
     private VisualElement center;
+    public event Action<int> OnOverlaySelection;
     public PBROverlaySelector()
     {
         this.AddClass("pbr-overlay");
@@ -29,11 +30,19 @@ public class PBROverlaySelector : VisualElement
 
     public void SetImages(List<string> paths)
     {
+        int index = 0;
         foreach (string path in paths)
         {
             Debug.Log(path);
             var button = center.CreateChild<Button>("image-container");
             button.style.backgroundImage = Loader.LoadImage(path);
+            int localIndex = index;
+            button.clicked += () =>
+            {
+                OnOverlaySelection.Invoke(localIndex);
+                this.style.display = DisplayStyle.None;
+            };
+            index++;
         }
     }
 }
