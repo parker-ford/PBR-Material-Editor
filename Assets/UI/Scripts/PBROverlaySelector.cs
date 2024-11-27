@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using MaterialUI;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -25,11 +27,13 @@ public class PBROverlaySelector : VisualElement
         center = this.CreateChild("center");
     }
 
-    public void setImages(string[] paths)
+    public void SetImages(List<string> paths)
     {
         foreach (string path in paths)
         {
-
+            Debug.Log(path);
+            var button = center.CreateChild<Button>();
+            button.style.backgroundImage = Loader.LoadImage(path);
         }
     }
 }

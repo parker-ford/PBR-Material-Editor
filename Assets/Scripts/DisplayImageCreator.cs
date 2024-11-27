@@ -57,7 +57,6 @@ public class DisplayImageCreator : MonoBehaviour
         }
     }
 
-
     void SaveDisplayImage()
     {
         RenderTexture renderTexture = new RenderTexture(Screen.width, Screen.height, 24);

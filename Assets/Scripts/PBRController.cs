@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PBRController : MonoBehaviour
@@ -60,9 +62,13 @@ public class PBRController : MonoBehaviour
     private Diffuse diffuse;
     private DebugView debug;
 
+    private List<ModelObject> modelObjects;
+
 
     void Start()
     {
+        modelObjects = Loader.LoadScriptableObjects<ModelObject>();
+
         roughness = defaultRoughness;
         reflectance = defaultReflectance;
         subsurface = defaultSubsurface;
@@ -88,6 +94,8 @@ public class PBRController : MonoBehaviour
         view.materialMenu.normalDistributionModelDropdown.SetDropdownChoices(Enum.GetNames(typeof(NormalDistributionFunction)));
         view.materialMenu.geometryAttenuationModelDropdown.SetDropdownChoices(Enum.GetNames(typeof(GeometryAttenuationFunction)));
         view.materialMenu.debugViewTypeDropdown.SetDropdownChoices(Enum.GetNames(typeof(DebugView)));
+
+        view.modelOverlay.SetImages(modelObjects.Select(obj => obj.displayImagePath).ToList());
 
         view.materialMenu.SetValues(
             reflectance,
