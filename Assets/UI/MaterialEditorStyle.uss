@@ -221,8 +221,9 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.96); /* Semi-transparent black */
-    z-index: 1000; /* Ensure it appears above other UI elements */
+    background-color: rgba(0, 0, 0, 0.96);
+    z-index: 1000;
+    color: white; 
 }
 
 .pbr-overlay .center {
