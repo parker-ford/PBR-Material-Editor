@@ -95,7 +95,7 @@ public class PBRController : MonoBehaviour
         view.materialMenu.geometryAttenuationModelDropdown.SetDropdownChoices(Enum.GetNames(typeof(GeometryAttenuationFunction)));
         view.materialMenu.debugViewTypeDropdown.SetDropdownChoices(Enum.GetNames(typeof(DebugView)));
 
-        view.modelOverlay.SetImages(modelObjects.Select(obj => obj.displayImagePath).ToList());
+        view.modelOverlay.SetImages(modelObjects.Select(obj => obj.GetPath()).ToList());
 
         view.materialMenu.SetValues(
             reflectance,

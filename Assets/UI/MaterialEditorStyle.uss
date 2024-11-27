@@ -238,7 +238,9 @@
 
 .pbr-overlay .image-container {
     width: 200px;
-    height: 175px;
-    background-color: white;
+    height: 200px;
+    background-color: red;
     margin: 5px;
+    background-size: contain;
+    background-size: 200%;
 }

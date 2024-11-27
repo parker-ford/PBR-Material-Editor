@@ -4,11 +4,11 @@ using UnityEngine;
 public class ModelObject : ScriptableObject
 {
     public string id;
-    public Mesh mesh;
-    public Vector3 position = new Vector3(0, 0, 0);
-    public Vector3 scale = new Vector3(1, 1, 1);
-    public Quaternion rotation;
-    public string displayImagePath;
+    [SerializeField] private Mesh mesh;
+    [SerializeField] private Vector3 position = Vector3.zero;
+    [SerializeField] private Vector3 scale = Vector3.one;
+    [SerializeField] private Quaternion rotation = Quaternion.identity;
+    [SerializeField] private string displayImagePath = "";
 
     public void SetToTransform(Transform transform)
     {
@@ -16,5 +16,48 @@ public class ModelObject : ScriptableObject
         transform.localScale = scale;
         transform.rotation = rotation;
     }
+
+    public Mesh GetMesh()
+    {
+        return mesh;
+    }
+    public void SetMesh(Mesh _mesh)
+    {
+        mesh = _mesh;
+    }
+    public Vector3 GetPosition()
+    {
+        return position;
+    }
+    public void SetPosition(Vector3 _position)
+    {
+        position = _position;
+    }
+    public Vector3 GetScale()
+    {
+        return scale;
+    }
+    public void SetScale(Vector3 _scale)
+    {
+        scale = _scale;
+    }
+    public Quaternion GetRotation()
+    {
+        return rotation;
+    }
+    public void SetRotation(Quaternion _rotation)
+    {
+        rotation = _rotation;
+    }
+    public string GetPath()
+    {
+        return displayImagePath;
+    }
+    public void SetPath(string _path)
+    {
+        displayImagePath = _path;
+    }
+
+
 }
 

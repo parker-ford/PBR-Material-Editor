@@ -31,7 +31,7 @@ public class DisplayImageCreator : MonoBehaviour
     {
         currentModel = models[modelIndex];
         currentModel.SetToTransform(displayModel.transform);
-        displayModel.GetComponent<MeshFilter>().mesh = currentModel.mesh;
+        displayModel.GetComponent<MeshFilter>().mesh = currentModel.GetMesh();
         modelIndex++;
 
     }
@@ -40,10 +40,13 @@ public class DisplayImageCreator : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            currentModel.position = displayModel.transform.position;
-            currentModel.scale = displayModel.transform.localScale;
-            currentModel.rotation = displayModel.transform.rotation;
-            SaveDisplayImage();
+            currentModel.SetPosition(displayModel.transform.position);
+            currentModel.SetScale(displayModel.transform.localScale);
+            currentModel.SetRotation(displayModel.transform.rotation);
+
+            string savePath = path + currentModel.id + ".png";
+            currentModel.SetPath(savePath);
+            SaveDisplayImage(savePath);
 
             if (modelIndex < models.Count)
             {
@@ -57,7 +60,7 @@ public class DisplayImageCreator : MonoBehaviour
         }
     }
 
-    void SaveDisplayImage()
+    void SaveDisplayImage(string path)
     {
         RenderTexture renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
         Camera.main.targetTexture = renderTexture;
@@ -73,9 +76,8 @@ public class DisplayImageCreator : MonoBehaviour
         Destroy(renderTexture);
 
         byte[] bytes = texture.EncodeToPNG();
-        string fullPath = path + currentModel.id + ".png";
-        File.WriteAllBytes(fullPath, bytes);
-        Debug.Log(fullPath + " saved");
-        currentModel.displayImagePath = fullPath;
+
+        File.WriteAllBytes(path, bytes);
+        Debug.Log(path + " saved");
     }
 }

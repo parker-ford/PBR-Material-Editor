@@ -32,7 +32,7 @@ public class PBROverlaySelector : VisualElement
         foreach (string path in paths)
         {
             Debug.Log(path);
-            var button = center.CreateChild<Button>();
+            var button = center.CreateChild<Button>("image-container");
             button.style.backgroundImage = Loader.LoadImage(path);
         }
     }
