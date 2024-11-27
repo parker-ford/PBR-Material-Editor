@@ -229,10 +229,10 @@ brdfResult PBR_BRDF(float3 n, float3 l, float3 v, brdfParameters params, brdfSet
         result.diffuse = (1.0 - fresnel) * LambertianDiffuse();
     }
     else if(settings.diffuse == DIFF_HAMMON){
-        result.diffuse = HammonDiffuse(n, l, v, h, alpha);
+        result.diffuse = HammonDiffuse(n, l, v, h, alpha, params);
     }
     else if(settings.diffuse == DIFF_DISNEY){
-        result.diffuse = DisneyDiffuse(n, l, v, alpha);
+        result.diffuse = DisneyDiffuse(n, l, v, alpha, params);
     }
 
     if(settings.debug == DEBUG_VIEW_DIFFUSE){

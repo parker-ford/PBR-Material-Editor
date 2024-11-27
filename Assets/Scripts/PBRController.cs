@@ -37,6 +37,7 @@ public class PBRController : MonoBehaviour
 
     public PBRView view;
     public Shader pbrShader;
+    public Light sun;
     public Mesh defaultMesh;
     public NormalDistributionFunction defaultNDF;
     public GeometryAttenuationFunction defaultGeometry;
@@ -162,9 +163,13 @@ public class PBRController : MonoBehaviour
         material.SetColor("_DiffuseColor", diffuseColor);
 
         material.SetInt("_NDF", (int)ndf);
-        material.SetInt("_GEO", (int)geometry);
+        material.SetInt("_Geometry", (int)geometry);
         material.SetInt("_Diffuse", (int)diffuse);
         material.SetInt("_DebugView", (int)debug);
+
+        material.SetColor("_LightColor", sun.color);
+        material.SetVector("_LightDirection", -sun.transform.forward);
+        material.SetFloat("_LightIntensity", sun.intensity);
     }
 
     void OnDisable()

@@ -16,6 +16,7 @@ Shader "Parker/PBR"
             #pragma fragment frag
 
             #include "UnityCG.cginc"
+            #include "./ParkerPBR.cginc"
 
             struct appdata
             {
@@ -45,7 +46,7 @@ Shader "Parker/PBR"
             float _Subsurface;
 
             int _NDF;
-            int _GEO;
+            int _Geometry;
             int _Diffuse;
             int _DebugView;
 
@@ -53,13 +54,40 @@ Shader "Parker/PBR"
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.uv = v.uv;
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+                o.worldNormal = normalize(UnityObjectToWorldNormal(v.normal));
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-                return _DiffuseColor;
+
+                float3 n = normalize(i.worldNormal);
+                float3 l = normalize(_LightDirection);
+                float3 v = normalize(_WorldSpaceCameraPos - i.worldPos);
+
+                float ndotl = clampedDot(l, normalize(i.worldNormal));
+
+                brdfParameters params;
+                params.roughness = _Roughness;
+                params.diffuseColor = _DiffuseColor;
+                params.reflectance = _Reflectance;
+                params.subsurface = _Subsurface;
+
+                brdfSettings settings;
+                settings.ndf = _NDF;
+                settings.geometry = _Geometry;
+                settings.diffuse = _Diffuse;
+                settings.debug = _DebugView;
+
+                brdfResult brdf = PBR_BRDF(n,l,v, params, settings);
+
+                float3 lightIn =  _LightColor.rgb * _LightIntensity;
+
+                float3 lightOut = lightIn * (brdf.specular + brdf.diffuse * _DiffuseColor) * ndotl;
+
+                return float4(lightOut, 1.0);
             }
             ENDCG
         }
