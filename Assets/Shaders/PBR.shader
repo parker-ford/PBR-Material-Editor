@@ -26,6 +26,7 @@ Shader "Parker/PBR"
             #define DEBUG_VIEW_NORMAL_MAP 7
             #define DEBUG_VIEW_DISPLACEMENT_MAP 8
             #define DEBUG_VIEW_ROUGHNESS_MAP 9
+            #define DEBUG_VIEW_NORMAL 10
 
             struct appdata
             {
@@ -104,9 +105,21 @@ Shader "Parker/PBR"
                     uv = parallaxMap(uv, mul(v, float3x3(tangent, bitangent, normal)), _DisplacementMap, _DisplacementStrength);
                 }
 
+                if(_DebugView == DEBUG_VIEW_DIFFUSE) return _DiffuseMapSet ? tex2D(_DiffuseMap, uv) : float4(1,1,1,1);
+                if(_DebugView == DEBUG_VIEW_NORMAL_MAP) return _NormalMapSet ? tex2D(_NormalMap, uv): float4(1,1,1,1);
+                if(_DebugView == DEBUG_VIEW_DISPLACEMENT_MAP) return _DisplacementMapSet ? tex2D(_DiffuseMap, uv) : float4(1,1,1,1);
+                if(_DebugView == DEBUG_VIEW_ROUGHNESS_MAP) return _RoughnessMapSet ? tex2D(_RoughnessMap, uv) : float4(1,1,1,1);
 
 
                 float3 n = normal;
+                if(_NormalMapSet && _UseNormalMap){
+                    n = normalMap(normal, tangent, bitangent, uv, _NormalMap, _NormalStrength);
+                }
+                if(_DebugView == DEBUG_VIEW_NORMAL) return float4(n, 1);
+
+
+
+
 
                 float3 diffuseMapSample = 1;
                 if(_DiffuseMapSet){
@@ -136,7 +149,7 @@ Shader "Parker/PBR"
 
                 
 
-                float ndotl = clampedDot(l, normalize(i.normal));
+                float ndotl = clampedDot(l, normalize(n));
 
                 brdfParameters params;
                 params.roughness = _Roughness;
