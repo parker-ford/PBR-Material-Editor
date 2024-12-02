@@ -56,6 +56,7 @@ public class PBRController : MonoBehaviour
     public Color defaultDiffuseColor;
     public float defaultDisplacementStrength;
     public float defaultNormalMapStrength;
+    public bool defaultUseDisplacementMap;
 
     private GameObject model;
     private Material material;
@@ -71,6 +72,7 @@ public class PBRController : MonoBehaviour
     private DebugView debug;
     private float displacementMapStrength;
     private float normalMapStrength;
+    private bool useDisplacementMap;
     private List<ModelObject> modelObjects;
     private List<TextureObject> textureObjects;
 
@@ -88,6 +90,7 @@ public class PBRController : MonoBehaviour
         textureObject = defaultTextureObject;
         displacementMapStrength = defaultDisplacementStrength;
         normalMapStrength = defaultNormalMapStrength;
+        useDisplacementMap = defaultUseDisplacementMap;
         material = new Material(pbrShader);
         ndf = defaultNDF;
         geometry = defaultGeometry;
@@ -155,56 +158,17 @@ public class PBRController : MonoBehaviour
         BindDropdown(view.materialMenu.diffuseModelDropdown, newValue => diffuse = (Diffuse)newValue);
         BindDropdown(view.materialMenu.debugViewTypeDropdown, newValue => debug = (DebugView)newValue);
 
-        // view.materialMenu.displacementMapStrengthSlider.OnMaterialSliderChanged += newValue =>
-        // {
-        //     displacementMapStrength = newValue;
-        //     UpdateMaterialParameters();
-        // };
-        // view.materialMenu.normalMapStrengthSlider.OnMaterialSliderChanged += newValue =>
-        // {
-        //     normalMapStrength = newValue;
-        //     UpdateMaterialParameters();
-        // };
-        // view.materialMenu.diffuseColorPicker.OnColorChanged += newColor =>
-        // {
-        //     diffuseColor = newColor;
-        //     UpdateMaterialParameters();
-        // };
-        // view.materialMenu.reflectanceSlider.OnMaterialSliderChanged += newValue =>
-        // {
-        //     reflectance = newValue;
-        //     UpdateMaterialParameters();
-        // };
-        // view.materialMenu.roughnessSlider.OnMaterialSliderChanged += newValue =>
-        // {
-        //     roughness = newValue;
-        //     UpdateMaterialParameters();
-        // };
-        // view.materialMenu.subsurfaceSlider.OnMaterialSliderChanged += newValue =>
-        // {
-        //     subsurface = newValue;
-        //     UpdateMaterialParameters();
-        // };
-        // view.materialMenu.normalDistributionModelDropdown.OnChoiceChanged += newValue =>
-        // {
-        //     ndf = (NormalDistributionFunction)newValue;
-        //     UpdateMaterialParameters();
-        // };
-        // view.materialMenu.geometryAttenuationModelDropdown.OnChoiceChanged += newValue =>
-        // {
-        //     geometry = (GeometryAttenuationFunction)newValue;
-        //     UpdateMaterialParameters();
-        // };
-        // view.materialMenu.diffuseModelDropdown.OnChoiceChanged += newValue =>
-        // {
-        //     diffuse = (Diffuse)newValue;
-        //     UpdateMaterialParameters();
-        // };
-        // view.materialMenu.debugViewTypeDropdown.OnChoiceChanged += newValue =>
-        // {
-        //     debug = (DebugView)newValue;
-        //     UpdateMaterialParameters();
-        // };
+        // Bind Toggle
+        BindToggle(view.materialMenu.displacementMapToggle, newValue => useDisplacementMap = newValue);
+    }
+
+    void BindToggle(MaterialToggle toggle, Action<bool> action)
+    {
+        toggle.OnToggleChanged += newValue =>
+        {
+            action(newValue);
+            UpdateMaterialParameters();
+        };
     }
 
     void BindSlider(MaterialSlider slider, Action<float> action)
@@ -309,6 +273,8 @@ public class PBRController : MonoBehaviour
 
         material.SetFloat("_DisplacementStrength", displacementMapStrength);
         material.SetFloat("_NormalStrength", normalMapStrength);
+
+        material.SetInt("_UseDisplacementMap", useDisplacementMap ? 1 : 0);
     }
 
     void OnDisable()

@@ -68,6 +68,8 @@ Shader "Parker/PBR"
             float _Reflectance;
             float _Subsurface;
 
+            int _UseDisplacementMap;
+
             int _NDF;
             int _Geometry;
             int _Diffuse;
@@ -92,12 +94,14 @@ Shader "Parker/PBR"
 
                 float3 normal = normalize(i.normal);
                 float3 tangent = normalize(i.tangent);
-                float3 bitangent = getBitangent(normal, tangent, i.tangent.w);////
+                float3 bitangent = getBitangent(normal, tangent, i.tangent.w);
 
                 float2 uv = i.uv;
-                if(_DisplacementMapSet){
+                if(_DisplacementMapSet && _UseDisplacementMap){
                     uv = parallaxMap(uv, mul(v, float3x3(tangent, bitangent, normal)), _DisplacementMap, _DisplacementStrength);
                 }
+
+                
 
                 float3 n = normal;
 

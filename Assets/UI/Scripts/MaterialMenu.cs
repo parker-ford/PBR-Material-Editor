@@ -14,6 +14,7 @@ public class MaterialMenu : VisualElement
     public MaterialSlider reflectanceSlider;
     public MaterialSlider displacementMapStrengthSlider;
     public MaterialSlider normalMapStrengthSlider;
+    public MaterialToggle displacementMapToggle;
 
 
     public MaterialMenu()
@@ -79,6 +80,9 @@ public class MaterialMenu : VisualElement
 
         debugViewTypeDropdown = debugView.CreateChild<MaterialDropdown>();
         debugViewTypeDropdown.label.text = "Type";
+
+        displacementMapToggle = debugView.CreateChild<MaterialToggle>();
+        displacementMapToggle.label.text = "Use Displacement Map";
     }
 
     public void SetValues(
