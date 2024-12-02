@@ -167,6 +167,7 @@ MonoBehaviour:
   pbrShader: {fileID: 4800000, guid: 46f53897b4d38a840a18ef7e7e18e93e, type: 3}
   sun: {fileID: 1585609542}
   defaultModelObject: {fileID: 11400000, guid: f4513f4d4d704ab4c8dc25dbf1f0e718, type: 2}
+  defaultTextureObject: {fileID: 11400000, guid: 12792c6812a020c45ba8d0ac204cf4a6, type: 2}
   defaultNDF: 2
   defaultGeometry: 1
   defaultDiffuse: 2
@@ -175,6 +176,12 @@ MonoBehaviour:
   defaultRoughness: 0.5
   defaultSubsurface: 0.1
   defaultDiffuseColor: {r: 1, g: 0, b: 0, a: 1}
+  defaultDisplacementStrength: 1
+  defaultNormalMapStrength: 0.05
+  defaultUseDisplacementMap: 1
+  defaultUseDiffuseMap: 1
+  defaultUseNormalMap: 1
+  defaultUseRoughnessMap: 1
 --- !u!1 &1585609541
 GameObject:
   m_ObjectHideFlags: 0

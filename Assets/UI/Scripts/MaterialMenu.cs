@@ -14,7 +14,10 @@ public class MaterialMenu : VisualElement
     public MaterialSlider reflectanceSlider;
     public MaterialSlider displacementMapStrengthSlider;
     public MaterialSlider normalMapStrengthSlider;
+    public MaterialToggle diffuseMapToggle;
+    public MaterialToggle normalMapToggle;
     public MaterialToggle displacementMapToggle;
+    public MaterialToggle roughnessMapToggle;
 
 
     public MaterialMenu()
@@ -81,8 +84,18 @@ public class MaterialMenu : VisualElement
         debugViewTypeDropdown = debugView.CreateChild<MaterialDropdown>();
         debugViewTypeDropdown.label.text = "Type";
 
+        diffuseMapToggle = debugView.CreateChild<MaterialToggle>();
+        diffuseMapToggle.label.text = "Use Diffuse Map";
+
+        normalMapToggle = debugView.CreateChild<MaterialToggle>();
+        normalMapToggle.label.text = "Use Normal Map";
+
         displacementMapToggle = debugView.CreateChild<MaterialToggle>();
         displacementMapToggle.label.text = "Use Displacement Map";
+
+        roughnessMapToggle = debugView.CreateChild<MaterialToggle>();
+        roughnessMapToggle.label.text = "Use Roughness Map";
+
     }
 
     public void SetValues(
@@ -93,7 +106,13 @@ public class MaterialMenu : VisualElement
         int ndf,
         int geometry,
         int diffuse,
-        int debug
+        int debug,
+        bool useDiffuseMap,
+        bool useNormalMap,
+        bool useDisplacementMap,
+        bool useRoughnessMap,
+        float normalMapStrength,
+        float displacementMapStrength
     )
     {
         reflectanceSlider.SetCurrentValue(reflectance);
@@ -104,6 +123,12 @@ public class MaterialMenu : VisualElement
         geometryAttenuationModelDropdown.SetCurrentValue(geometry);
         diffuseModelDropdown.SetCurrentValue(diffuse);
         debugViewTypeDropdown.SetCurrentValue(debug);
+        diffuseMapToggle.SetCurrentValue(useDiffuseMap);
+        normalMapToggle.SetCurrentValue(useNormalMap);
+        displacementMapToggle.SetCurrentValue(useDisplacementMap);
+        roughnessMapToggle.SetCurrentValue(useRoughnessMap);
+        normalMapStrengthSlider.SetCurrentValue(normalMapStrength);
+        displacementMapStrengthSlider.SetCurrentValue(displacementMapStrength);
     }
 
 

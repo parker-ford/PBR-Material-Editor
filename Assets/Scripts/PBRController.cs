@@ -57,6 +57,9 @@ public class PBRController : MonoBehaviour
     public float defaultDisplacementStrength;
     public float defaultNormalMapStrength;
     public bool defaultUseDisplacementMap;
+    public bool defaultUseDiffuseMap;
+    public bool defaultUseNormalMap;
+    public bool defaultUseRoughnessMap;
 
     private GameObject model;
     private Material material;
@@ -73,6 +76,9 @@ public class PBRController : MonoBehaviour
     private float displacementMapStrength;
     private float normalMapStrength;
     private bool useDisplacementMap;
+    private bool useDiffuseMap;
+    private bool useNormalMap;
+    private bool useRoughnessMap;
     private List<ModelObject> modelObjects;
     private List<TextureObject> textureObjects;
 
@@ -91,6 +97,9 @@ public class PBRController : MonoBehaviour
         displacementMapStrength = defaultDisplacementStrength;
         normalMapStrength = defaultNormalMapStrength;
         useDisplacementMap = defaultUseDisplacementMap;
+        useNormalMap = defaultUseNormalMap;
+        useDiffuseMap = defaultUseDiffuseMap;
+        useRoughnessMap = defaultUseRoughnessMap;
         material = new Material(pbrShader);
         ndf = defaultNDF;
         geometry = defaultGeometry;
@@ -139,7 +148,13 @@ public class PBRController : MonoBehaviour
             (int)ndf,
             (int)geometry,
             (int)diffuse,
-            (int)debug
+            (int)debug,
+            useDiffuseMap,
+            useNormalMap,
+            useDisplacementMap,
+            useRoughnessMap,
+            normalMapStrength,
+            displacementMapStrength
         );
 
         // Bind Sliders
@@ -160,6 +175,10 @@ public class PBRController : MonoBehaviour
 
         // Bind Toggle
         BindToggle(view.materialMenu.displacementMapToggle, newValue => useDisplacementMap = newValue);
+        BindToggle(view.materialMenu.diffuseMapToggle, newValue => useDiffuseMap = newValue);
+        BindToggle(view.materialMenu.normalMapToggle, newValue => useNormalMap = newValue);
+        BindToggle(view.materialMenu.roughnessMapToggle, newValue => useRoughnessMap = newValue);
+
     }
 
     void BindToggle(MaterialToggle toggle, Action<bool> action)
@@ -275,6 +294,9 @@ public class PBRController : MonoBehaviour
         material.SetFloat("_NormalStrength", normalMapStrength);
 
         material.SetInt("_UseDisplacementMap", useDisplacementMap ? 1 : 0);
+        material.SetInt("_UseDiffuseMap", useDiffuseMap ? 1 : 0);
+        material.SetInt("_UseNormalMap", useNormalMap ? 1 : 0);
+        material.SetInt("_UseRoughnessMap", useRoughnessMap ? 1 : 0);
     }
 
     void OnDisable()

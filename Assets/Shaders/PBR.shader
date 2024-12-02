@@ -69,6 +69,9 @@ Shader "Parker/PBR"
             float _Subsurface;
 
             int _UseDisplacementMap;
+            int _UseNormalMap;
+            int _UseDiffuseMap;
+            int _UseRoughnessMap;
 
             int _NDF;
             int _Geometry;
@@ -101,7 +104,7 @@ Shader "Parker/PBR"
                     uv = parallaxMap(uv, mul(v, float3x3(tangent, bitangent, normal)), _DisplacementMap, _DisplacementStrength);
                 }
 
-                
+
 
                 float3 n = normal;
 

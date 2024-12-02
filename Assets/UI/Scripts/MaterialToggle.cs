@@ -24,4 +24,9 @@ public class MaterialToggle : VisualElement
         toggle.RegisterValueChangedCallback(evt => OnToggleChanged.Invoke(evt.newValue));
     }
 
+    public void SetCurrentValue(bool newValue)
+    {
+        toggle.value = newValue;
+    }
+
 }
