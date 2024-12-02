@@ -5,6 +5,7 @@ Shader "Parker/PBR"
         _DiffuseMap ("Diffuse Map", 2D) = "white" {}
         _NormalMap ("Normal Map", 2D) = "white" {}
         _DisplacementMap ("Displacement Map", 2D) = "white" {}
+        _RoughnessMap ("Roughness Map", 2D) = "white" {}
     }
     SubShader
     {
@@ -20,6 +21,11 @@ Shader "Parker/PBR"
             #include "UnityCG.cginc"
             #include "./ParkerPBR.cginc"
             #include "./ParkerUtils.cginc"
+
+            #define DEBUG_VIEW_DIFFUSE_MAP 6
+            #define DEBUG_VIEW_NORMAL_MAP 7
+            #define DEBUG_VIEW_DISPLACEMENT_MAP 8
+            #define DEBUG_VIEW_ROUGHNESS_MAP 9
 
             struct appdata
             {
@@ -37,8 +43,16 @@ Shader "Parker/PBR"
             };
 
             sampler2D _DiffuseMap;
+            int _DiffuseMapSet;
+
             sampler2D _NormalMap;
+            int _NormalMapSet;
+
             sampler2D _DisplacementMap;
+            int _DisplacementMapSet;
+
+            sampler2D _RoughnessMap;
+            int _RoughnessMapSet;
 
             float _NormalStrength;
             float _DisplacementStrength;
@@ -69,6 +83,33 @@ Shader "Parker/PBR"
 
             fixed4 frag (v2f i) : SV_Target
             {
+                float2 uv = i.uv;
+
+                float3 diffuseMapSample = 1;
+                if(_DiffuseMapSet){
+                    diffuseMapSample = tex2D(_DiffuseMap, uv).rgb;
+                }
+                if(_DebugView == DEBUG_VIEW_DIFFUSE_MAP) return float4(diffuseMapSample, 1);
+
+                float3 normalMapSample = 1;
+                if(_NormalMapSet){
+                    normalMapSample = tex2D(_NormalMap, uv).rgb;
+                }
+                if(_DebugView == DEBUG_VIEW_NORMAL_MAP) return float4(normalMapSample, 1);
+
+                float displacementMapSample = 1;
+                if(_DisplacementMapSet){
+                    displacementMapSample = tex2D(_DisplacementMap, uv).r;
+                }
+                if(_DebugView == DEBUG_VIEW_DISPLACEMENT_MAP) return float4(displacementMapSample, displacementMapSample, displacementMapSample, 1);
+
+                float roughnessMapSample = 1;
+                if(_RoughnessMapSet){
+                    roughnessMapSample = tex2D(_RoughnessMap, uv).r;
+                }
+                if(_DebugView == DEBUG_VIEW_ROUGHNESS_MAP) return float4(roughnessMapSample, roughnessMapSample, roughnessMapSample, 1);
+
+
 
                 float3 n = normalize(i.worldNormal);
                 float3 l = normalize(_LightDirection);

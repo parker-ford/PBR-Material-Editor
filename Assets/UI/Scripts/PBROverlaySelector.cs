@@ -9,7 +9,7 @@ public class PBROverlaySelector : VisualElement
 {
     public Label label;
     private VisualElement center;
-    public event Action<int> OnOverlaySelection;
+    public event Action<int> OnOverlaySelection = delegate { };
     public PBROverlaySelector()
     {
         this.AddClass("pbr-overlay");
@@ -33,9 +33,28 @@ public class PBROverlaySelector : VisualElement
         int index = 0;
         foreach (string path in paths)
         {
-            Debug.Log(path);
             var button = center.CreateChild<Button>("image-container");
             button.style.backgroundImage = Loader.LoadImage(path);
+            int localIndex = index;
+            button.clicked += () =>
+            {
+                OnOverlaySelection.Invoke(localIndex);
+                this.style.display = DisplayStyle.None;
+            };
+            index++;
+        }
+    }
+
+    public void SetImages(List<Texture2D> images)
+    {
+        int index = 0;
+        foreach (Texture2D image in images)
+        {
+            var button = center.CreateChild<Button>("image-container");
+            if (image)
+            {
+                button.style.backgroundImage = image;
+            }
             int localIndex = index;
             button.clicked += () =>
             {

@@ -10,7 +10,7 @@ public class DisplayImageCreator : MonoBehaviour
     private GameObject displayModel;
     private ModelObject currentModel;
     private int modelIndex;
-    private const string path = "Assets/DisplayImages/";
+    private const string path = "Assets/Resources/DisplayImages/";
     void Start()
     {
         models = Loader.LoadScriptableObjects<ModelObject>();
@@ -47,6 +47,10 @@ public class DisplayImageCreator : MonoBehaviour
             string savePath = path + currentModel.id + ".png";
             currentModel.SetPath(savePath);
             SaveDisplayImage(savePath);
+
+            EditorUtility.SetDirty(currentModel);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 
             if (modelIndex < models.Count)
             {

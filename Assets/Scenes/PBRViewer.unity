@@ -166,7 +166,7 @@ MonoBehaviour:
   view: {fileID: 1721707256}
   pbrShader: {fileID: 4800000, guid: 46f53897b4d38a840a18ef7e7e18e93e, type: 3}
   sun: {fileID: 1585609542}
-  defaultMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  defaultModelObject: {fileID: 11400000, guid: f4513f4d4d704ab4c8dc25dbf1f0e718, type: 2}
   defaultNDF: 2
   defaultGeometry: 1
   defaultDiffuse: 2

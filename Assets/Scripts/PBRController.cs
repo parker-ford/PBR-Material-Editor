@@ -35,12 +35,17 @@ public class PBRController : MonoBehaviour
         Fresnel = 3,
         Diffuse = 4,
         Specular = 5,
+        DiffuseMap = 6,
+        NormalMap = 7,
+        DisplacementMap = 8,
+        RoughnessMap = 9,
     }
 
     public PBRView view;
     public Shader pbrShader;
     public Light sun;
     public ModelObject defaultModelObject;
+    public TextureObject defaultTextureObject;
     public NormalDistributionFunction defaultNDF;
     public GeometryAttenuationFunction defaultGeometry;
     public Diffuse defaultDiffuse;
@@ -53,6 +58,7 @@ public class PBRController : MonoBehaviour
     private GameObject model;
     private Material material;
     private ModelObject modelObject;
+    private TextureObject textureObject;
     private float reflectance;
     private float roughness;
     private float subsurface;
@@ -62,18 +68,33 @@ public class PBRController : MonoBehaviour
     private Diffuse diffuse;
     private DebugView debug;
 
+    // private Texture2D diffuseMap;
+    // private int diffuseMapSet;
+
+    // private Texture2D normalMap;
+    // private int normalMapSet;
+
+    // private Texture2D displacementMap;
+    // private int displacementMapSet;
+
+    // private Texture2D roughnessMap;
+    // private int roughnessMapSet;
+
     private List<ModelObject> modelObjects;
+    private List<TextureObject> textureObjects;
 
 
     void Start()
     {
         modelObjects = Loader.LoadScriptableObjects<ModelObject>();
+        textureObjects = Loader.LoadScriptableObjects<TextureObject>();
 
         roughness = defaultRoughness;
         reflectance = defaultReflectance;
         subsurface = defaultSubsurface;
         diffuseColor = defaultDiffuseColor;
         modelObject = defaultModelObject;
+        textureObject = defaultTextureObject;
         material = new Material(pbrShader);
         ndf = defaultNDF;
         geometry = defaultGeometry;
@@ -82,12 +103,8 @@ public class PBRController : MonoBehaviour
 
         InstantiateModel();
         UpdateMaterialParameters();
+        SetTextureMaps();
         InstantiateUI();
-
-    }
-
-    void test(int i)
-    {
 
     }
 
@@ -95,17 +112,27 @@ public class PBRController : MonoBehaviour
     {
         view.GenerateUI();
 
+        // Setting Dropdown Choices
         view.materialMenu.diffuseModelDropdown.SetDropdownChoices(Enum.GetNames(typeof(Diffuse)));
         view.materialMenu.normalDistributionModelDropdown.SetDropdownChoices(Enum.GetNames(typeof(NormalDistributionFunction)));
         view.materialMenu.geometryAttenuationModelDropdown.SetDropdownChoices(Enum.GetNames(typeof(GeometryAttenuationFunction)));
         view.materialMenu.debugViewTypeDropdown.SetDropdownChoices(Enum.GetNames(typeof(DebugView)));
 
+        // Setting Overlay Choices
         view.modelOverlay.SetImages(modelObjects.Select(obj => obj.GetPath()).ToList());
         view.modelOverlay.OnOverlaySelection += (index) =>
         {
             modelObject = modelObjects[index];
             InstantiateModel();
         };
+
+        view.textureOverlay.SetImages(textureObjects.Select(obj => obj.displayImage).ToList());
+        view.textureOverlay.OnOverlaySelection += (index) =>
+        {
+            textureObject = textureObjects[index];
+            SetTextureMaps();
+        };
+
 
         view.materialMenu.SetValues(
             reflectance,
@@ -167,6 +194,49 @@ public class PBRController : MonoBehaviour
         model.AddComponent<MeshFilter>().mesh = modelObject.GetMesh();
         modelObject.SetToTransform(model.transform);
         model.AddComponent<MeshRenderer>().material = material;
+    }
+
+    void SetTextureMaps()
+    {
+        if (textureObject.diffuseMap)
+        {
+            material.SetTexture("_DiffuseMap", textureObject.diffuseMap);
+            material.SetInt("_DiffuseMapSet", 1);
+        }
+        else
+        {
+            material.SetInt("_DiffuseMapSet", 0);
+        }
+
+        if (textureObject.normalMap)
+        {
+            material.SetTexture("_NormalMap", textureObject.normalMap);
+            material.SetInt("_NormalMapSet", 1);
+        }
+        else
+        {
+            material.SetInt("_NormalMapSet", 0);
+        }
+
+        if (textureObject.displacementMap)
+        {
+            material.SetTexture("_DisplacementMap", textureObject.displacementMap);
+            material.SetInt("_DisplacementMapSet", 1);
+        }
+        else
+        {
+            material.SetInt("_DisplacementMapSet", 0);
+        }
+
+        if (textureObject.roughnessMap)
+        {
+            material.SetTexture("_RoughnessMap", textureObject.roughnessMap);
+            material.SetInt("_RoughnessMapSet", 1);
+        }
+        else
+        {
+            material.SetInt("_RoughnessMapSet", 0);
+        }
     }
 
     void UpdateMaterialParameters()

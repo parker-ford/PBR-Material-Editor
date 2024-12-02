@@ -31,7 +31,7 @@ public class ModelObject : ScriptableObject
     }
     public void SetPosition(Vector3 _position)
     {
-        position = _position;
+        position = new Vector3(_position.x, _position.y, _position.z);
     }
     public Vector3 GetScale()
     {
