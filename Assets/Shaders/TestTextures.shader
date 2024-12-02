@@ -32,7 +32,7 @@ Shader "Unlit/TestTextures"
                 float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 float3 worldPos: TEXCOORD1;
-                float3 normal: TEXCOORD02;
+                float3 normal: TEXCOORD2;
                 float4 tangent: TEXCOORD3;
             };
 

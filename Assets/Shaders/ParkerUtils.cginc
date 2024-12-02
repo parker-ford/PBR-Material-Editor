@@ -1,6 +1,7 @@
-//TODO: Blue noise offset?
-//TODO: Try these: https://github.com/panthuncia/webgl_test/blob/main/index.html
+// TODO: Blue noise offset?
+// TODO: Try these: https://github.com/panthuncia/webgl_test/blob/main/index.html
 // https://developer.nvidia.com/gpugems/gpugems2/part-i-geometric-complexity/chapter-8-pixel-displacement-mapping-distance-functions
+// view Direction should be passed in as tangent space
 float2 parallaxMap(float2 uv, float3 viewDirection, sampler2D displacementTex, float displacementStrength){
     const int minSteps = 128;
     const int maxSteps = 128;

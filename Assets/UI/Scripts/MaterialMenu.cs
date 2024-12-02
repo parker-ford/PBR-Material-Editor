@@ -12,6 +12,8 @@ public class MaterialMenu : VisualElement
     public MaterialSlider subsurfaceSlider;
     public MaterialSlider roughnessSlider;
     public MaterialSlider reflectanceSlider;
+    public MaterialSlider displacementMapStrengthSlider;
+    public MaterialSlider normalMapStrengthSlider;
 
 
     public MaterialMenu()
@@ -23,6 +25,18 @@ public class MaterialMenu : VisualElement
 
         var materialScrollView = materialEditorMenu.CreateChild<ScrollView>();
 
+
+        /*
+        *   Texture Properties
+        */
+        var textureProperties = materialScrollView.CreateChild<MaterialPropertyGroup>();
+        textureProperties.label.text = "Texture Properties";
+
+        normalMapStrengthSlider = textureProperties.CreateChild<MaterialSlider>();
+        normalMapStrengthSlider.label.text = "Normal Strength";
+
+        displacementMapStrengthSlider = textureProperties.CreateChild<MaterialSlider>();
+        displacementMapStrengthSlider.label.text = "Displacement Strength";
 
         /*
         *   Diffuse Properties

@@ -54,6 +54,8 @@ public class PBRController : MonoBehaviour
     [Range(0, 1)] public float defaultRoughness;
     [Range(0, 1)] public float defaultSubsurface;
     public Color defaultDiffuseColor;
+    public float defaultDisplacementStrength;
+    public float defaultNormalMapStrength;
 
     private GameObject model;
     private Material material;
@@ -67,19 +69,8 @@ public class PBRController : MonoBehaviour
     private GeometryAttenuationFunction geometry;
     private Diffuse diffuse;
     private DebugView debug;
-
-    // private Texture2D diffuseMap;
-    // private int diffuseMapSet;
-
-    // private Texture2D normalMap;
-    // private int normalMapSet;
-
-    // private Texture2D displacementMap;
-    // private int displacementMapSet;
-
-    // private Texture2D roughnessMap;
-    // private int roughnessMapSet;
-
+    private float displacementMapStrength;
+    private float normalMapStrength;
     private List<ModelObject> modelObjects;
     private List<TextureObject> textureObjects;
 
@@ -95,6 +86,8 @@ public class PBRController : MonoBehaviour
         diffuseColor = defaultDiffuseColor;
         modelObject = defaultModelObject;
         textureObject = defaultTextureObject;
+        displacementMapStrength = defaultDisplacementStrength;
+        normalMapStrength = defaultNormalMapStrength;
         material = new Material(pbrShader);
         ndf = defaultNDF;
         geometry = defaultGeometry;
@@ -134,6 +127,7 @@ public class PBRController : MonoBehaviour
         };
 
 
+        // Set Default UI Values
         view.materialMenu.SetValues(
             reflectance,
             roughness,
@@ -145,44 +139,96 @@ public class PBRController : MonoBehaviour
             (int)debug
         );
 
-        view.materialMenu.diffuseColorPicker.OnColorChanged += newColor =>
+        // Bind Sliders
+        BindSlider(view.materialMenu.displacementMapStrengthSlider, newValue => displacementMapStrength = newValue);
+        BindSlider(view.materialMenu.normalMapStrengthSlider, newValue => normalMapStrength = newValue);
+        BindSlider(view.materialMenu.reflectanceSlider, newValue => reflectance = newValue);
+        BindSlider(view.materialMenu.roughnessSlider, newValue => roughness = newValue);
+        BindSlider(view.materialMenu.subsurfaceSlider, newValue => subsurface = newValue);
+
+        // Bind Color Pickers
+        BindColorPicker(view.materialMenu.diffuseColorPicker, newColor => diffuseColor = newColor);
+
+        // Bind Dropdown
+        BindDropdown(view.materialMenu.normalDistributionModelDropdown, newValue => ndf = (NormalDistributionFunction)newValue);
+        BindDropdown(view.materialMenu.geometryAttenuationModelDropdown, newValue => geometry = (GeometryAttenuationFunction)newValue);
+        BindDropdown(view.materialMenu.diffuseModelDropdown, newValue => diffuse = (Diffuse)newValue);
+        BindDropdown(view.materialMenu.debugViewTypeDropdown, newValue => debug = (DebugView)newValue);
+
+        // view.materialMenu.displacementMapStrengthSlider.OnMaterialSliderChanged += newValue =>
+        // {
+        //     displacementMapStrength = newValue;
+        //     UpdateMaterialParameters();
+        // };
+        // view.materialMenu.normalMapStrengthSlider.OnMaterialSliderChanged += newValue =>
+        // {
+        //     normalMapStrength = newValue;
+        //     UpdateMaterialParameters();
+        // };
+        // view.materialMenu.diffuseColorPicker.OnColorChanged += newColor =>
+        // {
+        //     diffuseColor = newColor;
+        //     UpdateMaterialParameters();
+        // };
+        // view.materialMenu.reflectanceSlider.OnMaterialSliderChanged += newValue =>
+        // {
+        //     reflectance = newValue;
+        //     UpdateMaterialParameters();
+        // };
+        // view.materialMenu.roughnessSlider.OnMaterialSliderChanged += newValue =>
+        // {
+        //     roughness = newValue;
+        //     UpdateMaterialParameters();
+        // };
+        // view.materialMenu.subsurfaceSlider.OnMaterialSliderChanged += newValue =>
+        // {
+        //     subsurface = newValue;
+        //     UpdateMaterialParameters();
+        // };
+        // view.materialMenu.normalDistributionModelDropdown.OnChoiceChanged += newValue =>
+        // {
+        //     ndf = (NormalDistributionFunction)newValue;
+        //     UpdateMaterialParameters();
+        // };
+        // view.materialMenu.geometryAttenuationModelDropdown.OnChoiceChanged += newValue =>
+        // {
+        //     geometry = (GeometryAttenuationFunction)newValue;
+        //     UpdateMaterialParameters();
+        // };
+        // view.materialMenu.diffuseModelDropdown.OnChoiceChanged += newValue =>
+        // {
+        //     diffuse = (Diffuse)newValue;
+        //     UpdateMaterialParameters();
+        // };
+        // view.materialMenu.debugViewTypeDropdown.OnChoiceChanged += newValue =>
+        // {
+        //     debug = (DebugView)newValue;
+        //     UpdateMaterialParameters();
+        // };
+    }
+
+    void BindSlider(MaterialSlider slider, Action<float> action)
+    {
+        slider.OnMaterialSliderChanged += newValue =>
         {
-            diffuseColor = newColor;
+            action(newValue);
             UpdateMaterialParameters();
         };
-        view.materialMenu.reflectanceSlider.OnMaterialSliderChanged += newValue =>
+    }
+    void BindColorPicker(MaterialColorPickerRGB colorPicker, Action<Color> action)
+    {
+        colorPicker.OnColorChanged += newColor =>
         {
-            reflectance = newValue;
+            action(newColor);
             UpdateMaterialParameters();
         };
-        view.materialMenu.roughnessSlider.OnMaterialSliderChanged += newValue =>
+    }
+
+    void BindDropdown(MaterialDropdown dropdown, Action<int> action)
+    {
+        dropdown.OnChoiceChanged += newValue =>
         {
-            roughness = newValue;
-            UpdateMaterialParameters();
-        };
-        view.materialMenu.subsurfaceSlider.OnMaterialSliderChanged += newValue =>
-        {
-            subsurface = newValue;
-            UpdateMaterialParameters();
-        };
-        view.materialMenu.normalDistributionModelDropdown.OnChoiceChanged += newValue =>
-        {
-            ndf = (NormalDistributionFunction)newValue;
-            UpdateMaterialParameters();
-        };
-        view.materialMenu.geometryAttenuationModelDropdown.OnChoiceChanged += newValue =>
-        {
-            geometry = (GeometryAttenuationFunction)newValue;
-            UpdateMaterialParameters();
-        };
-        view.materialMenu.diffuseModelDropdown.OnChoiceChanged += newValue =>
-        {
-            diffuse = (Diffuse)newValue;
-            UpdateMaterialParameters();
-        };
-        view.materialMenu.debugViewTypeDropdown.OnChoiceChanged += newValue =>
-        {
-            debug = (DebugView)newValue;
+            action(newValue);
             UpdateMaterialParameters();
         };
     }
@@ -260,6 +306,9 @@ public class PBRController : MonoBehaviour
         material.SetColor("_LightColor", sun.color);
         material.SetVector("_LightDirection", -sun.transform.forward);
         material.SetFloat("_LightIntensity", sun.intensity);
+
+        material.SetFloat("_DisplacementStrength", displacementMapStrength);
+        material.SetFloat("_NormalStrength", normalMapStrength);
     }
 
     void OnDisable()
