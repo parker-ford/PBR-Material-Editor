@@ -36,6 +36,8 @@ public class PBRController : MonoBehaviour
         Diffuse = 4,
         Specular = 5,
         Sheen = 6,
+        Clearcoat = 7,
+        ClearcoatGloss = 8,
         DiffuseMap = 60,
         NormalMap = 70,
         DisplacementMap = 80,
@@ -58,6 +60,8 @@ public class PBRController : MonoBehaviour
     [Range(0, 1)] public float defaultSubsurface;
     [Range(0, 1)] public float defaultSheen;
     [Range(0, 1)] public float defaultSheenTint;
+    [Range(0, 1)] public float defaultClearcoat;
+    [Range(0, 1)] public float defaultClearcoatGloss;
     public Color defaultDiffuseColor;
     public float defaultDisplacementStrength;
     public float defaultNormalMapStrength;
@@ -77,6 +81,8 @@ public class PBRController : MonoBehaviour
     private float subsurface;
     private float sheen;
     private float sheenTint;
+    private float clearcoat;
+    private float clearcoatGloss;
     private Color diffuseColor;
     private NormalDistributionFunction ndf;
     private GeometryAttenuationFunction geometry;
@@ -105,6 +111,8 @@ public class PBRController : MonoBehaviour
         diffuseColor = defaultDiffuseColor;
         sheen = defaultSheen;
         sheenTint = defaultSheenTint;
+        clearcoat = defaultClearcoat;
+        clearcoatGloss = defaultClearcoatGloss;
         modelObject = defaultModelObject;
         textureObject = defaultTextureObject;
         displacementMapStrength = defaultDisplacementStrength;
@@ -200,6 +208,8 @@ public class PBRController : MonoBehaviour
         BindSlider(view.materialMenu.subsurfaceSlider, newValue => subsurface = newValue);
         BindSlider(view.materialMenu.sheenSlider, newValue => sheen = newValue);
         BindSlider(view.materialMenu.sheenTintSlider, newValue => sheenTint = newValue);
+        BindSlider(view.materialMenu.clearcoatSlider, newValue => clearcoat = newValue);
+        BindSlider(view.materialMenu.clearcoatGlossSlider, newValue => clearcoatGloss = newValue);
 
         // Bind Color Pickers
         BindColorPicker(view.materialMenu.diffuseColorPicker, newColor => diffuseColor = newColor);
@@ -319,6 +329,8 @@ public class PBRController : MonoBehaviour
         material.SetColor("_DiffuseColor", diffuseColor);
         material.SetFloat("_Sheen", sheen);
         material.SetFloat("_SheenTint", sheenTint);
+        material.SetFloat("_Clearcoat", clearcoat);
+        material.SetFloat("_ClearcoatGloss", clearcoatGloss);
 
         material.SetInt("_NDF", (int)ndf);
         material.SetInt("_Geometry", (int)geometry);

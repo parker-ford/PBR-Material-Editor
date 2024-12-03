@@ -16,6 +16,8 @@ public class MaterialMenu : VisualElement
     public MaterialSlider normalMapStrengthSlider;
     public MaterialSlider sheenSlider;
     public MaterialSlider sheenTintSlider;
+    public MaterialSlider clearcoatSlider;
+    public MaterialSlider clearcoatGlossSlider;
     public MaterialToggle diffuseMapToggle;
     public MaterialToggle normalMapToggle;
     public MaterialToggle displacementMapToggle;
@@ -82,6 +84,12 @@ public class MaterialMenu : VisualElement
 
         reflectanceSlider = specularProperties.CreateChild<MaterialSlider>();
         reflectanceSlider.label.text = "Reflectance";
+
+        clearcoatSlider = specularProperties.CreateChild<MaterialSlider>();
+        clearcoatSlider.label.text = "Clearcoat";
+
+        clearcoatGlossSlider = specularProperties.CreateChild<MaterialSlider>();
+        clearcoatGlossSlider.label.text = "Clearcoat Gloss";
 
         /*
         *   Debug Views

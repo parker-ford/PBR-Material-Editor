@@ -18,6 +18,8 @@
 #define DEBUG_VIEW_DIFFUSE 4
 #define DEBUG_VIEW_SPECULAR 5
 #define DEBUG_VIEW_SHEEN 6
+#define DEBUG_VIEW_CLEARCOAT 7
+#define DEBUG_VIEW_CLEARCOAT_GLOSS 8
 
 struct brdfResult
 {
@@ -33,6 +35,8 @@ struct brdfParameters
     float subsurface;
     float sheen;
     float sheenTint;
+    float clearcoat;
+    float clearcoatGloss;
 };
 
 struct brdfSettings
@@ -56,10 +60,10 @@ int isPositive(float x){
 }
 
 
-float3 SchlickFresnel(float3 v, float3 n, brdfParameters params){
+float3 SchlickFresnelReflectance(float3 v, float3 n, float reflectance, float3 diffuseColor){
     //TODO: Figure out how to do metallic
-    float3 F0 = (0.16 * (params.reflectance * params.reflectance));
-    F0 = lerp(F0, params.diffuseColor, 0);
+    float3 F0 = (0.16 * (reflectance * reflectance));
+    F0 = lerp(F0, diffuseColor, 0);
     return F0 + (1 - F0) * pow((1 - (clampedDot(v,n))),5);
 }
 
@@ -196,7 +200,7 @@ brdfResult PBR_BRDF(float3 n, float3 l, float3 v, brdfParameters params, brdfSet
     float alpha = pow(params.roughness, 2);
 
     //Fresnel Term
-    float3 fresnel = SchlickFresnel(h, v, params);
+    float3 fresnel = SchlickFresnelReflectance(h, v, params.reflectance, params.diffuseColor);
 
     //NDF Term
     float3 normalDistribution = 0;
@@ -222,18 +226,7 @@ brdfResult PBR_BRDF(float3 n, float3 l, float3 v, brdfParameters params, brdfSet
         geometryAttenuation = GgxSchlickGeometry(n, v, alpha) * GgxSchlickGeometry(n, l, alpha);
     }
 
-    if(settings.debug == DEBUG_VIEW_FRESNEL){
-        result.specular = fresnel;
-    }
-    else if(settings.debug == DEBUG_VIEW_NDF){
-        result.specular = normalDistribution;
-    }
-    else if(settings.debug == DEBUG_VIEW_GEO_ATTEN){
-        result.specular = geometryAttenuation;
-    }
-    else{
-        result.specular = (fresnel * normalDistribution * geometryAttenuation) / (4 * clampedDot(n,l) * clampedDot(n,v));
-    }
+    result.specular = (fresnel * normalDistribution * geometryAttenuation) / (4 * clampedDot(n,l) * clampedDot(n,v));
 
      //Diffuse
     if(settings.diffuse == DIFF_LAMBERT){
@@ -248,9 +241,17 @@ brdfResult PBR_BRDF(float3 n, float3 l, float3 v, brdfParameters params, brdfSet
     result.diffuse *= params.diffuseColor;
 
     // Sheen
-    float3 fSheen = SchlickFresnel2(n, v) * params.sheen* lerp(float3(1,1,1), params.diffuseColor, params.sheenTint);
-    // float3 fSheen = SchlickFresnel2(l, h) * params.sheen * lerp(float3(1,1,1), params.diffuseColor, params.sheenTint);
+    // float3 fSheen = SchlickFresnel2(n, v) * params.sheen* lerp(float3(1,1,1), params.diffuseColor, params.sheenTint);
+    float3 fSheen = SchlickFresnel2(h, l) * params.sheen * lerp(float3(1,1,1), params.diffuseColor, params.sheenTint); // From Disney
     result.diffuse += fSheen;
+
+    // Clear Coat
+    //Clear coat reflectance 0.5 (F0 = 0.04)
+    float clearcoatNDF = GgxNDF(n,h,lerp(.1, .001, params.clearcoatGloss));
+    float clearcoatFresnel = SchlickFresnelReflectance(h, l, 0.5, float3(1,1,1)); // Half and light or half and view. White color?
+    float clearcoatGeometry =  GgxSchlickGeometry(n, v, 0.25) * GgxSchlickGeometry(n, l, 0.25);
+    float clearSpecular = 0.25 * params.clearcoat * clearcoatGeometry * clearcoatFresnel * clearcoatNDF;
+    result.specular += clearSpecular;
 
     // Debug
     if(settings.debug == DEBUG_VIEW_DIFFUSE){
@@ -262,6 +263,26 @@ brdfResult PBR_BRDF(float3 n, float3 l, float3 v, brdfParameters params, brdfSet
     else if(settings.debug == DEBUG_VIEW_SHEEN){
         result.specular = 0;
         result.diffuse = fSheen;
+    }
+    else if(settings.debug == DEBUG_VIEW_FRESNEL){
+        result.specular = fresnel;
+        result.diffuse = 0;
+    }
+    else if(settings.debug == DEBUG_VIEW_NDF){
+        result.specular = normalDistribution;
+        result.diffuse = 0;
+    }
+    else if(settings.debug == DEBUG_VIEW_GEO_ATTEN){
+        result.specular = geometryAttenuation;
+        result.diffuse = 0;
+    }
+    else if(settings.debug == DEBUG_VIEW_CLEARCOAT){
+        result.specular = clearSpecular;
+        result.diffuse = 0;
+    }
+    else if(settings.debug == DEBUG_VIEW_CLEARCOAT_GLOSS){
+        result.specular = clearcoatNDF;
+        result.diffuse = 0;
     }
 
     return result;

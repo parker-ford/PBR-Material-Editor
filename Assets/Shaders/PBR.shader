@@ -71,6 +71,8 @@ Shader "Parker/PBR"
             float _Subsurface;
             float _Sheen;
             float _SheenTint;
+            float _Clearcoat;
+            float _ClearcoatGloss;
 
             int _UseDisplacementMap;
             int _UseNormalMap;
@@ -133,6 +135,8 @@ Shader "Parker/PBR"
                 params.subsurface = _Subsurface;
                 params.sheen = _Sheen;
                 params.sheenTint = _SheenTint;
+                params.clearcoat = _Clearcoat;
+                params.clearcoatGloss = _ClearcoatGloss;
 
                 brdfSettings settings;
                 settings.ndf = _NDF;
