@@ -40,6 +40,7 @@ public class PBRController : MonoBehaviour
         DisplacementMap = 8,
         RoughnessMap = 9,
         Normal = 10,
+        Roughness = 11
     }
 
     public PBRView view;

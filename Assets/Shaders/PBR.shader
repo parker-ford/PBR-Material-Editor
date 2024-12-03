@@ -27,6 +27,7 @@ Shader "Parker/PBR"
             #define DEBUG_VIEW_DISPLACEMENT_MAP 8
             #define DEBUG_VIEW_ROUGHNESS_MAP 9
             #define DEBUG_VIEW_NORMAL 10
+            #define DEBUG_VIEW_ROUGHNESS 11
 
             struct appdata
             {
@@ -105,55 +106,27 @@ Shader "Parker/PBR"
                     uv = parallaxMap(uv, mul(v, float3x3(tangent, bitangent, normal)), _DisplacementMap, _DisplacementStrength);
                 }
 
-                if(_DebugView == DEBUG_VIEW_DIFFUSE) return _DiffuseMapSet ? tex2D(_DiffuseMap, uv) : float4(1,1,1,1);
-                if(_DebugView == DEBUG_VIEW_NORMAL_MAP) return _NormalMapSet ? tex2D(_NormalMap, uv): float4(1,1,1,1);
-                if(_DebugView == DEBUG_VIEW_DISPLACEMENT_MAP) return _DisplacementMapSet ? tex2D(_DiffuseMap, uv) : float4(1,1,1,1);
-                if(_DebugView == DEBUG_VIEW_ROUGHNESS_MAP) return _RoughnessMapSet ? tex2D(_RoughnessMap, uv) : float4(1,1,1,1);
+                if(_DebugView == DEBUG_VIEW_DIFFUSE_MAP) return (_DiffuseMapSet && _UseDiffuseMap) ? tex2D(_DiffuseMap, uv) : float4(1,1,1,1);
+                if(_DebugView == DEBUG_VIEW_NORMAL_MAP) return (_NormalMapSet && _UseNormalMap) ? tex2D(_NormalMap, uv): float4(1,1,1,1);
+                if(_DebugView == DEBUG_VIEW_DISPLACEMENT_MAP) return (_DisplacementMapSet && _UseDisplacementMap) ? tex2D(_DisplacementMap, uv) : float4(1,1,1,1);
+                if(_DebugView == DEBUG_VIEW_ROUGHNESS_MAP) return (_RoughnessMapSet && _UseRoughnessMap) ? tex2D(_RoughnessMap, uv) : float4(1,1,1,1);
 
 
                 float3 n = normal;
                 if(_NormalMapSet && _UseNormalMap){
                     n = normalMap(normal, tangent, bitangent, uv, _NormalMap, _NormalStrength);
                 }
-                if(_DebugView == DEBUG_VIEW_NORMAL) return float4(n, 1);
-
-
-
-
-
-                float3 diffuseMapSample = 1;
-                if(_DiffuseMapSet){
-                    diffuseMapSample = tex2D(_DiffuseMap, uv).rgb;
-                }
-                if(_DebugView == DEBUG_VIEW_DIFFUSE_MAP) return float4(diffuseMapSample, 1);
-
-                float3 normalMapSample = 1;
-                if(_NormalMapSet){
-                    normalMapSample = tex2D(_NormalMap, uv).rgb;
-                }
-                if(_DebugView == DEBUG_VIEW_NORMAL_MAP) return float4(normalMapSample, 1);
-
-                float displacementMapSample = 1;
-                if(_DisplacementMapSet){
-                    displacementMapSample = tex2D(_DisplacementMap, uv).r;
-                }
-                if(_DebugView == DEBUG_VIEW_DISPLACEMENT_MAP) return float4(displacementMapSample, displacementMapSample, displacementMapSample, 1);
-
-                float roughnessMapSample = 1;
-                if(_RoughnessMapSet){
-                    roughnessMapSample = tex2D(_RoughnessMap, uv).r;
-                }
-                if(_DebugView == DEBUG_VIEW_ROUGHNESS_MAP) return float4(roughnessMapSample, roughnessMapSample, roughnessMapSample, 1);
-
-
-
-                
+                if(_DebugView == DEBUG_VIEW_NORMAL) return float4(n, 1);            
 
                 float ndotl = clampedDot(l, normalize(n));
 
+                float3 diffuseColor = _DiffuseColor * ((_DiffuseMapSet && _UseDiffuseMap) ? tex2D(_DiffuseMap, uv) : 1);
+                float roughness = _Roughness * ((_RoughnessMapSet && _UseRoughnessMap) ? tex2D(_RoughnessMap, uv).r : 1);
+                if(_DebugView == DEBUG_VIEW_ROUGHNESS) return float4(roughness, roughness, roughness, 1);
+
                 brdfParameters params;
-                params.roughness = _Roughness;
-                params.diffuseColor = _DiffuseColor;
+                params.roughness = roughness;
+                params.diffuseColor = diffuseColor;
                 params.reflectance = _Reflectance;
                 params.subsurface = _Subsurface;
 
@@ -167,7 +140,7 @@ Shader "Parker/PBR"
 
                 float3 lightIn =  _LightColor.rgb * _LightIntensity;
 
-                float3 lightOut = lightIn * (brdf.specular + brdf.diffuse * _DiffuseColor) * ndotl;
+                float3 lightOut = lightIn * (brdf.specular + brdf.diffuse * diffuseColor) * ndotl;
 
                 return float4(lightOut, 1.0);
             }
