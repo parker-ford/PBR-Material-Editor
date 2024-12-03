@@ -62,6 +62,7 @@ public class PBRController : MonoBehaviour
     public bool defaultUseDiffuseMap;
     public bool defaultUseNormalMap;
     public bool defaultUseRoughnessMap;
+    public bool defaultRotateModel;
 
     private GameObject model;
     private Material material;
@@ -81,6 +82,7 @@ public class PBRController : MonoBehaviour
     private bool useDiffuseMap;
     private bool useNormalMap;
     private bool useRoughnessMap;
+    private bool rotateModel;
     private List<ModelObject> modelObjects;
     private List<TextureObject> textureObjects;
 
@@ -102,6 +104,7 @@ public class PBRController : MonoBehaviour
         useNormalMap = defaultUseNormalMap;
         useDiffuseMap = defaultUseDiffuseMap;
         useRoughnessMap = defaultUseRoughnessMap;
+        rotateModel = defaultRotateModel;
         material = new Material(pbrShader);
         ndf = defaultNDF;
         geometry = defaultGeometry;
@@ -113,6 +116,14 @@ public class PBRController : MonoBehaviour
         SetTextureMaps();
         InstantiateUI();
 
+    }
+
+    void Update()
+    {
+        if (rotateModel)
+        {
+            model.transform.Rotate(new Vector3(0, Time.deltaTime * 4.0f, 0));
+        }
     }
 
     void InstantiateUI()
