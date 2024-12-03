@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e60204aa5325eb8488a6bef90ac5bd82, type: 3}
   m_Name: RedBrick
   m_EditorClassIdentifier: 
+  id: Red Brick
   displayImage: {fileID: 2800000, guid: 6348fbb2daa77d942a00136ce437d70f, type: 3}
   diffuseMap: {fileID: 2800000, guid: 6348fbb2daa77d942a00136ce437d70f, type: 3}
   normalMap: {fileID: 2800000, guid: 6eb3e4ebca7896644b5179890c89cf77, type: 3}

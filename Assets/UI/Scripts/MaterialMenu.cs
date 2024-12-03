@@ -14,6 +14,8 @@ public class MaterialMenu : VisualElement
     public MaterialSlider reflectanceSlider;
     public MaterialSlider displacementMapStrengthSlider;
     public MaterialSlider normalMapStrengthSlider;
+    public MaterialSlider sheenSlider;
+    public MaterialSlider sheenTintSlider;
     public MaterialToggle diffuseMapToggle;
     public MaterialToggle normalMapToggle;
     public MaterialToggle displacementMapToggle;
@@ -56,6 +58,12 @@ public class MaterialMenu : VisualElement
 
         subsurfaceSlider = diffuseProperties.CreateChild<MaterialSlider>();
         subsurfaceSlider.label.text = "Subsurface";
+
+        sheenSlider = diffuseProperties.CreateChild<MaterialSlider>();
+        sheenSlider.label.text = "Sheen";
+
+        sheenTintSlider = diffuseProperties.CreateChild<MaterialSlider>();
+        sheenTintSlider.label.text = "Sheen Tint";
 
         /*
         *   Specular Properties
@@ -112,7 +120,9 @@ public class MaterialMenu : VisualElement
         bool useDisplacementMap,
         bool useRoughnessMap,
         float normalMapStrength,
-        float displacementMapStrength
+        float displacementMapStrength,
+        float sheen,
+        float sheenTint
     )
     {
         reflectanceSlider.SetCurrentValue(reflectance);
@@ -129,6 +139,8 @@ public class MaterialMenu : VisualElement
         roughnessMapToggle.SetCurrentValue(useRoughnessMap);
         normalMapStrengthSlider.SetCurrentValue(normalMapStrength);
         displacementMapStrengthSlider.SetCurrentValue(displacementMapStrength);
+        sheenSlider.SetCurrentValue(sheen);
+        sheenTintSlider.SetCurrentValue(sheenTint);
     }
 
 

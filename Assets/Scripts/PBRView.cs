@@ -15,6 +15,10 @@ public class PBRView : MonoBehaviour
     public PBROverlaySelector textureOverlay;
     public PBROverlaySelector environmentOverlay;
     public PBROverlaySelector presetsOverlay;
+    public Button modelButton;
+    public Button textureButton;
+    public Button environmentButton;
+    public Button presetsButton;
 
     public void GenerateUI()
     {
@@ -28,28 +32,28 @@ public class PBRView : MonoBehaviour
 
         materialMenu = buttonsHolder.CreateChild<MaterialMenu>("material-menu");
 
-        var modelButton = buttonsHolder.CreateChild<Button>("models-button", "pbr-button");
+        modelButton = buttonsHolder.CreateChild<Button>("models-button", "pbr-button");
         modelButton.text = "Model: Sphere";
         modelOverlay = container.CreateChild<PBROverlaySelector>();
         modelOverlay.label.text = "Models";
         modelOverlay.style.display = DisplayStyle.None;
         modelButton.clicked += () => modelOverlay.style.display = DisplayStyle.Flex;
 
-        var textureButton = buttonsHolder.CreateChild<Button>("texture-button", "pbr-button");
+        textureButton = buttonsHolder.CreateChild<Button>("texture-button", "pbr-button");
         textureButton.text = "Texture: None";
         textureOverlay = container.CreateChild<PBROverlaySelector>();
         textureOverlay.label.text = "Textures";
         textureOverlay.style.display = DisplayStyle.None;
         textureButton.clicked += () => textureOverlay.style.display = DisplayStyle.Flex;
 
-        var environmentButton = buttonsHolder.CreateChild<Button>("environment-butotn", "pbr-button");
+        environmentButton = buttonsHolder.CreateChild<Button>("environment-butotn", "pbr-button");
         environmentButton.text = "Environment: Default";
         environmentOverlay = container.CreateChild<PBROverlaySelector>();
         environmentOverlay.label.text = "Environments";
         environmentOverlay.style.display = DisplayStyle.None;
         environmentButton.clicked += () => environmentOverlay.style.display = DisplayStyle.Flex;
 
-        var presetsButton = buttonsHolder.CreateChild<Button>("presets-button", "pbr-button");
+        presetsButton = buttonsHolder.CreateChild<Button>("presets-button", "pbr-button");
         presetsButton.text = "Presets";
         presetsOverlay = container.CreateChild<PBROverlaySelector>();
         presetsOverlay.label.text = "Presets";

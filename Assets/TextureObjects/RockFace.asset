@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e60204aa5325eb8488a6bef90ac5bd82, type: 3}
   m_Name: RockFace
   m_EditorClassIdentifier: 
+  id: Rock Face
   displayImage: {fileID: 2800000, guid: 86d5a5e03062a434bb04e6785dd4c883, type: 3}
   diffuseMap: {fileID: 2800000, guid: 86d5a5e03062a434bb04e6785dd4c883, type: 3}
   normalMap: {fileID: 2800000, guid: e9128553630499a48935b178bbca709b, type: 3}

@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "TextureObject", menuName = "Scriptable Objects/TextureObject")]
 public class TextureObject : ScriptableObject
 {
+    public String id;
     public Texture2D displayImage;
     public Texture2D diffuseMap;
     public Texture2D normalMap;

@@ -35,12 +35,13 @@ public class PBRController : MonoBehaviour
         Fresnel = 3,
         Diffuse = 4,
         Specular = 5,
-        DiffuseMap = 6,
-        NormalMap = 7,
-        DisplacementMap = 8,
-        RoughnessMap = 9,
-        Normal = 10,
-        Roughness = 11
+        Sheen = 6,
+        DiffuseMap = 60,
+        NormalMap = 70,
+        DisplacementMap = 80,
+        RoughnessMap = 90,
+        Normal = 100,
+        Roughness = 110
     }
 
     public PBRView view;
@@ -55,6 +56,8 @@ public class PBRController : MonoBehaviour
     [Range(0, 1)] public float defaultReflectance;
     [Range(0, 1)] public float defaultRoughness;
     [Range(0, 1)] public float defaultSubsurface;
+    [Range(0, 1)] public float defaultSheen;
+    [Range(0, 1)] public float defaultSheenTint;
     public Color defaultDiffuseColor;
     public float defaultDisplacementStrength;
     public float defaultNormalMapStrength;
@@ -63,6 +66,7 @@ public class PBRController : MonoBehaviour
     public bool defaultUseNormalMap;
     public bool defaultUseRoughnessMap;
     public bool defaultRotateModel;
+    public bool defaultRotateLight;
 
     private GameObject model;
     private Material material;
@@ -71,6 +75,8 @@ public class PBRController : MonoBehaviour
     private float reflectance;
     private float roughness;
     private float subsurface;
+    private float sheen;
+    private float sheenTint;
     private Color diffuseColor;
     private NormalDistributionFunction ndf;
     private GeometryAttenuationFunction geometry;
@@ -83,6 +89,7 @@ public class PBRController : MonoBehaviour
     private bool useNormalMap;
     private bool useRoughnessMap;
     private bool rotateModel;
+    private bool rotateLight;
     private List<ModelObject> modelObjects;
     private List<TextureObject> textureObjects;
 
@@ -96,6 +103,8 @@ public class PBRController : MonoBehaviour
         reflectance = defaultReflectance;
         subsurface = defaultSubsurface;
         diffuseColor = defaultDiffuseColor;
+        sheen = defaultSheen;
+        sheenTint = defaultSheenTint;
         modelObject = defaultModelObject;
         textureObject = defaultTextureObject;
         displacementMapStrength = defaultDisplacementStrength;
@@ -105,6 +114,7 @@ public class PBRController : MonoBehaviour
         useDiffuseMap = defaultUseDiffuseMap;
         useRoughnessMap = defaultUseRoughnessMap;
         rotateModel = defaultRotateModel;
+        rotateLight = defaultRotateLight;
         material = new Material(pbrShader);
         ndf = defaultNDF;
         geometry = defaultGeometry;
@@ -124,6 +134,11 @@ public class PBRController : MonoBehaviour
         {
             model.transform.Rotate(new Vector3(0, Time.deltaTime * 4.0f, 0));
         }
+        if (defaultRotateLight)
+        {
+            sun.transform.Rotate(new Vector3(0, Time.deltaTime * -15.0f, 0), Space.World);
+        }
+        material.SetVector("_LightDirection", -sun.transform.forward);
     }
 
     void InstantiateUI()
@@ -136,11 +151,15 @@ public class PBRController : MonoBehaviour
         view.materialMenu.geometryAttenuationModelDropdown.SetDropdownChoices(Enum.GetNames(typeof(GeometryAttenuationFunction)));
         view.materialMenu.debugViewTypeDropdown.SetDropdownChoices(Enum.GetNames(typeof(DebugView)));
 
+        view.modelButton.text = "Model: " + modelObject.id;
+        view.textureButton.text = "Texture: " + textureObject.id;
+
         // Setting Overlay Choices
         view.modelOverlay.SetImages(modelObjects.Select(obj => obj.GetPath()).ToList());
         view.modelOverlay.OnOverlaySelection += (index) =>
         {
             modelObject = modelObjects[index];
+            view.modelButton.text = "Model: " + modelObject.id;
             InstantiateModel();
         };
 
@@ -148,6 +167,7 @@ public class PBRController : MonoBehaviour
         view.textureOverlay.OnOverlaySelection += (index) =>
         {
             textureObject = textureObjects[index];
+            view.textureButton.text = "Texture: " + textureObject.id;
             SetTextureMaps();
         };
 
@@ -167,7 +187,9 @@ public class PBRController : MonoBehaviour
             useDisplacementMap,
             useRoughnessMap,
             normalMapStrength,
-            displacementMapStrength
+            displacementMapStrength,
+            sheen,
+            sheenTint
         );
 
         // Bind Sliders
@@ -176,6 +198,8 @@ public class PBRController : MonoBehaviour
         BindSlider(view.materialMenu.reflectanceSlider, newValue => reflectance = newValue);
         BindSlider(view.materialMenu.roughnessSlider, newValue => roughness = newValue);
         BindSlider(view.materialMenu.subsurfaceSlider, newValue => subsurface = newValue);
+        BindSlider(view.materialMenu.sheenSlider, newValue => sheen = newValue);
+        BindSlider(view.materialMenu.sheenTintSlider, newValue => sheenTint = newValue);
 
         // Bind Color Pickers
         BindColorPicker(view.materialMenu.diffuseColorPicker, newColor => diffuseColor = newColor);
@@ -293,6 +317,8 @@ public class PBRController : MonoBehaviour
         material.SetFloat("_Roughness", roughness);
         material.SetFloat("_Subsurface", subsurface);
         material.SetColor("_DiffuseColor", diffuseColor);
+        material.SetFloat("_Sheen", sheen);
+        material.SetFloat("_SheenTint", sheenTint);
 
         material.SetInt("_NDF", (int)ndf);
         material.SetInt("_Geometry", (int)geometry);
@@ -300,7 +326,6 @@ public class PBRController : MonoBehaviour
         material.SetInt("_DebugView", (int)debug);
 
         material.SetColor("_LightColor", sun.color);
-        material.SetVector("_LightDirection", -sun.transform.forward);
         material.SetFloat("_LightIntensity", sun.intensity);
 
         material.SetFloat("_DisplacementStrength", displacementMapStrength);

@@ -22,12 +22,12 @@ Shader "Parker/PBR"
             #include "./ParkerPBR.cginc"
             #include "./ParkerUtils.cginc"
 
-            #define DEBUG_VIEW_DIFFUSE_MAP 6
-            #define DEBUG_VIEW_NORMAL_MAP 7
-            #define DEBUG_VIEW_DISPLACEMENT_MAP 8
-            #define DEBUG_VIEW_ROUGHNESS_MAP 9
-            #define DEBUG_VIEW_NORMAL 10
-            #define DEBUG_VIEW_ROUGHNESS 11
+            #define DEBUG_VIEW_DIFFUSE_MAP 60
+            #define DEBUG_VIEW_NORMAL_MAP 70
+            #define DEBUG_VIEW_DISPLACEMENT_MAP 80
+            #define DEBUG_VIEW_ROUGHNESS_MAP 90
+            #define DEBUG_VIEW_NORMAL 100
+            #define DEBUG_VIEW_ROUGHNESS 110
 
             struct appdata
             {
@@ -69,6 +69,8 @@ Shader "Parker/PBR"
             float _Roughness;
             float _Reflectance;
             float _Subsurface;
+            float _Sheen;
+            float _SheenTint;
 
             int _UseDisplacementMap;
             int _UseNormalMap;
@@ -129,6 +131,8 @@ Shader "Parker/PBR"
                 params.diffuseColor = diffuseColor;
                 params.reflectance = _Reflectance;
                 params.subsurface = _Subsurface;
+                params.sheen = _Sheen;
+                params.sheenTint = _SheenTint;
 
                 brdfSettings settings;
                 settings.ndf = _NDF;
@@ -140,7 +144,7 @@ Shader "Parker/PBR"
 
                 float3 lightIn =  _LightColor.rgb * _LightIntensity;
 
-                float3 lightOut = lightIn * (brdf.specular + brdf.diffuse * diffuseColor) * ndotl;
+                float3 lightOut = lightIn * (brdf.specular + brdf.diffuse) * ndotl;
 
                 return float4(lightOut, 1.0);
             }

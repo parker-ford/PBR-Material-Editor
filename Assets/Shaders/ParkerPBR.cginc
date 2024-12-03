@@ -17,6 +17,7 @@
 #define DEBUG_VIEW_FRESNEL 3
 #define DEBUG_VIEW_DIFFUSE 4
 #define DEBUG_VIEW_SPECULAR 5
+#define DEBUG_VIEW_SHEEN 6
 
 struct brdfResult
 {
@@ -30,6 +31,8 @@ struct brdfParameters
     float3 diffuseColor;
     float reflectance;
     float subsurface;
+    float sheen;
+    float sheenTint;
 };
 
 struct brdfSettings
@@ -52,6 +55,7 @@ int isPositive(float x){
     return x > 0;
 }
 
+
 float3 SchlickFresnel(float3 v, float3 n, brdfParameters params){
     //TODO: Figure out how to do metallic
     float3 F0 = (0.16 * (params.reflectance * params.reflectance));
@@ -59,6 +63,11 @@ float3 SchlickFresnel(float3 v, float3 n, brdfParameters params){
     return F0 + (1 - F0) * pow((1 - (clampedDot(v,n))),5);
 }
 
+float SchlickFresnel2(float3 v, float3 n){
+    float vdotn = 1.0 - clampedDot(v,n);
+    float vdotn2 = vdotn * vdotn;
+    return vdotn2 * vdotn2 * vdotn;
+}
 
 /*
 *   Normal Distriubtion Functions
@@ -101,6 +110,7 @@ float BeckmanGeometry(float3 n, float3 v, float alpha){
     return result;
 }
 
+// TODO: look into alpha_g = (0.5 + roughness/2)^2 . Section 5.6 in disney paper.
 float GgxGeometry(float3 n, float3 v, float alpha){
     float ndotv = clampedDot(n,v);
     float ndotv2 = pow(ndotv,2);
@@ -169,6 +179,7 @@ float3 DisneyDiffuse(float3 n, float3 l, float3 v, float alpha, brdfParameters p
     float FSS = (1.0 + (FSS90 - 1.0) * invNdotL5) * (1.0 + (FSS90 - 1.0) * invNdotV5);
     float fss = (1.0 / (ndotl + ndotv) - 0.5f) * FSS + 0.5;
 
+    // TODO: Double check that  sub surface is correct
     return (1.0 / PI) * (1.0 - params.subsurface) * fd + 1.25 * params.subsurface * fss;
 }
 
@@ -234,12 +245,23 @@ brdfResult PBR_BRDF(float3 n, float3 l, float3 v, brdfParameters params, brdfSet
     else if(settings.diffuse == DIFF_DISNEY){
         result.diffuse = DisneyDiffuse(n, l, v, alpha, params);
     }
+    result.diffuse *= params.diffuseColor;
 
+    // Sheen
+    float3 fSheen = SchlickFresnel2(n, v) * params.sheen* lerp(float3(1,1,1), params.diffuseColor, params.sheenTint);
+    // float3 fSheen = SchlickFresnel2(l, h) * params.sheen * lerp(float3(1,1,1), params.diffuseColor, params.sheenTint);
+    result.diffuse += fSheen;
+
+    // Debug
     if(settings.debug == DEBUG_VIEW_DIFFUSE){
         result.specular = 0;
     }
     else if(settings.debug == DEBUG_VIEW_SPECULAR){
         result.diffuse = 0;
+    }
+    else if(settings.debug == DEBUG_VIEW_SHEEN){
+        result.specular = 0;
+        result.diffuse = fSheen;
     }
 
     return result;
