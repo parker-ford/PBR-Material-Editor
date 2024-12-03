@@ -41,7 +41,7 @@
 
 .material-menu-foldout {
     flex-shrink: 0;
-    background-color: rgba(0, 0, 0, 0.95);
+    background-color: rgba(0, 0, 0, 0.94);
     margin: 5px;
     color: white;
     font-size: 10px;
@@ -50,7 +50,13 @@
     -unity-font-definition: url("/Assets/UI/Fonts/Montserrat/Montserrat.ttf");
     -unity-text-outline-color: white;
     -unity-text-outline-width: 0.05px;
-     
+    height: auto;
+    /* height: 100%; */
+}
+
+.material-menu-foldout:selected {
+    /* background-color:red; */
+    height: 98.75%;
 }
 
 .unity_toggle:selected {
@@ -75,6 +81,50 @@
     flex-grow: 1;
 }
 
+.material-menu-foldout .material-scrollview{
+    /* height: 95%; */
+}
+
+
+.material-menu-foldout #unity-high-button {
+    display: none;
+}
+
+.material-menu-foldout #unity-low-button {
+    display: none
+}
+
+.material-menu-foldout .unity-scroller {
+    width: 6px;
+    /* padding-left: 2px; */
+    margin-left: 4px;
+    margin-right: 1px;
+}
+
+.material-menu-foldout .unity-scroller *{
+    width: 6px;
+}
+
+.material-menu-foldout .unity-scroller #unity-tracker {
+    /* background-color: red;
+     */
+    background-color: rgba(0, 0, 0, 0.75);
+    border-width: 0px;
+}
+
+.material-menu-foldout #unity-slider {
+    margin: 0;
+    min-width: none;
+    /* background-color: rgba(20, 20, 20, 0.5); */
+    /* width: 10px;
+     */
+    /* align-self: flex-end; */
+}
+
+.material-menu-foldout #unity-dragger {
+    left: 0;
+    background-color: rgba(150, 150, 150, 0.75);
+}
 
 /*
 *   Material Property Group

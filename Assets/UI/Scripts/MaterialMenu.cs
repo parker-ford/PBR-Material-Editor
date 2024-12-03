@@ -31,7 +31,20 @@ public class MaterialMenu : VisualElement
         var materialEditorMenu = this.CreateChild<Foldout>("material-menu-foldout");
         materialEditorMenu.text = "Material Properties";
 
-        var materialScrollView = materialEditorMenu.CreateChild<ScrollView>();
+        var materialScrollView = materialEditorMenu.CreateChild<ScrollView>("material-scrollview");
+
+        // materialScrollView.CreateChild().style.height = 100;
+        // materialScrollView.CreateChild().style.height = 100;
+        // materialScrollView.CreateChild().style.height = 100;
+        // materialScrollView.CreateChild().style.height = 100;
+        // materialScrollView.CreateChild().style.height = 100;
+        // materialScrollView.CreateChild().style.height = 100;
+        // materialScrollView.CreateChild().style.height = 100;
+        // materialScrollView.CreateChild().style.height = 100;
+        // materialScrollView.CreateChild().style.height = 100;
+        // materialScrollView.CreateChild().style.height = 100;
+        // materialScrollView.CreateChild().style.height = 100;
+        // materialScrollView.CreateChild().style.height = 100;
 
 
         /*
