@@ -28,20 +28,6 @@ float3 random_pcg3d(uint3 v) {
     return float3(v) * (1.0 / float(0xffffffffu));
 }
 
-float3 textureToSpherical(float2 t){
-    float theta = PI * (1.0 - t.y);
-    float phi = 2.0 * PI * (0.5 - t.x);
-    return float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
-}
-
-float2 sphericalToTexture(float3 s){
-    float phi = atan2(s.y, s.x);
-    float theta = acos(s.z);
-    float x = 0.5 - phi / (2.0 * PI);
-    float y = 1.0 - theta / PI;
-    return float2(x,y);
-}
-
 float3x3 getTBNMatrix(float3 normal){
     float3 someVec = float3(1.0, 0.0, 0.0);
     float dd = dot(someVec, normal);
@@ -56,7 +42,7 @@ float3x3 getTBNMatrix(float3 normal){
 float3 prefilterEnvironmentMapDiffuse_compute(Texture2D<float4> environmentMap, SamplerState samplerState, uint2 id, float2 size){
     float2 uv = float2(pixelToTexture(id.x, size.x), pixelToTexture(id.y, size.y));
 
-    float3 normal = textureToSpherical(uv);
+    float3 normal = textureToSphericalDirection(uv);
     float3x3 tbn = getTBNMatrix(normal);
     float3 result = 0;
 
@@ -67,7 +53,7 @@ float3 prefilterEnvironmentMapDiffuse_compute(Texture2D<float4> environmentMap, 
         float theta = asin(sqrt(random.y));
         float3 localPos = float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
         float3 worldPos = mul(localPos, tbn);
-        float2 samplePos = sphericalToTexture(worldPos);
+        float2 samplePos = directionToSphericalTexture(worldPos);
         float3 sample = gammaToLinear(environmentMap.SampleLevel(samplerState, samplePos, _MipMapLevel).rgb);
         result += sample;
     }

@@ -75,3 +75,17 @@ float textureToPixels(float t, float size){
 float pixelToTexture(float p, float size){
     return (p + 0.5) / size;
 }
+
+float3 textureToSphericalDirection(float2 t){
+    float theta = PI * (1.0 - t.y);
+    float phi = 2.0 * PI * (0.5 - t.x);
+    return float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
+}
+
+float2 directionToSphericalTexture(float3 s){
+    float phi = atan2(s.y, s.x);
+    float theta = acos(s.z);
+    float x = 0.5 - phi / (2.0 * PI);
+    float y = 1.0 - theta / PI;
+    return float2(x,y);
+}

@@ -225,6 +225,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87ab44f186396c842b2553e2d91c7ac2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tex: {fileID: 2800000, guid: 6e5aca1d76d41b04698fbf2c9f3bd782, type: 3}
+  renderTexture: {fileID: 0}
 --- !u!114 &58558331
 MonoBehaviour:
   m_ObjectHideFlags: 0

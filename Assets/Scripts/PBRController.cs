@@ -51,6 +51,7 @@ public class PBRController : MonoBehaviour
     public Light sun;
     public ModelObject defaultModelObject;
     public TextureObject defaultTextureObject;
+    public EnvironmentObject defaultEnvironmentObject;
     public NormalDistributionFunction defaultNDF;
     public GeometryAttenuationFunction defaultGeometry;
     public Diffuse defaultDiffuse;
@@ -72,12 +73,11 @@ public class PBRController : MonoBehaviour
     public bool defaultRotateModel;
     public bool defaultRotateLight;
 
-    public Texture2D defaultEnvironmentMap;
-
     private GameObject model;
     private Material material;
     private ModelObject modelObject;
     private TextureObject textureObject;
+    private EnvironmentObject environmentObject;
     private float reflectance;
     private float roughness;
     private float subsurface;
@@ -117,6 +117,7 @@ public class PBRController : MonoBehaviour
         clearcoatGloss = defaultClearcoatGloss;
         modelObject = defaultModelObject;
         textureObject = defaultTextureObject;
+        environmentObject = defaultEnvironmentObject;
         displacementMapStrength = defaultDisplacementStrength;
         normalMapStrength = defaultNormalMapStrength;
         useDisplacementMap = defaultUseDisplacementMap;
@@ -134,6 +135,7 @@ public class PBRController : MonoBehaviour
         InstantiateModel();
         UpdateMaterialParameters();
         SetTextureMaps();
+        SetEnvironment();
         InstantiateUI();
 
     }
@@ -315,6 +317,33 @@ public class PBRController : MonoBehaviour
         {
             material.SetInt("_RoughnessMapSet", 0);
         }
+    }
+
+    void SetEnvironment()
+    {
+        if (environmentObject.environmentMap != null)
+        {
+            material.SetTexture("_EnvironmentMap", environmentObject.environmentMap);
+            material.SetInt("_EnvironmentMapSet", 1);
+        }
+        else
+        {
+            material.SetTexture("_EnvironmentMap", null);
+            material.SetInt("_EnvironmentMapSet", 0);
+        }
+
+        if (environmentObject.skyboxMaterial != null)
+        {
+            Debug.Log("Setting env");
+            RenderSettings.skybox = environmentObject.skyboxMaterial;
+        }
+        else
+        {
+            RenderSettings.skybox = null;
+        }
+
+
+
     }
 
     void UpdateMaterialParameters()

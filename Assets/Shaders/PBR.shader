@@ -57,6 +57,9 @@ Shader "Parker/PBR"
             sampler2D _RoughnessMap;
             int _RoughnessMapSet;
 
+            sampler2D _EnvironmentMap;
+            int _EnvironmentMapSet;
+
             float _NormalStrength;
             float _DisplacementStrength;
 
@@ -146,8 +149,14 @@ Shader "Parker/PBR"
                 brdfResult brdf = PBR_BRDF(n,l,v, params, settings);
 
                 float3 lightIn =  _LightColor.rgb * _LightIntensity;
-
                 float3 lightOut = lightIn * (brdf.specular + brdf.diffuse) * ndotl;
+
+                if(_EnvironmentMapSet){
+                    float2 envUV = directionToSphericalTexture(n);
+                    lightIn = tex2D(_EnvironmentMap, envUV).rgb;
+                    lightOut = diffuseColor * lightIn;
+                }
+
 
                 return float4(lightOut, 1.0);
             }
