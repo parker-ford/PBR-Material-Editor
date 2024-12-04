@@ -7,4 +7,5 @@ public class EnvironmentObject : ScriptableObject
     public Texture2D displayImage;
     public Texture2D environmentMap;
     public Material skyboxMaterial;
+    public Texture2DArray filteredSpecularMaap;
 }

@@ -9,7 +9,7 @@ public class ViewRenderTexture : MonoBehaviour
     {
         if (renderTexture != null)
         {
-            Graphics.Blit(tex, destination);
+            Graphics.Blit(renderTexture, destination);
         }
         else
         {

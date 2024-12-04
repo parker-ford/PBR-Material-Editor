@@ -156,8 +156,8 @@ Camera:
   m_GameObject: {fileID: 58558326}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.25157225, g: 0.25157225, b: 0.25157225, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -410,8 +410,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   computeShader: {fileID: 7200000, guid: 040ef6bcf2cef2242a37c551b22b6d41, type: 3}
   environmentMap: {fileID: 2800000, guid: 1d18ca2bbf3baf64e81d3364ab7cd51c, type: 3}
+  debugTex: {fileID: 2800000, guid: 8b34f420d733d42469d3e67a20a8aa43, type: 3}
   mipMapLevel: 5
   numSamples: 2048
+  roughness: 0.33
+  numSpecularFilterLevels: 6
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

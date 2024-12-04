@@ -168,9 +168,10 @@ MonoBehaviour:
   sun: {fileID: 1585609542}
   defaultModelObject: {fileID: 11400000, guid: f4513f4d4d704ab4c8dc25dbf1f0e718, type: 2}
   defaultTextureObject: {fileID: 11400000, guid: 0c870c05070980645ab6834e333bae4f, type: 2}
+  defaultEnvironmentObject: {fileID: 11400000, guid: 086abd5e863b43e459d58d32616e136c, type: 2}
   defaultNDF: 2
   defaultGeometry: 1
-  defaultDiffuse: 2
+  defaultDiffuse: 0
   defaultDebug: 0
   defaultReflectance: 0.25
   defaultRoughness: 1
@@ -387,8 +388,8 @@ Camera:
   m_GameObject: {fileID: 1940127843}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.56194514, g: 0.4978441, b: 0.72955966, a: 0}
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0

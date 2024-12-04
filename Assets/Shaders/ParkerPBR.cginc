@@ -118,6 +118,11 @@ float GgxSchlickGeometry(float3 n, float3 v, float alpha){
     return ndotv / (ndotv * (1 - k) + k);
 }
 
+float GgxSchlickGeometry(float ndotv, float alpha){
+    float k = alpha / 2.0;
+    return ndotv / (ndotv * (1 - k) + k);
+}
+
 
 /*
 *   Diffuse Models
