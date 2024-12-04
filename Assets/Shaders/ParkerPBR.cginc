@@ -1,4 +1,6 @@
-#define PI 3.141592653589793238462
+#pragma once
+
+#include "./ParkerUtils.cginc"
 
 #define NDF_BLINNPHONG 0
 #define NDF_BECKMAN 1
@@ -46,19 +48,6 @@ struct brdfSettings
     int diffuse;
     int debug;
 };
-
-float clampedDot(float3 a, float3 b) {
-    return max(dot(a, b), 0.0001);
-}
-
-float epsilonDot(float3 a, float3 b){
-    return max(clampedDot(a,b), 0.0001);
-}
-
-int isPositive(float x){
-    return x > 0;
-}
-
 
 float3 SchlickFresnelReflectance(float3 v, float3 n, float reflectance, float3 diffuseColor){
     //TODO: Figure out how to do metallic

@@ -1,3 +1,30 @@
+#pragma once
+
+#include "UnityCG.cginc"
+
+#define PI 3.141592653589793238462
+
+//TODO: Differentiate between clamped dot and epsilon dot
+float clampedDot(float3 a, float3 b) {
+    return max(dot(a, b), 0.0001);
+}
+
+float epsilonDot(float3 a, float3 b){
+    return max(clampedDot(a,b), 0.0001);
+}
+
+int isPositive(float x){
+    return x > 0;
+}
+
+float3 gammaToLinear(float3 col){
+    return pow(col, 2.2);
+}
+
+float3 linearToGamma(float3 col){
+    return pow(col, 1.0/2.2);
+}
+
 // TODO: Blue noise offset?
 // TODO: Try these: https://github.com/panthuncia/webgl_test/blob/main/index.html
 // https://developer.nvidia.com/gpugems/gpugems2/part-i-geometric-complexity/chapter-8-pixel-displacement-mapping-distance-functions
@@ -39,4 +66,12 @@ float3 normalMap(float3 normal, float3 tangent, float3 bitangent, float2 uv, sam
 
 float3 getBitangent(float3 normal, float3 tangent, float handedness){
     return cross(normal, tangent) * handedness * unity_WorldTransformParams.w;
+}
+
+float textureToPixels(float t, float size){
+    return t * size - 0.5;
+}
+
+float pixelToTexture(float p, float size){
+    return (p + 0.5) / size;
 }

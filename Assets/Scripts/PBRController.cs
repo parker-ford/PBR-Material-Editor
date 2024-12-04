@@ -72,6 +72,8 @@ public class PBRController : MonoBehaviour
     public bool defaultRotateModel;
     public bool defaultRotateLight;
 
+    public Texture2D defaultEnvironmentMap;
+
     private GameObject model;
     private Material material;
     private ModelObject modelObject;

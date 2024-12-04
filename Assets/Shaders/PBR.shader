@@ -20,7 +20,6 @@ Shader "Parker/PBR"
 
             #include "UnityCG.cginc"
             #include "./ParkerPBR.cginc"
-            #include "./ParkerUtils.cginc"
 
             #define DEBUG_VIEW_DIFFUSE_MAP 60
             #define DEBUG_VIEW_NORMAL_MAP 70

@@ -33,20 +33,6 @@ public class MaterialMenu : VisualElement
 
         var materialScrollView = materialEditorMenu.CreateChild<ScrollView>("material-scrollview");
 
-        // materialScrollView.CreateChild().style.height = 100;
-        // materialScrollView.CreateChild().style.height = 100;
-        // materialScrollView.CreateChild().style.height = 100;
-        // materialScrollView.CreateChild().style.height = 100;
-        // materialScrollView.CreateChild().style.height = 100;
-        // materialScrollView.CreateChild().style.height = 100;
-        // materialScrollView.CreateChild().style.height = 100;
-        // materialScrollView.CreateChild().style.height = 100;
-        // materialScrollView.CreateChild().style.height = 100;
-        // materialScrollView.CreateChild().style.height = 100;
-        // materialScrollView.CreateChild().style.height = 100;
-        // materialScrollView.CreateChild().style.height = 100;
-
-
         /*
         *   Texture Properties
         */
