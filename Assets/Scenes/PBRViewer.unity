@@ -173,14 +173,14 @@ MonoBehaviour:
   defaultGeometry: 1
   defaultDiffuse: 0
   defaultDebug: 0
-  defaultReflectance: 1
+  defaultReflectance: 0
   defaultRoughness: 0
   defaultSubsurface: 0
   defaultSheen: 0
   defaultSheenTint: 0
   defaultClearcoat: 0
   defaultClearcoatGloss: 0
-  defaultDiffuseColor: {r: 0.39420903, g: 0.70698583, b: 0.8301887, a: 1}
+  defaultDiffuseColor: {r: 0, g: 0, b: 0, a: 1}
   defaultDisplacementStrength: 0.05
   defaultNormalMapStrength: 1
   defaultUseDisplacementMap: 1

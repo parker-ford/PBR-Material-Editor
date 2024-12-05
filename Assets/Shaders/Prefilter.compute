@@ -1,9 +1,12 @@
 #pragma kernel CS_PrefilterSpecular
 #pragma kernel CS_IntegrateBRDF
+#pragma kernel CS_Greyscale
 
 #include "UnityCG.cginc"
 #include "./ParkerUtils.cginc"
 #include "./ParkerPBR.cginc"
+
+RWTexture2D<float4> _Target;
 
 Texture2D<float4> _EnvironmentMap;
 SamplerState sampler_EnvironmentMap;
@@ -143,7 +146,10 @@ float2 integrateBRDF(uint2 id, float roughness, float nDotV){
 
     result = result / float(N);
     return result;
+}
 
+float rgbToGreyscale(float3 col){
+    return 0.5;
 }
 
 [numthreads(8,8,1)]
@@ -151,7 +157,6 @@ void CS_IntegrateBRDF(uint3 id : SV_DispatchThreadID)
 {
     float2 uv = float2(pixelToTexture(id.x, _Width), pixelToTexture(id.y, _Height));
     _IntegratedBRDF[id.xy] = float4(integrateBRDF(id.xy, uv.y, uv.x), 0.0, 1.0);
-    // _IntegratedBRDF[id.xy] = float4(1.0, 0.0, 0.0, 1.0);
 }
 
 [numthreads(8,8,1)]
@@ -161,4 +166,13 @@ void CS_PrefilterSpecular(uint3 id : SV_DispatchThreadID)
     float3 color = prefilterEnvironmentMapSpecular_compute(_EnvironmentMap, sampler_EnvironmentMap, id.xy, float2(_Width, _Height), roughness, id.z);
     _FilteredSpecularMap[id] = float4(color, 1.0);
 
+}
+
+
+[numthreads(8,8,1)]
+void CS_Greyscale(uint3 id : SV_DispatchThreadID)
+{
+    float2 uv = float2(pixelToTexture(id.x, _Width), pixelToTexture(id.y, _Height));
+    float3 color = _EnvironmentMap.SampleLevel(sampler_EnvironmentMap, uv, _MipMapLevel).rgb;
+    _Target[id.xy] = float4(color, 1.0);
 }

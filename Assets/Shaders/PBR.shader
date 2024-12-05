@@ -92,13 +92,24 @@ Shader "Parker/PBR"
             int _DebugView;
 
             float3 specularIBL(float3 F0, float roughness, float3 n, float3 v){
-                float ndotv = clampedDot(n,v);
+                // float ndotv = clampedDot(n,v);
+                float ndotv = clamp(dot(n,v), 0.001, 0.999);
+                roughness = clamp(roughness, 0.001, 0.999);
                 float3 r = reflect(-v, n);
                 float2 uv = directionToSphericalTexture(r);
-                // float3 = tex2Dlod()
-                float3 T1 =  UNITY_SAMPLE_TEX2DARRAY(_FilteredSpecularMap, float3(uv, roughness * float(_SpecularMipLevels))).rgb;
+                // float h
+                float sampleLevel = roughness * float(_SpecularMipLevels);
+                float lowSample = floor(sampleLevel);
+                float highSample = ceil(sampleLevel);
+                float diff = frac(sampleLevel);
+                float3 T1_low =  UNITY_SAMPLE_TEX2DARRAY(_FilteredSpecularMap, float3(uv, lowSample)).rgb;
+                float3 T1_high =  UNITY_SAMPLE_TEX2DARRAY(_FilteredSpecularMap, float3(uv, highSample)).rgb;
+                float3 T1 = T1_low * (1.0 - diff) + T1_high * diff;
+                T1 = linearToGamma(T1);
+
                 float4 brdfIntegration = tex2D(_IntegratedBRDF, float2(ndotv, roughness));
                 float3 T2 = (F0 * brdfIntegration.x + brdfIntegration.y);
+
                 return T1 * T2;
             }
 
@@ -172,7 +183,6 @@ Shader "Parker/PBR"
                     float2 envUV = directionToSphericalTexture(n);
                     lightIn = tex2D(_EnvironmentMap, envUV).rgb;
                     lightOut = diffuseColor * lightIn + specularIBL(f0, roughness, n, v);
-
                 }
 
 

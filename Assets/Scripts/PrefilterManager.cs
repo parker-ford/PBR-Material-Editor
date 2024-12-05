@@ -12,15 +12,17 @@ public class PrefilterManager : MonoBehaviour
     [SerializeField] private int numSamples;
     [SerializeField] private float roughness;
     [SerializeField] private int numSpecularFilterLevels;
-    private RenderTexture filteredMap;
+    // private RenderTexture filteredMap;
 
     private int KERNEL_PREFILTER_SPECULAR;
     private int KERNEL_INTEGRATE_BRDF;
+    private int KERNEL_GREYSCALE;
 
     void Start()
     {
         KERNEL_PREFILTER_SPECULAR = computeShader.FindKernel("CS_PrefilterSpecular");
         KERNEL_INTEGRATE_BRDF = computeShader.FindKernel("CS_IntegrateBRDF");
+        KERNEL_GREYSCALE = computeShader.FindKernel("CS_Greyscale");
 
         // int level = 16;
 
@@ -59,7 +61,45 @@ public class PrefilterManager : MonoBehaviour
         // SaveRenderTextureAsEXR(filteredMap, exrFilePath);
 
         // GeneratePrefilteredSpecular();
-        IntegrateBRDF();
+        // IntegrateBRDF();
+
+        GeneratePrefilteredEnvironment();
+
+    }
+
+    void GeneratePrefilteredEnvironment()
+    {
+        int width = environmentMap.width;
+        int height = environmentMap.height;
+
+
+        RenderTexture filteredMap = new RenderTexture(
+            width,
+            height,
+            0,
+            RenderTextureFormat.ARGBFloat,
+            RenderTextureReadWrite.Linear
+        );
+        filteredMap.filterMode = FilterMode.Bilinear;
+        filteredMap.wrapMode = TextureWrapMode.Clamp;
+        filteredMap.enableRandomWrite = true;
+        filteredMap.useMipMap = false;
+        filteredMap.autoGenerateMips = false;
+        filteredMap.anisoLevel = 16;
+        filteredMap.Create();
+
+        Camera.main.GetComponent<ViewRenderTexture>().renderTexture = filteredMap;
+
+        computeShader.SetFloat("_Width", width);
+        computeShader.SetFloat("_Height", height);
+        computeShader.SetFloat("_MipMapLevel", mipMapLevel);
+
+
+        //GreyScale Image
+        computeShader.SetTexture(KERNEL_GREYSCALE, "_Target", filteredMap);
+        computeShader.SetTexture(KERNEL_GREYSCALE, "_EnvironmentMap", environmentMap);
+        computeShader.Dispatch(KERNEL_GREYSCALE, width / 8, height / 8, 1);
+
 
     }
 
@@ -187,8 +227,13 @@ public class PrefilterManager : MonoBehaviour
 
     Texture2D ConvertRenderTextureToTexture2D(RenderTexture renderTexture)
     {
-        // Convert RenderTexture to Texture2D
-        Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGBAFloat, false);
+        Texture2D texture = new Texture2D(
+            renderTexture.width,
+            renderTexture.height,
+            TextureFormat.RGBAFloat,
+            false,
+            true
+        );
 
         // Copy the RenderTexture content to the Texture2D
         RenderTexture.active = renderTexture;
