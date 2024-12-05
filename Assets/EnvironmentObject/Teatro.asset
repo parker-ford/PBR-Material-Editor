@@ -16,3 +16,4 @@ MonoBehaviour:
   displayImage: {fileID: 2800000, guid: 1d18ca2bbf3baf64e81d3364ab7cd51c, type: 3}
   environmentMap: {fileID: 2800000, guid: 0af31c81b2a976445ade00505e632579, type: 3}
   skyboxMaterial: {fileID: 2100000, guid: a37ee738a4ab9d540b11c973fbb60079, type: 2}
+  filteredSpecularMaap: {fileID: 18700000, guid: 134afbf5b6b819943bdcec1dababb2c5, type: 2}

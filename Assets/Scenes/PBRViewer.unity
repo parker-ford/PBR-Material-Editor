@@ -167,20 +167,20 @@ MonoBehaviour:
   pbrShader: {fileID: 4800000, guid: 46f53897b4d38a840a18ef7e7e18e93e, type: 3}
   sun: {fileID: 1585609542}
   defaultModelObject: {fileID: 11400000, guid: f4513f4d4d704ab4c8dc25dbf1f0e718, type: 2}
-  defaultTextureObject: {fileID: 11400000, guid: 0c870c05070980645ab6834e333bae4f, type: 2}
+  defaultTextureObject: {fileID: 11400000, guid: 12792c6812a020c45ba8d0ac204cf4a6, type: 2}
   defaultEnvironmentObject: {fileID: 11400000, guid: 086abd5e863b43e459d58d32616e136c, type: 2}
   defaultNDF: 2
   defaultGeometry: 1
   defaultDiffuse: 0
   defaultDebug: 0
-  defaultReflectance: 0.25
-  defaultRoughness: 1
-  defaultSubsurface: 0.1
-  defaultSheen: 0.46
+  defaultReflectance: 1
+  defaultRoughness: 0
+  defaultSubsurface: 0
+  defaultSheen: 0
   defaultSheenTint: 0
   defaultClearcoat: 0
   defaultClearcoatGloss: 0
-  defaultDiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+  defaultDiffuseColor: {r: 0.39420903, g: 0.70698583, b: 0.8301887, a: 1}
   defaultDisplacementStrength: 0.05
   defaultNormalMapStrength: 1
   defaultUseDisplacementMap: 1
@@ -189,6 +189,7 @@ MonoBehaviour:
   defaultUseRoughnessMap: 1
   defaultRotateModel: 0
   defaultRotateLight: 1
+  integratedBRDF: {fileID: 2800000, guid: 980c6109143fc7a45b1b65c52fedb458, type: 2}
 --- !u!1 &1585609541
 GameObject:
   m_ObjectHideFlags: 0

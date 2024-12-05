@@ -72,6 +72,7 @@ public class PBRController : MonoBehaviour
     public bool defaultUseRoughnessMap;
     public bool defaultRotateModel;
     public bool defaultRotateLight;
+    public Texture2D integratedBRDF;
 
     private GameObject model;
     private Material material;
@@ -342,8 +343,9 @@ public class PBRController : MonoBehaviour
             RenderSettings.skybox = null;
         }
 
-
-
+        material.SetTexture("_IntegratedBRDF", integratedBRDF);
+        material.SetTexture("_FilteredSpecularMap", environmentObject.filteredSpecularMaap);
+        material.SetInt("_SpecularMipLevels", 6); //Hardcoded for now
     }
 
     void UpdateMaterialParameters()

@@ -83,8 +83,8 @@ float3 textureToSphericalDirection(float2 t){
 }
 
 float2 directionToSphericalTexture(float3 s){
-    float phi = atan2(s.y, s.x);
-    float theta = acos(s.z);
+    float phi = atan2(s.z, s.x);
+    float theta = acos(s.y);
     float x = 0.5 - phi / (2.0 * PI);
     float y = 1.0 - theta / PI;
     return float2(x,y);

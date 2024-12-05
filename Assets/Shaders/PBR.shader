@@ -60,6 +60,11 @@ Shader "Parker/PBR"
             sampler2D _EnvironmentMap;
             int _EnvironmentMapSet;
 
+            sampler2D _IntegratedBRDF;
+
+            UNITY_DECLARE_TEX2DARRAY(_FilteredSpecularMap);
+            int _SpecularMipLevels;
+
             float _NormalStrength;
             float _DisplacementStrength;
 
@@ -85,6 +90,17 @@ Shader "Parker/PBR"
             int _Geometry;
             int _Diffuse;
             int _DebugView;
+
+            float3 specularIBL(float3 F0, float roughness, float3 n, float3 v){
+                float ndotv = clampedDot(n,v);
+                float3 r = reflect(-v, n);
+                float2 uv = directionToSphericalTexture(r);
+                // float3 = tex2Dlod()
+                float3 T1 =  UNITY_SAMPLE_TEX2DARRAY(_FilteredSpecularMap, float3(uv, roughness * float(_SpecularMipLevels))).rgb;
+                float4 brdfIntegration = tex2D(_IntegratedBRDF, float2(ndotv, roughness));
+                float3 T2 = (F0 * brdfIntegration.x + brdfIntegration.y);
+                return T1 * T2;
+            }
 
             v2f vert (appdata v)
             {
@@ -152,9 +168,11 @@ Shader "Parker/PBR"
                 float3 lightOut = lightIn * (brdf.specular + brdf.diffuse) * ndotl;
 
                 if(_EnvironmentMapSet){
+                    float3 f0 = 0.16 * (_Reflectance * _Reflectance);
                     float2 envUV = directionToSphericalTexture(n);
                     lightIn = tex2D(_EnvironmentMap, envUV).rgb;
-                    lightOut = diffuseColor * lightIn;
+                    lightOut = diffuseColor * lightIn + specularIBL(f0, roughness, n, v);
+
                 }
 
 

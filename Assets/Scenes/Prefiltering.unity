@@ -412,7 +412,7 @@ MonoBehaviour:
   environmentMap: {fileID: 2800000, guid: 1d18ca2bbf3baf64e81d3364ab7cd51c, type: 3}
   debugTex: {fileID: 2800000, guid: 8b34f420d733d42469d3e67a20a8aa43, type: 3}
   mipMapLevel: 5
-  numSamples: 2048
+  numSamples: 8192
   roughness: 0.33
   numSpecularFilterLevels: 6
 --- !u!1660057539 &9223372036854775807
