@@ -79,6 +79,7 @@ public class PBRController : MonoBehaviour
     public Texture2D integratedBRDF;
     public float defaultLightIntensity;
     public Color defaultLightColor;
+    public Color defaultBackgroundColor;
 
     private GameObject model;
     private Material material;
@@ -110,6 +111,7 @@ public class PBRController : MonoBehaviour
     private bool useEnvironmentLighting;
     private float lightIntensity;
     private Color lightColor;
+    private Color backgroundColor;
     private List<ModelObject> modelObjects;
     private List<TextureObject> textureObjects;
     private List<EnvironmentObject> environmentObjects;
@@ -150,6 +152,7 @@ public class PBRController : MonoBehaviour
         debug = defaultDebug;
         lightIntensity = defaultLightIntensity;
         lightColor = defaultLightColor;
+        backgroundColor = defaultBackgroundColor;
 
         InstantiateModel();
         UpdateMaterialParameters();
@@ -227,6 +230,7 @@ public class PBRController : MonoBehaviour
         // Bind Color Pickers
         BindColorPicker(view.materialMenu.diffuseColorPicker, newColor => diffuseColor = newColor);
         BindColorPicker(view.materialMenu.lightColorPicker, newColor => lightColor = newColor);
+        BindColorPicker(view.materialMenu.backgroundColorPicker, newColor => { backgroundColor = newColor; SetEnvironment(); });
 
         // Bind Dropdown
         BindDropdown(view.materialMenu.normalDistributionModelDropdown, newValue => ndf = (NormalDistributionFunction)newValue);
@@ -269,6 +273,11 @@ public class PBRController : MonoBehaviour
                 view.materialMenu.normalDistributionModelDropdown.SetCurrentValue((int)ndf);
                 view.materialMenu.geometryAttenuationModelDropdown.SetCurrentValue((int)geometry);
             }
+
+            view.materialMenu.lightRotateToggle.SetEnabled(!useEnvironmentLighting);
+            view.materialMenu.lightColorPicker.SetEnabled(!useEnvironmentLighting);
+            view.materialMenu.lightIntensitySlider.SetEnabled(!useEnvironmentLighting);
+
         });
 
         // Set Default UI Values
@@ -296,7 +305,8 @@ public class PBRController : MonoBehaviour
             rotateLight,
             rotateModel,
             lightColor,
-            lightIntensity
+            lightIntensity,
+            backgroundColor
         );
     }
 
@@ -400,6 +410,7 @@ public class PBRController : MonoBehaviour
         else
         {
             RenderSettings.skybox = null;
+            Camera.main.backgroundColor = backgroundColor;
         }
     }
 
@@ -421,6 +432,7 @@ public class PBRController : MonoBehaviour
         material.SetFloat("_ClearcoatGloss", clearcoatGloss);
         material.SetFloat("_Metallic", metallic);
         material.SetFloat("_Anisotropic", anisotropic);
+        material.SetColor("_AmbientColor", backgroundColor);
 
         material.SetInt("_NDF", (int)ndf);
         material.SetInt("_Geometry", (int)geometry);

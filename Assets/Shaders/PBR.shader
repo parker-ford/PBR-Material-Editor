@@ -70,6 +70,7 @@ Shader "Parker/PBR"
             float4 _LightColor;
             float3 _LightDirection;
             float _LightIntensity;
+            float4 _AmbientColor;
 
             float4 _DiffuseColor;
             float _Roughness;

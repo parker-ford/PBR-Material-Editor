@@ -29,6 +29,7 @@ public class MaterialMenu : VisualElement
     public MaterialToggle lightRotateToggle;
     public MaterialColorPickerRGB lightColorPicker;
     public MaterialSlider lightIntensitySlider;
+    public MaterialColorPickerRGB backgroundColorPicker;
 
 
 
@@ -74,6 +75,9 @@ public class MaterialMenu : VisualElement
 
         objectRotateToggle = lightingProperties.CreateChild<MaterialToggle>();
         objectRotateToggle.label.text = "Rotate Object";
+
+        backgroundColorPicker = lightingProperties.CreateChild<MaterialColorPickerRGB>();
+        backgroundColorPicker.label.text = "Background Color";
 
 
 
@@ -175,7 +179,8 @@ public class MaterialMenu : VisualElement
         bool rotateLight,
         bool rotateObject,
         Color lightColor,
-        float lightIntensity
+        float lightIntensity,
+        Color backgroundColor
     )
     {
         reflectanceSlider.SetCurrentValue(reflectance);
@@ -202,6 +207,7 @@ public class MaterialMenu : VisualElement
         objectRotateToggle.SetCurrentValue(rotateObject);
         lightColorPicker.SetCurrentValue(lightColor);
         lightIntensitySlider.SetCurrentValue(lightIntensity);
+        backgroundColorPicker.SetCurrentValue(backgroundColor);
     }
 
     public void SetAllEnabled(bool state)
