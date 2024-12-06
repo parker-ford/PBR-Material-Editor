@@ -18,10 +18,12 @@ public class MaterialMenu : VisualElement
     public MaterialSlider sheenTintSlider;
     public MaterialSlider clearcoatSlider;
     public MaterialSlider clearcoatGlossSlider;
+    public MaterialSlider metallicSlider;
     public MaterialToggle diffuseMapToggle;
     public MaterialToggle normalMapToggle;
     public MaterialToggle displacementMapToggle;
     public MaterialToggle roughnessMapToggle;
+
 
 
     public MaterialMenu()
@@ -65,6 +67,9 @@ public class MaterialMenu : VisualElement
 
         sheenTintSlider = diffuseProperties.CreateChild<MaterialSlider>();
         sheenTintSlider.label.text = "Sheen Tint";
+
+        metallicSlider = diffuseProperties.CreateChild<MaterialSlider>();
+        metallicSlider.label.text = "Metallic";
 
         /*
         *   Specular Properties

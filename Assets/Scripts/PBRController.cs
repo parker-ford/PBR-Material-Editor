@@ -331,30 +331,12 @@ public class PBRController : MonoBehaviour
 
     void SetEnvironment()
     {
-        if (environmentObject.filteredDiffuseMap != null)
-        {
-            material.SetTexture("_EnvironmentMap", environmentObject.filteredDiffuseMap);
-            material.SetInt("_EnvironmentMapSet", 1);
-        }
-        else
-        {
-            material.SetTexture("_EnvironmentMap", null);
-            material.SetInt("_EnvironmentMapSet", 0);
-        }
-
-        if (environmentObject.skyboxMaterial != null)
-        {
-            Debug.Log("Setting env");
-            RenderSettings.skybox = environmentObject.skyboxMaterial;
-        }
-        else
-        {
-            RenderSettings.skybox = null;
-        }
-
+        material.SetInt("_EnvironmentMapSet", 1);
+        material.SetTexture("_FilteredDiffuseMap", environmentObject.filteredDiffuseMap);
         material.SetTexture("_IntegratedBRDF", integratedBRDF);
         material.SetTexture("_FilteredSpecularMap", environmentObject.filteredSpecularMap);
         material.SetInt("_SpecularMipLevels", 6); //Hardcoded for now
+        RenderSettings.skybox = environmentObject.skyboxMaterial;
     }
 
     void UpdateMaterialParameters()

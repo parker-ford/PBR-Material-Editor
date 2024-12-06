@@ -57,10 +57,10 @@ Shader "Parker/PBR"
             sampler2D _RoughnessMap;
             int _RoughnessMapSet;
 
-            sampler2D _EnvironmentMap;
-            int _EnvironmentMapSet;
-
             sampler2D _IntegratedBRDF;
+
+            sampler2D _FilteredDiffuseMap;
+            int _EnvironmentMapSet;
 
             UNITY_DECLARE_TEX2DARRAY(_FilteredSpecularMap);
             int _SpecularMipLevels;
@@ -91,13 +91,12 @@ Shader "Parker/PBR"
             int _Diffuse;
             int _DebugView;
 
-            float3 specularIBL(float3 F0, float roughness, float3 n, float3 v){
-                // float ndotv = clampedDot(n,v);
+            float3 specularImageBasedLighting(float reflectance, float roughness, float3 n, float3 v){
+                float3 F0 =  0.16 * (reflectance * reflectance);
                 float ndotv = clamp(dot(n,v), 0.001, 0.999);
                 roughness = clamp(roughness, 0.001, 0.999);
                 float3 r = reflect(-v, n);
                 float2 uv = directionToSphericalTexture(r);
-
 
                 float sampleLevel = roughness * float(_SpecularMipLevels);
                 float lowSample = floor(sampleLevel);
@@ -113,6 +112,11 @@ Shader "Parker/PBR"
                 float3 T2 = (F0 * brdfIntegration.x + brdfIntegration.y);
 
                 return T1 * T2;
+            }
+
+            float3 diffuseImageBasedLighting(float3 n){
+                float2 envUV = directionToSphericalTexture(n);
+                return tex2D(_FilteredDiffuseMap, envUV).rgb;
             }
 
             v2f vert (appdata v)
@@ -175,21 +179,30 @@ Shader "Parker/PBR"
                 settings.diffuse = _Diffuse;
                 settings.debug = _DebugView;
 
-                brdfResult brdf = PBR_BRDF(n,l,v, params, settings);
 
-                float3 lightIn =  _LightColor.rgb * _LightIntensity;
-                float3 lightOut = lightIn * (brdf.specular + brdf.diffuse) * ndotl;
+                // float3 lightIn =  _LightColor.rgb * _LightIntensity;
+                // float3 lightOut = lightIn * (brdf.specular + brdf.diffuse) * ndotl;
+                float3 lightOut = 0;
+                if(_EnvironmentMapSet){
+                    float3 diffuseIBL = diffuseColor * diffuseImageBasedLighting(n);
+                    //TODO: Specular Gloss?
+                    // float3 specularIBL = specularImageBasedLighting(_Reflectance, _Roughness, n, v) * lerp(float3(1,1,1), diffuseColor, 1.0);
+                    float3 specularIBL = specularImageBasedLighting(_Reflectance, _Roughness, n, v);
+                    float3 clearcoatIBL = 0.25 * _Clearcoat * specularImageBasedLighting(0.5, 1.0 - _ClearcoatGloss, n, v);
+                    lightOut =  diffuseIBL + specularIBL + clearcoatIBL; 
+                }
+                else{
+                    brdfResult brdf = PBR_BRDF(n,l,v, params, settings);
+
+                }
+                
 
                 if(_EnvironmentMapSet){
-                    float3 f0 = 0.16 * (_Reflectance * _Reflectance);
-                    float2 envUV = directionToSphericalTexture(n);
-                    lightIn = tex2D(_EnvironmentMap, envUV).rgb;
-                    // lightOut = diffuseColor * lightIn + specularIBL(f0, roughness, n, v);
-
-                    // float ndotv = clamp(dot(n,v), 0.001, 0.999);
-                    // float4 brdfIntegration = tex2D(_IntegratedBRDF, float2(ndotv, roughness));
-                    // float3 T2 = (F0 * brdfIntegration.x + brdfIntegration.y);
-                    lightOut = diffuseColor * lightIn;
+                    // float3 f0 = 0.16 * (_Reflectance * _Reflectance);
+                    // float2 envUV = directionToSphericalTexture(n);
+                    // lightOut = diffuseColor * lightIn;
+                    // lightIn = tex2D(_EnvironmentMap, envUV).rgb;
+                    
                 }
 
 
