@@ -34,24 +34,30 @@ public class PrefilterManager : MonoBehaviour
         KERNEL_CDF_CONDITIONAL_INVERSE = computeShader.FindKernel("CS_CDFConditionalInverse");
         KERNEL_PREFILTER_DIFFUSE = computeShader.FindKernel("CS_PrefilterEnvironment");
 
-        Material skybox = new Material(Shader.Find("Skybox/Panoramic"));
-        skybox.SetTexture("_MainTex", environmentMap);
+        // New texture without mip maps for panoramic skybox (original enivornment map has visible seam)
+        Texture2D panorama = new Texture2D(environmentMap.width, environmentMap.height, environmentMap.format, false);
+        panorama.SetPixels(environmentMap.GetPixels());
+        panorama.Apply();
+        SaveAsAsset(panorama, GetPathWithPostfix(environmentMap, "_panorama.asset"));
 
+        // Skybox
+        Material skybox = new Material(Shader.Find("Skybox/Panoramic"));
+        skybox.SetTexture("_MainTex", panorama);
+        SaveAsAsset(skybox, GetPathWithPostfix(environmentMap, "_skybox.asset"));
+
+        // Filtered Env Maps
         Texture2D filteredDiffuse = GeneratePrefilteredDiffuse();
         Texture2DArray filteredSpecular = GeneratePrefilteredSpecular();
-
-        SaveAsAsset(skybox, GetPathWithPostfix(environmentMap, "_skybox.asset"));
         SaveAsAsset(filteredDiffuse, GetPathWithPostfix(environmentMap, "_filteredDiffuse.asset"));
         SaveAsAsset(filteredSpecular, GetPathWithPostfix(environmentMap, "_filteredSpecular.asset"));
 
+        // Environment Map
         EnvironmentObject obj = new EnvironmentObject();
-
         obj.id = objectID;
         obj.displayImage = environmentMap;
         obj.skyboxMaterial = skybox;
         obj.filteredDiffuseMap = filteredDiffuse;
         obj.filteredSpecularMap = filteredSpecular;
-
         SaveAsAsset(obj, "Assets/EnvironmentObject/" + objectID + ".asset");
 
         Debug.Log("Done Saving " + objectID);

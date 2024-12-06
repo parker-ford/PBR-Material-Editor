@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e97b7cdc1f0505b47bc0386c200e9fa1, type: 3}
+  m_Name: Shanghai
+  m_EditorClassIdentifier: 
+  id: Shanghai
+  displayImage: {fileID: 2800000, guid: b587daf7c78e082458400813ce0591ab, type: 3}
+  skyboxMaterial: {fileID: 2100000, guid: b770812c6d9a6b8449a57165b417d03f, type: 2}
+  filteredDiffuseMap: {fileID: 2800000, guid: 1f8f57ffa8435d04f833403c15ac0a15, type: 2}
+  filteredSpecularMap: {fileID: 18700000, guid: a0bc70c468e4d7949b93c89cee2c0565, type: 2}

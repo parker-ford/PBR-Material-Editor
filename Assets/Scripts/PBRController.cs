@@ -101,12 +101,14 @@ public class PBRController : MonoBehaviour
     private bool rotateLight;
     private List<ModelObject> modelObjects;
     private List<TextureObject> textureObjects;
+    private List<EnvironmentObject> environmentObjects;
 
 
     void Start()
     {
         modelObjects = Loader.LoadScriptableObjects<ModelObject>();
         textureObjects = Loader.LoadScriptableObjects<TextureObject>();
+        environmentObjects = Loader.LoadScriptableObjects<EnvironmentObject>();
 
         roughness = defaultRoughness;
         reflectance = defaultReflectance;
@@ -184,6 +186,13 @@ public class PBRController : MonoBehaviour
             SetTextureMaps();
         };
 
+        view.environmentOverlay.SetImages(environmentObjects.Select(obj => obj.displayImage).ToList());
+        view.environmentOverlay.OnOverlaySelection += (index) =>
+        {
+            environmentObject = environmentObjects[index];
+            view.environmentButton.text = "Environment: " + environmentObject.id;
+            SetEnvironment();
+        };
 
         // Set Default UI Values
         view.materialMenu.SetValues(

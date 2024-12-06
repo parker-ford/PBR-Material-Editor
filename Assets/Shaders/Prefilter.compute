@@ -225,7 +225,7 @@ float3 prefilterEnvironmentMapSpecular_compute(Texture2D<float4> environmentMap,
         float3 l = 2.0 * dot(v, h) * h - v; //reflect(-V, H);
         float nDotL = dot(normal, l);
         if(nDotL > 0.0){        
-            float2 samplePos = directionToSphericalTexture(l);
+            float2 samplePos = directionToSphericalTexture(l.xzy);
             float3 sample = ( environmentMap.SampleLevel(samplerState, samplePos, mipLevel).rgb);
             result += sample * nDotL;
             totalWeigth += nDotL;

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e97b7cdc1f0505b47bc0386c200e9fa1, type: 3}
+  m_Name: FouriesburgMountain
+  m_EditorClassIdentifier: 
+  id: FouriesburgMountain
+  displayImage: {fileID: 2800000, guid: 28fd90fa182e5a348843ece5d752d1d6, type: 3}
+  skyboxMaterial: {fileID: 2100000, guid: 1123c72b74dd1f441abeb7ba3d426c56, type: 2}
+  filteredDiffuseMap: {fileID: 2800000, guid: 11bd30c49ae51844eb78f16097b54b06, type: 2}
+  filteredSpecularMap: {fileID: 18700000, guid: 823ec0571ee48bb4db5de4be5a51e9f0, type: 2}
