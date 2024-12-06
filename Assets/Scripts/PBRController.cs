@@ -8,17 +8,17 @@ public class PBRController : MonoBehaviour
 
     public enum NormalDistributionFunction
     {
-        BlinnPhong = 0,
+        GGX = 0,
         Beckman = 1,
-        GGX = 2,
+        BlinnPhong = 2,
         // AnisotropicGTR = 3 // TODO: Properly implement this
     }
 
     public enum GeometryAttenuationFunction
     {
-        Beckman = 0,
+        SchlickGGX = 0,
         GGX = 1,
-        SchlickGGX = 2
+        Beckman = 2,
     }
 
     public enum Diffuse
@@ -237,8 +237,29 @@ public class PBRController : MonoBehaviour
         BindToggle(view.materialMenu.diffuseMapToggle, newValue => useDiffuseMap = newValue);
         BindToggle(view.materialMenu.normalMapToggle, newValue => useNormalMap = newValue);
         BindToggle(view.materialMenu.roughnessMapToggle, newValue => useRoughnessMap = newValue);
-        BindToggle(view.materialMenu.environmentLightingToggle, newValue => { useEnvironmentLighting = newValue; SetEnvironment(); });
-
+        BindToggle(view.materialMenu.environmentLightingToggle, newValue =>
+        {
+            useEnvironmentLighting = newValue;
+            SetEnvironment();
+            if (useEnvironmentLighting)
+            {
+                view.materialMenu.diffuseModelDropdown.SetDropdownChoices(new[] { "Lambert" });
+                view.materialMenu.normalDistributionModelDropdown.SetDropdownChoices(new[] { "GGX" });
+                view.materialMenu.geometryAttenuationModelDropdown.SetDropdownChoices(new[] { "SchlickGGX" });
+                view.materialMenu.diffuseModelDropdown.SetCurrentValue(0);
+                view.materialMenu.normalDistributionModelDropdown.SetCurrentValue(0);
+                view.materialMenu.geometryAttenuationModelDropdown.SetCurrentValue(0);
+            }
+            else
+            {
+                view.materialMenu.diffuseModelDropdown.SetDropdownChoices(Enum.GetNames(typeof(Diffuse)));
+                view.materialMenu.normalDistributionModelDropdown.SetDropdownChoices(Enum.GetNames(typeof(NormalDistributionFunction)));
+                view.materialMenu.geometryAttenuationModelDropdown.SetDropdownChoices(Enum.GetNames(typeof(GeometryAttenuationFunction)));
+                view.materialMenu.diffuseModelDropdown.SetCurrentValue((int)diffuse);
+                view.materialMenu.normalDistributionModelDropdown.SetCurrentValue((int)ndf);
+                view.materialMenu.geometryAttenuationModelDropdown.SetCurrentValue((int)geometry);
+            }
+        });
 
         // Set Default UI Values
         view.materialMenu.SetValues(

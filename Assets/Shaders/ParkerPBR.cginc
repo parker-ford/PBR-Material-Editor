@@ -2,14 +2,14 @@
 
 #include "./ParkerUtils.cginc"
 
-#define NDF_BLINNPHONG 0
+#define NDF_GGX 0
 #define NDF_BECKMAN 1
-#define NDF_GGX 2
+#define NDF_BLINNPHONG 2
 #define NDF_ANISOTROPIC_GTR 3
 
-#define GEO_BECKMAN 0
+#define GEO_GGXSCHLICK 0
 #define GEO_GGX 1
-#define GEO_GGXSCHLICK 2
+#define GEO_BECKMAN 2
 
 #define DIFF_LAMBERT 0
 #define DIFF_HAMMON 1
