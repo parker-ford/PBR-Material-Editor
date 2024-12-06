@@ -39,6 +39,7 @@ struct brdfParameters
     float sheenTint;
     float clearcoat;
     float clearcoatGloss;
+    float metallic;
 };
 
 struct brdfSettings
@@ -49,10 +50,10 @@ struct brdfSettings
     int debug;
 };
 
-float3 SchlickFresnelReflectance(float3 v, float3 n, float reflectance, float3 diffuseColor){
+float3 SchlickFresnelReflectance(float3 v, float3 n, float reflectance, float3 diffuseColor, float metallic){
     //TODO: Figure out how to do metallic
     float3 F0 = (0.16 * (reflectance * reflectance));
-    F0 = lerp(F0, diffuseColor, 0);
+    F0 = lerp(F0, diffuseColor, metallic);
     return F0 + (1 - F0) * pow((1 - (clampedDot(v,n))),5);
 }
 
@@ -194,7 +195,7 @@ brdfResult PBR_BRDF(float3 n, float3 l, float3 v, brdfParameters params, brdfSet
     float alpha = pow(params.roughness, 2);
 
     //Fresnel Term
-    float3 fresnel = SchlickFresnelReflectance(h, v, params.reflectance, params.diffuseColor);
+    float3 fresnel = SchlickFresnelReflectance(h, v, params.reflectance, params.diffuseColor, params.metallic);
 
     //NDF Term
     float3 normalDistribution = 0;
@@ -232,7 +233,7 @@ brdfResult PBR_BRDF(float3 n, float3 l, float3 v, brdfParameters params, brdfSet
     else if(settings.diffuse == DIFF_DISNEY){
         result.diffuse = DisneyDiffuse(n, l, v, alpha, params);
     }
-    result.diffuse *= params.diffuseColor;
+    result.diffuse *= params.diffuseColor * (1.0 - params.metallic);
 
     // Sheen
     // float3 fSheen = SchlickFresnel2(n, v) * params.sheen* lerp(float3(1,1,1), params.diffuseColor, params.sheenTint);
@@ -242,7 +243,7 @@ brdfResult PBR_BRDF(float3 n, float3 l, float3 v, brdfParameters params, brdfSet
     // Clear Coat
     //Clear coat reflectance 0.5 (F0 = 0.04)
     float clearcoatNDF = GgxNDF(n,h,lerp(.1, .001, params.clearcoatGloss));
-    float clearcoatFresnel = SchlickFresnelReflectance(h, l, 0.5, float3(1,1,1)); // Half and light or half and view. White color?
+    float clearcoatFresnel = SchlickFresnelReflectance(h, l, 0.5, float3(1,1,1), 0); // Half and light or half and view. White color? zero for metallic?
     float clearcoatGeometry =  GgxSchlickGeometry(n, v, 0.25) * GgxSchlickGeometry(n, l, 0.25);
     float clearSpecular = 0.25 * params.clearcoat * clearcoatGeometry * clearcoatFresnel * clearcoatNDF;
     result.specular += clearSpecular;

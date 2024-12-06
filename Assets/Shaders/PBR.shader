@@ -92,8 +92,9 @@ Shader "Parker/PBR"
             int _Diffuse;
             int _DebugView;
 
-            float3 specularImageBasedLighting(float reflectance, float roughness, float3 n, float3 v){
+            float3 specularImageBasedLighting(float reflectance, float roughness, float3 diffuseColor, float metallic, float3 n, float3 v){
                 float3 F0 =  0.16 * (reflectance * reflectance);
+                F0 = lerp(F0, diffuseColor, metallic);
                 float ndotv = clamp(dot(n,v), 0.001, 0.999);
                 roughness = clamp(roughness, 0.001, 0.999);
                 float3 r = reflect(-v, n);
@@ -173,6 +174,7 @@ Shader "Parker/PBR"
                 params.sheenTint = _SheenTint;
                 params.clearcoat = _Clearcoat;
                 params.clearcoatGloss = _ClearcoatGloss;
+                params.metallic = _Metallic;
 
                 brdfSettings settings;
                 settings.ndf = _NDF;
@@ -185,11 +187,11 @@ Shader "Parker/PBR"
                 // float3 lightOut = lightIn * (brdf.specular + brdf.diffuse) * ndotl;
                 float3 lightOut = 0;
                 if(_UseEnvironmentLighting){
-                    float3 diffuseIBL = diffuseColor * diffuseImageBasedLighting(n);
+                    float3 diffuseIBL = diffuseColor * diffuseImageBasedLighting(n) * (1.0 - _Metallic);
                     //TODO: Specular Tint?
                     // float3 specularIBL = specularImageBasedLighting(_Reflectance, _Roughness, n, v) * lerp(float3(1,1,1), diffuseColor, 1.0);
-                    float3 specularIBL = specularImageBasedLighting(_Reflectance, _Roughness, n, v);
-                    float3 clearcoatIBL = 0.25 * _Clearcoat * specularImageBasedLighting(0.5, 1.0 - _ClearcoatGloss, n, v);
+                    float3 specularIBL = specularImageBasedLighting(_Reflectance, _Roughness, diffuseColor, _Metallic, n, v);
+                    float3 clearcoatIBL = 0.25 * _Clearcoat * specularImageBasedLighting(0.5, 1.0 - _ClearcoatGloss, float3(1,1,1), 0.0, n, v);
                     lightOut =  diffuseIBL + specularIBL + clearcoatIBL; 
                 }
                 else{
