@@ -80,6 +80,10 @@ float roundToInt(float n){
     return int(n + 0.5);
 }
 
+float sqr(float x){
+    return x * x;
+}
+
 float3 textureToSphericalDirection(float2 t){
     float theta = PI * (1.0 - t.y);
     float phi = 2.0 * PI * (0.5 - t.x);
@@ -92,6 +96,17 @@ float2 directionToSphericalTexture(float3 s){
     float x = 0.5 - phi / (2.0 * PI);
     float y = 1.0 - theta / PI;
     return float2(x,y);
+}
+
+float3x3 getTBNMatrix(float3 normal){
+    float3 someVec = float3(1.0, 0.0, 0.0);
+    float dd = dot(someVec, normal);
+    float3 tangent = float3(0.0, 1.0, 0.0);
+    if(1.0 - abs(dd) > 0.00001){
+        tangent = normalize(cross(someVec, normal));
+    }
+    float3 bitangent = cross(normal, tangent);
+    return float3x3(tangent, bitangent, normal);
 }
 
 // float2 directionToSphericalTexture(float3 dir) {

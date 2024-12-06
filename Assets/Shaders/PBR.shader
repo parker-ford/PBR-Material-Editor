@@ -80,6 +80,7 @@ Shader "Parker/PBR"
             float _Clearcoat;
             float _ClearcoatGloss;
             float _Metallic;
+            float _Anisotropic;
 
             int _UseDisplacementMap;
             int _UseNormalMap;
@@ -154,8 +155,13 @@ Shader "Parker/PBR"
 
 
                 float3 n = normal;
+                float3 x = tangent;
+                float3 y = bitangent;
                 if(_NormalMapSet && _UseNormalMap){
                     n = normalMap(normal, tangent, bitangent, uv, _NormalMap, _NormalStrength);
+                    float3x3 tbn = getTBNMatrix(n);
+                    x = tbn[0];
+                    y = tbn[1];
                 }
                 if(_DebugView == DEBUG_VIEW_NORMAL) return float4(n, 1);            
 
@@ -175,6 +181,7 @@ Shader "Parker/PBR"
                 params.clearcoat = _Clearcoat;
                 params.clearcoatGloss = _ClearcoatGloss;
                 params.metallic = _Metallic;
+                params.anisotropic = _Anisotropic;
 
                 brdfSettings settings;
                 settings.ndf = _NDF;
@@ -195,7 +202,7 @@ Shader "Parker/PBR"
                     lightOut =  diffuseIBL + specularIBL + clearcoatIBL; 
                 }
                 else{
-                    brdfResult brdf = PBR_BRDF(n,l,v, params, settings);
+                    brdfResult brdf = PBR_BRDF(n,l,v,x,y, params, settings);
                     float3 lightIn =  _LightColor.rgb * _LightIntensity;
                     lightOut = lightIn * (brdf.specular + brdf.diffuse) * ndotl;
                 }

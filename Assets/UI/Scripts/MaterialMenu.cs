@@ -16,6 +16,7 @@ public class MaterialMenu : VisualElement
     public MaterialSlider normalMapStrengthSlider;
     public MaterialSlider sheenSlider;
     public MaterialSlider sheenTintSlider;
+    public MaterialSlider anisotropicSlider;
     public MaterialSlider clearcoatSlider;
     public MaterialSlider clearcoatGlossSlider;
     public MaterialSlider metallicSlider;
@@ -105,6 +106,9 @@ public class MaterialMenu : VisualElement
         clearcoatGlossSlider = specularProperties.CreateChild<MaterialSlider>();
         clearcoatGlossSlider.label.text = "Clearcoat Gloss";
 
+        // anisotropicSlider = specularProperties.CreateChild<MaterialSlider>();
+        // anisotropicSlider.label.text = "Anisotropic";
+
         /*
         *   Debug Views
         */
@@ -163,6 +167,14 @@ public class MaterialMenu : VisualElement
         displacementMapStrengthSlider.SetCurrentValue(displacementMapStrength);
         sheenSlider.SetCurrentValue(sheen);
         sheenTintSlider.SetCurrentValue(sheenTint);
+    }
+
+    public void SetAllEnabled(bool state)
+    {
+        foreach (var child in this.Children())
+        {
+            child.SetEnabled(state);
+        }
     }
 
 

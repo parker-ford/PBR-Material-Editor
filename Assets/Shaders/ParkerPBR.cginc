@@ -5,6 +5,7 @@
 #define NDF_BLINNPHONG 0
 #define NDF_BECKMAN 1
 #define NDF_GGX 2
+#define NDF_ANISOTROPIC_GTR 3
 
 #define GEO_BECKMAN 0
 #define GEO_GGX 1
@@ -40,6 +41,7 @@ struct brdfParameters
     float clearcoat;
     float clearcoatGloss;
     float metallic;
+    float anisotropic;
 };
 
 struct brdfSettings
@@ -51,7 +53,6 @@ struct brdfSettings
 };
 
 float3 SchlickFresnelReflectance(float3 v, float3 n, float reflectance, float3 diffuseColor, float metallic){
-    //TODO: Figure out how to do metallic
     float3 F0 = (0.16 * (reflectance * reflectance));
     F0 = lerp(F0, diffuseColor, metallic);
     return F0 + (1 - F0) * pow((1 - (clampedDot(v,n))),5);
@@ -86,6 +87,13 @@ float GgxNDF(float3 n, float3 m, float alpha){
     float ndotm2 = pow(ndotm,2);
     float alpha2 = pow(alpha, 2);
     return (ndotm * alpha2) / pow((PI * (1 + ndotm2 * (alpha2 - 1))),2);
+}
+
+float AnisotropicGTR2(float3 n, float3 h, float3 x, float3 y, float ax, float ay){
+    float ndoth = clampedDot(n,h);
+    float hdotx = clampedDot(h,x);
+    float hdoty = clampedDot(h,y);
+    return rcp(PI * ax * ay * sqr(sqr(hdotx / ax) + sqr(hdoty / ay) + sqr(ndoth)));
 }
 
 
@@ -186,13 +194,14 @@ float3 DisneyDiffuse(float3 n, float3 l, float3 v, float alpha, brdfParameters p
 /*
 *   BRDF
 */
-brdfResult PBR_BRDF(float3 n, float3 l, float3 v, brdfParameters params, brdfSettings settings){
+brdfResult PBR_BRDF(float3 n, float3 l, float3 v, float3 x, float3 y, brdfParameters params, brdfSettings settings){
     brdfResult result;
     result.specular = 0;
     result.diffuse = 0;
 
     float3 h = normalize(l + v);
     float alpha = pow(params.roughness, 2);
+    float alpha2 = sqr(alpha);
 
     //Fresnel Term
     float3 fresnel = SchlickFresnelReflectance(h, v, params.reflectance, params.diffuseColor, params.metallic);
@@ -207,6 +216,12 @@ brdfResult PBR_BRDF(float3 n, float3 l, float3 v, brdfParameters params, brdfSet
     }
     else if(settings.ndf == NDF_GGX){
         normalDistribution = GgxNDF(n,h,alpha);
+    }
+    else if(settings.ndf == NDF_ANISOTROPIC_GTR){
+        float aspectRatio = sqrt(1.0 - params.anisotropic * 0.9);
+        float ax = max(0.0001, alpha2 / aspectRatio);
+        float ay = max(0.0001, alpha2 * aspectRatio);
+        normalDistribution = AnisotropicGTR2(n, h, x, y, ax, ay);
     }
 
     //Gemoetry Term

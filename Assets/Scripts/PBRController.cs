@@ -11,6 +11,7 @@ public class PBRController : MonoBehaviour
         BlinnPhong = 0,
         Beckman = 1,
         GGX = 2,
+        // AnisotropicGTR = 3 // TODO: Properly implement this
     }
 
     public enum GeometryAttenuationFunction
@@ -64,6 +65,7 @@ public class PBRController : MonoBehaviour
     [Range(0, 1)] public float defaultClearcoat;
     [Range(0, 1)] public float defaultClearcoatGloss;
     [Range(0, 1)] public float defaultMetallic;
+    [Range(0, 1)] public float defaultAnisotropic;
     public Color defaultDiffuseColor;
     public float defaultDisplacementStrength;
     public float defaultNormalMapStrength;
@@ -89,6 +91,7 @@ public class PBRController : MonoBehaviour
     private float clearcoat;
     private float clearcoatGloss;
     private float metallic;
+    private float anisotropic;
     private Color diffuseColor;
     private NormalDistributionFunction ndf;
     private GeometryAttenuationFunction geometry;
@@ -123,6 +126,7 @@ public class PBRController : MonoBehaviour
         clearcoat = defaultClearcoat;
         clearcoatGloss = defaultClearcoatGloss;
         metallic = defaultMetallic;
+        anisotropic = defaultAnisotropic;
         modelObject = defaultModelObject;
         textureObject = defaultTextureObject;
         environmentObject = defaultEnvironmentObject;
@@ -200,6 +204,42 @@ public class PBRController : MonoBehaviour
             SetEnvironment();
         };
 
+        // Bind Sliders
+        BindSlider(view.materialMenu.displacementMapStrengthSlider, newValue => displacementMapStrength = newValue);
+        BindSlider(view.materialMenu.normalMapStrengthSlider, newValue => normalMapStrength = newValue);
+        BindSlider(view.materialMenu.reflectanceSlider, newValue => reflectance = newValue);
+        BindSlider(view.materialMenu.roughnessSlider, newValue => roughness = newValue);
+        BindSlider(view.materialMenu.subsurfaceSlider, newValue => subsurface = newValue);
+        BindSlider(view.materialMenu.sheenSlider, newValue => sheen = newValue);
+        BindSlider(view.materialMenu.sheenTintSlider, newValue => sheenTint = newValue);
+        BindSlider(view.materialMenu.clearcoatSlider, newValue => clearcoat = newValue);
+        BindSlider(view.materialMenu.clearcoatGlossSlider, newValue => clearcoatGloss = newValue);
+        BindSlider(view.materialMenu.metallicSlider, newValue => metallic = newValue);
+        // BindSlider(view.materialMenu.anisotropicSlider, newValue => anisotropic = newValue);
+
+        // Bind Color Pickers
+        BindColorPicker(view.materialMenu.diffuseColorPicker, newColor => diffuseColor = newColor);
+
+        // Bind Dropdown
+        BindDropdown(view.materialMenu.normalDistributionModelDropdown, newValue => ndf = (NormalDistributionFunction)newValue);
+        BindDropdown(view.materialMenu.geometryAttenuationModelDropdown, newValue => geometry = (GeometryAttenuationFunction)newValue);
+        BindDropdown(view.materialMenu.debugViewTypeDropdown, newValue => debug = (DebugView)newValue);
+        BindDropdown(view.materialMenu.diffuseModelDropdown, newValue =>
+        {
+            diffuse = (Diffuse)newValue;
+            view.materialMenu.sheenSlider.SetEnabled(diffuse == Diffuse.Disney);
+            view.materialMenu.sheenTintSlider.SetEnabled(diffuse == Diffuse.Disney);
+            view.materialMenu.subsurfaceSlider.SetEnabled(diffuse == Diffuse.Disney);
+        });
+
+        // Bind Toggle
+        BindToggle(view.materialMenu.displacementMapToggle, newValue => useDisplacementMap = newValue);
+        BindToggle(view.materialMenu.diffuseMapToggle, newValue => useDiffuseMap = newValue);
+        BindToggle(view.materialMenu.normalMapToggle, newValue => useNormalMap = newValue);
+        BindToggle(view.materialMenu.roughnessMapToggle, newValue => useRoughnessMap = newValue);
+        BindToggle(view.materialMenu.environmentLightingToggle, newValue => { useEnvironmentLighting = newValue; SetEnvironment(); });
+
+
         // Set Default UI Values
         view.materialMenu.SetValues(
             reflectance,
@@ -219,35 +259,6 @@ public class PBRController : MonoBehaviour
             sheen,
             sheenTint
         );
-
-        // Bind Sliders
-        BindSlider(view.materialMenu.displacementMapStrengthSlider, newValue => displacementMapStrength = newValue);
-        BindSlider(view.materialMenu.normalMapStrengthSlider, newValue => normalMapStrength = newValue);
-        BindSlider(view.materialMenu.reflectanceSlider, newValue => reflectance = newValue);
-        BindSlider(view.materialMenu.roughnessSlider, newValue => roughness = newValue);
-        BindSlider(view.materialMenu.subsurfaceSlider, newValue => subsurface = newValue);
-        BindSlider(view.materialMenu.sheenSlider, newValue => sheen = newValue);
-        BindSlider(view.materialMenu.sheenTintSlider, newValue => sheenTint = newValue);
-        BindSlider(view.materialMenu.clearcoatSlider, newValue => clearcoat = newValue);
-        BindSlider(view.materialMenu.clearcoatGlossSlider, newValue => clearcoatGloss = newValue);
-        BindSlider(view.materialMenu.metallicSlider, newValue => metallic = newValue);
-
-        // Bind Color Pickers
-        BindColorPicker(view.materialMenu.diffuseColorPicker, newColor => diffuseColor = newColor);
-
-        // Bind Dropdown
-        BindDropdown(view.materialMenu.normalDistributionModelDropdown, newValue => ndf = (NormalDistributionFunction)newValue);
-        BindDropdown(view.materialMenu.geometryAttenuationModelDropdown, newValue => geometry = (GeometryAttenuationFunction)newValue);
-        BindDropdown(view.materialMenu.diffuseModelDropdown, newValue => diffuse = (Diffuse)newValue);
-        BindDropdown(view.materialMenu.debugViewTypeDropdown, newValue => debug = (DebugView)newValue);
-
-        // Bind Toggle
-        BindToggle(view.materialMenu.displacementMapToggle, newValue => useDisplacementMap = newValue);
-        BindToggle(view.materialMenu.diffuseMapToggle, newValue => useDiffuseMap = newValue);
-        BindToggle(view.materialMenu.normalMapToggle, newValue => useNormalMap = newValue);
-        BindToggle(view.materialMenu.roughnessMapToggle, newValue => useRoughnessMap = newValue);
-        BindToggle(view.materialMenu.environmentLightingToggle, newValue => { useEnvironmentLighting = newValue; SetEnvironment(); });
-
     }
 
     void BindToggle(MaterialToggle toggle, Action<bool> action)
@@ -370,6 +381,7 @@ public class PBRController : MonoBehaviour
         material.SetFloat("_Clearcoat", clearcoat);
         material.SetFloat("_ClearcoatGloss", clearcoatGloss);
         material.SetFloat("_Metallic", metallic);
+        material.SetFloat("_Anisotropic", anisotropic);
 
         material.SetInt("_NDF", (int)ndf);
         material.SetInt("_Geometry", (int)geometry);
