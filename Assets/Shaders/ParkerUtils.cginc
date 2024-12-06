@@ -2,7 +2,7 @@
 
 #include "UnityCG.cginc"
 
-#define PI 3.141592653589793238462
+#define PI 3.1415926535897932384626433832795
 
 //TODO: Differentiate between clamped dot and epsilon dot
 float clampedDot(float3 a, float3 b) {
@@ -76,16 +76,28 @@ float pixelToTexture(float p, float size){
     return (p + 0.5) / size;
 }
 
+float roundToInt(float n){
+    return int(n + 0.5);
+}
+
 float3 textureToSphericalDirection(float2 t){
     float theta = PI * (1.0 - t.y);
     float phi = 2.0 * PI * (0.5 - t.x);
     return float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
 }
 
-float2 directionToSphericalTexture(float3 s){
-    float phi = atan2(s.z, s.x);
-    float theta = acos(s.y);
-    float x = 0.5 - phi / (2.0 * PI);
-    float y = 1.0 - theta / PI;
-    return float2(x,y);
-}
+// float2 directionToSphericalTexture(float3 s){
+//     float phi = atan2(s.z, s.x);
+//     float theta = acos(s.y);
+//     float x = 0.5 - phi / (2.0 * PI);
+//     float y = 1.0 - theta / PI;
+//     return float2(x,y);
+// }
+
+float2 directionToSphericalTexture(float3 dir) {
+    float phi = atan2(dir.y, dir.x);
+    float theta = acos(dir.z);
+    float s = 0.5 - phi / (2.0 * PI);
+    float t = 1.0 - theta / PI;
+    return float2(s, t);
+  }

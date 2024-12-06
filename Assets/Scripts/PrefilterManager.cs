@@ -5,110 +5,184 @@ using UnityEngine;
 
 public class PrefilterManager : MonoBehaviour
 {
+    [SerializeField] private string objectID;
     [SerializeField] private ComputeShader computeShader;
     [SerializeField] private Texture2D environmentMap;
-    [SerializeField] private Texture2DArray debugTex;
     [SerializeField] private float mipMapLevel;
     [SerializeField] private int numSamples;
-    [SerializeField] private float roughness;
     [SerializeField] private int numSpecularFilterLevels;
-    // private RenderTexture filteredMap;
 
     private int KERNEL_PREFILTER_SPECULAR;
     private int KERNEL_INTEGRATE_BRDF;
     private int KERNEL_GREYSCALE;
+    private int KERNEL_AVERAGE_HORIZONTAL;
+    private int KERNEL_AVERAGE_VERTICAL;
+    private int KERNEL_DIVIDE;
+    private int KERNEL_CDF_MARGINAL_INVERSE;
+    private int KERNEL_CDF_CONDITIONAL_INVERSE;
+    private int KERNEL_PREFILTER_DIFFUSE;
 
     void Start()
     {
         KERNEL_PREFILTER_SPECULAR = computeShader.FindKernel("CS_PrefilterSpecular");
         KERNEL_INTEGRATE_BRDF = computeShader.FindKernel("CS_IntegrateBRDF");
         KERNEL_GREYSCALE = computeShader.FindKernel("CS_Greyscale");
+        KERNEL_AVERAGE_HORIZONTAL = computeShader.FindKernel("CS_AverageHorizontal");
+        KERNEL_AVERAGE_VERTICAL = computeShader.FindKernel("CS_AverageVertical");
+        KERNEL_DIVIDE = computeShader.FindKernel("CS_Divide");
+        KERNEL_CDF_MARGINAL_INVERSE = computeShader.FindKernel("CS_CDFMarginalInverse");
+        KERNEL_CDF_CONDITIONAL_INVERSE = computeShader.FindKernel("CS_CDFConditionalInverse");
+        KERNEL_PREFILTER_DIFFUSE = computeShader.FindKernel("CS_PrefilterEnvironment");
 
-        // int level = 16;
+        Material skybox = new Material(Shader.Find("Skybox/Panoramic"));
+        skybox.SetTexture("_MainTex", environmentMap);
 
-        // filteredMap = new RenderTexture(environmentMap.width / level, environmentMap.height / level, 0)
-        // {
-        //     enableRandomWrite = true,
-        //     graphicsFormat = environmentMap.graphicsFormat,
-        //     useMipMap = environmentMap.mipmapCount > 1,
-        //     autoGenerateMips = true,
-        // };
-        // filteredMap.Create();
+        Texture2D filteredDiffuse = GeneratePrefilteredDiffuse();
+        Texture2DArray filteredSpecular = GeneratePrefilteredSpecular();
 
-        // Camera.main.GetComponent<ViewRenderTexture>().renderTexture = filteredMap;
+        SaveAsAsset(skybox, GetPathWithPostfix(environmentMap, "_skybox.asset"));
+        SaveAsAsset(filteredDiffuse, GetPathWithPostfix(environmentMap, "_filteredDiffuse.asset"));
+        SaveAsAsset(filteredSpecular, GetPathWithPostfix(environmentMap, "_filteredSpecular.asset"));
 
-        // computeShader.SetTexture(0, "_EnvironmentMap", environmentMap);
-        // computeShader.SetTexture(0, "_FilteredMap", filteredMap);
-        // computeShader.SetFloat("_Width", environmentMap.width / level);
-        // computeShader.SetFloat("_Height", environmentMap.height / level);
-        // computeShader.SetFloat("_MipMapLevel", mipMapLevel);
-        // computeShader.SetInt("_Samples", numSamples);
-        // computeShader.SetFloat("_Roughness", roughness);
+        EnvironmentObject obj = new EnvironmentObject();
 
-        // computeShader.Dispatch(0, environmentMap.width / level / 8, environmentMap.height / level / 8, 1);
+        obj.id = objectID;
+        obj.displayImage = environmentMap;
+        obj.skyboxMaterial = skybox;
+        obj.filteredDiffuseMap = filteredDiffuse;
+        obj.filteredSpecularMap = filteredSpecular;
 
-        // // Get the path of the original Texture2D asset
-        // string originalTexturePath = AssetDatabase.GetAssetPath(environmentMap);
-        // string directoryPath = System.IO.Path.GetDirectoryName(originalTexturePath);
+        SaveAsAsset(obj, "Assets/EnvironmentObject/" + objectID + ".asset");
 
-        // // Extract the base file name (without extension) from the original texture path
-        // string originalFileName = System.IO.Path.GetFileNameWithoutExtension(originalTexturePath);
-
-        // // Generate the EXR file path by appending "_filtered" to the original file name
-        // string exrFileName = originalFileName + "_filtered.exr";
-        // string exrFilePath = System.IO.Path.Combine(directoryPath, exrFileName);
-
-        // SaveRenderTextureAsEXR(filteredMap, exrFilePath);
-
-        // GeneratePrefilteredSpecular();
-        // IntegrateBRDF();
-
-        GeneratePrefilteredEnvironment();
+        Debug.Log("Done Saving " + objectID);
 
     }
-
-    void GeneratePrefilteredEnvironment()
+    Texture2D GeneratePrefilteredDiffuse()
     {
         int width = environmentMap.width;
         int height = environmentMap.height;
 
-
-        RenderTexture filteredMap = new RenderTexture(
-            width,
-            height,
-            0,
-            RenderTextureFormat.ARGBFloat,
-            RenderTextureReadWrite.Linear
-        );
-        filteredMap.filterMode = FilterMode.Bilinear;
-        filteredMap.wrapMode = TextureWrapMode.Clamp;
-        filteredMap.enableRandomWrite = true;
-        filteredMap.useMipMap = false;
-        filteredMap.autoGenerateMips = false;
-        filteredMap.anisoLevel = 16;
-        filteredMap.Create();
-
-        Camera.main.GetComponent<ViewRenderTexture>().renderTexture = filteredMap;
-
         computeShader.SetFloat("_Width", width);
         computeShader.SetFloat("_Height", height);
         computeShader.SetFloat("_MipMapLevel", mipMapLevel);
-
+        computeShader.SetInt("_Samples", numSamples);
 
         //GreyScale Image
-        computeShader.SetTexture(KERNEL_GREYSCALE, "_Target", filteredMap);
+        RenderTexture greyScale = CreateRenderTexture(width, height);
+        computeShader.SetTexture(KERNEL_GREYSCALE, "_Target", greyScale);
         computeShader.SetTexture(KERNEL_GREYSCALE, "_EnvironmentMap", environmentMap);
         computeShader.Dispatch(KERNEL_GREYSCALE, width / 8, height / 8, 1);
 
+        //Average Horizontal
+        RenderTexture horizontalAverage = CreateRenderTexture(1, height);
+        computeShader.SetTexture(KERNEL_AVERAGE_HORIZONTAL, "_Target", horizontalAverage);
+        computeShader.SetTexture(KERNEL_AVERAGE_HORIZONTAL, "_EnvironmentMap", greyScale);
+        computeShader.Dispatch(KERNEL_AVERAGE_HORIZONTAL, 1, height, 1);
 
+        //Average Vertical
+        RenderTexture totalAverage = CreateRenderTexture(1, 1);
+        computeShader.SetTexture(KERNEL_AVERAGE_VERTICAL, "_Target", totalAverage);
+        computeShader.SetTexture(KERNEL_AVERAGE_VERTICAL, "_EnvironmentMap", horizontalAverage);
+        computeShader.Dispatch(KERNEL_AVERAGE_VERTICAL, 1, 1, 1);
+
+        //Divide greyscale by average;
+        RenderTexture environmentPDF = CreateRenderTexture(width, height);
+        computeShader.SetTexture(KERNEL_DIVIDE, "_Target", environmentPDF);
+        computeShader.SetTexture(KERNEL_DIVIDE, "_A", greyScale);
+        computeShader.SetInt("_A_Width", greyScale.width);
+        computeShader.SetInt("_A_Height", greyScale.height);
+        computeShader.SetTexture(KERNEL_DIVIDE, "_B", totalAverage);
+        computeShader.SetInt("_B_Width", totalAverage.width);
+        computeShader.SetInt("_B_Height", totalAverage.height);
+        computeShader.Dispatch(KERNEL_DIVIDE, width / 8, height / 8, 1);
+
+        Camera.main.GetComponent<ViewRenderTexture>().renderTexture = environmentPDF;
+
+        //Average PDF Horizontal
+        RenderTexture horizontalAveragePDF = CreateRenderTexture(1, height);
+        computeShader.SetTexture(KERNEL_DIVIDE, "_Target", horizontalAveragePDF);
+        computeShader.SetTexture(KERNEL_DIVIDE, "_A", horizontalAverage);
+        computeShader.SetInt("_A_Width", horizontalAverage.width);
+        computeShader.SetInt("_A_Height", horizontalAverage.height);
+        computeShader.SetTexture(KERNEL_DIVIDE, "_B", totalAverage);
+        computeShader.SetInt("_B_Width", totalAverage.width);
+        computeShader.SetInt("_B_Height", totalAverage.height);
+        computeShader.Dispatch(KERNEL_DIVIDE, 1, height / 8, 1);
+
+        //Conditional PDF
+        RenderTexture conditionalPDF = CreateRenderTexture(width, height, FilterMode.Point);
+        computeShader.SetTexture(KERNEL_DIVIDE, "_Target", conditionalPDF);
+        computeShader.SetTexture(KERNEL_DIVIDE, "_A", greyScale);
+        computeShader.SetInt("_A_Width", greyScale.width);
+        computeShader.SetInt("_A_Height", greyScale.height);
+        computeShader.SetTexture(KERNEL_DIVIDE, "_B", horizontalAverage);
+        computeShader.SetInt("_B_Width", horizontalAverage.width);
+        computeShader.SetInt("_B_Height", horizontalAverage.height);
+        computeShader.Dispatch(KERNEL_DIVIDE, width / 8, height / 8, 1);
+
+        //Find CDF Marginal Inverse
+        RenderTexture marginalInverse = CreateRenderTexture(1, height, FilterMode.Point);
+        computeShader.SetTexture(KERNEL_CDF_MARGINAL_INVERSE, "_Target", marginalInverse);
+        computeShader.SetTexture(KERNEL_CDF_MARGINAL_INVERSE, "_EnvironmentMap", horizontalAveragePDF);
+        computeShader.Dispatch(KERNEL_CDF_MARGINAL_INVERSE, 1, height, 1);
+
+        //Find CDF Conditional Inverse
+        RenderTexture conditionalInverse = CreateRenderTexture(width, height);
+        computeShader.SetTexture(KERNEL_CDF_CONDITIONAL_INVERSE, "_Target", conditionalInverse);
+        computeShader.SetTexture(KERNEL_CDF_CONDITIONAL_INVERSE, "_EnvironmentMap", conditionalPDF);
+        computeShader.Dispatch(KERNEL_CDF_CONDITIONAL_INVERSE, width / 8, height / 8, 1);
+
+        //Prefilter diffuse map
+        RenderTexture prefilteredDiffuse = CreateRenderTexture(width, height);
+        computeShader.SetTexture(KERNEL_PREFILTER_DIFFUSE, "_Target", prefilteredDiffuse);
+        computeShader.SetTexture(KERNEL_PREFILTER_DIFFUSE, "_EnvironmentMap", environmentMap);
+        computeShader.SetTexture(KERNEL_PREFILTER_DIFFUSE, "_CDFInvX", conditionalInverse);
+        computeShader.SetTexture(KERNEL_PREFILTER_DIFFUSE, "_CDFInvY", marginalInverse);
+        computeShader.SetTexture(KERNEL_PREFILTER_DIFFUSE, "_JointPDF", environmentPDF);
+
+        computeShader.Dispatch(KERNEL_PREFILTER_DIFFUSE, width / 8, height / 8, 1);
+
+        Texture2D result = ConvertRenderTextureToTexture2D(prefilteredDiffuse);
+
+        // Clean up
+        greyScale.Release();
+        Destroy(greyScale);
+
+        horizontalAverage.Release();
+        Destroy(horizontalAverage);
+
+        totalAverage.Release();
+        Destroy(totalAverage);
+
+        environmentPDF.Release();
+        Destroy(environmentPDF);
+
+        horizontalAveragePDF.Release();
+        Destroy(horizontalAverage);
+
+        conditionalPDF.Release();
+        Destroy(conditionalPDF);
+
+        marginalInverse.Release();
+        Destroy(marginalInverse);
+
+        conditionalInverse.Release();
+        Destroy(conditionalInverse);
+
+        prefilteredDiffuse.Release();
+        Destroy(prefilteredDiffuse);
+
+        return result;
     }
 
-    void GeneratePrefilteredSpecular()
+    Texture2DArray GeneratePrefilteredSpecular()
     {
 
+        int width = environmentMap.width / 2;
+        int height = environmentMap.height / 2;
         RenderTexture filteredSpecularMap = new RenderTexture(
-            environmentMap.width,
-            environmentMap.height,
+            width,
+            height,
             0,
             RenderTextureFormat.ARGBFloat,
             RenderTextureReadWrite.Linear
@@ -126,21 +200,29 @@ public class PrefilterManager : MonoBehaviour
         computeShader.SetTexture(KERNEL_PREFILTER_SPECULAR, "_EnvironmentMap", environmentMap);
         computeShader.SetTexture(KERNEL_PREFILTER_SPECULAR, "_FilteredSpecularMap", filteredSpecularMap);
         computeShader.SetInt("_NumSpecularFilterLevels", numSpecularFilterLevels);
-        computeShader.SetFloat("_Width", environmentMap.width);
-        computeShader.SetFloat("_Height", environmentMap.height);
+        computeShader.SetFloat("_Width", width);
+        computeShader.SetFloat("_Height", height);
         computeShader.SetInt("_Samples", numSamples);
         computeShader.SetFloat("_MipMapLevel", mipMapLevel);
 
-        computeShader.Dispatch(KERNEL_PREFILTER_SPECULAR, environmentMap.width / 8, environmentMap.height / 8, numSpecularFilterLevels);
 
-        Debug.Log("Done");
+        for (int i = 0; i < numSpecularFilterLevels; i++)
+        {
+            float roughness = (float)i * (1.0f / (float)(numSpecularFilterLevels - 1.0));
+            computeShader.SetFloat("_Roughness", roughness);
+            Debug.Log(roughness);
+            computeShader.SetInt("_CurrentFilterLevel", i);
+            computeShader.Dispatch(KERNEL_PREFILTER_SPECULAR, width / 8, height / 8, 1);
+        }
 
-        Texture2DArray filteredSpecularArray = ConvertRenderTextureToTexture2DArray(filteredSpecularMap);
+        // computeShader.Dispatch(KERNEL_PREFILTER_SPECULAR, width / 8, height / 8, numSpecularFilterLevels);
 
-        SaveAsAsset(filteredSpecularArray, GetPathWithPostfix(environmentMap, "_filteredSpecular.asset"));
+        Texture2DArray result = ConvertRenderTextureToTexture2DArray(filteredSpecularMap);
 
         filteredSpecularMap.Release();
         Destroy(filteredSpecularMap);
+
+        return result;
     }
 
     void IntegrateBRDF()
@@ -173,6 +255,25 @@ public class PrefilterManager : MonoBehaviour
         integratedBRDF.Release();
         Destroy(integratedBRDF);
 
+    }
+
+    RenderTexture CreateRenderTexture(int width, int height, FilterMode filterMode = FilterMode.Bilinear)
+    {
+        RenderTexture rt = new RenderTexture(
+                    width,
+                    height,
+                    0,
+                    RenderTextureFormat.ARGBFloat,
+                    RenderTextureReadWrite.Linear
+                );
+        rt.filterMode = filterMode;
+        rt.wrapMode = TextureWrapMode.Clamp;
+        rt.enableRandomWrite = true;
+        rt.useMipMap = false;
+        rt.autoGenerateMips = false;
+        rt.anisoLevel = 16;
+        rt.Create();
+        return rt;
     }
 
     Texture2DArray ConvertRenderTextureToTexture2DArray(RenderTexture rt)
@@ -270,7 +371,6 @@ public class PrefilterManager : MonoBehaviour
         Debug.Log("Saved EXR file to " + filePath);
     }
 
-    // Save Texture2DArray as an asset
     void SaveAsAsset(Object asset, string assetPath)
     {
 #if UNITY_EDITOR

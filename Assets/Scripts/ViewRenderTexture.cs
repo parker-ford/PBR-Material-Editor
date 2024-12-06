@@ -8,6 +8,7 @@ public class ViewRenderTexture : MonoBehaviour
     public RenderTexture renderTexture;
 
     private Material material;
+    public bool viewLinear;
 
     void Start()
     {
@@ -18,7 +19,14 @@ public class ViewRenderTexture : MonoBehaviour
     {
         if (renderTexture != null)
         {
-            Graphics.Blit(renderTexture, destination, material);
+            if (viewLinear)
+            {
+                Graphics.Blit(renderTexture, destination, material);
+            }
+            else
+            {
+                Graphics.Blit(renderTexture, destination);
+            }
         }
         else
         {

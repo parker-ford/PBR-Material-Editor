@@ -322,9 +322,9 @@ public class PBRController : MonoBehaviour
 
     void SetEnvironment()
     {
-        if (environmentObject.environmentMap != null)
+        if (environmentObject.filteredDiffuseMap != null)
         {
-            material.SetTexture("_EnvironmentMap", environmentObject.environmentMap);
+            material.SetTexture("_EnvironmentMap", environmentObject.filteredDiffuseMap);
             material.SetInt("_EnvironmentMapSet", 1);
         }
         else
@@ -344,7 +344,7 @@ public class PBRController : MonoBehaviour
         }
 
         material.SetTexture("_IntegratedBRDF", integratedBRDF);
-        material.SetTexture("_FilteredSpecularMap", environmentObject.filteredSpecularMaap);
+        material.SetTexture("_FilteredSpecularMap", environmentObject.filteredSpecularMap);
         material.SetInt("_SpecularMipLevels", 6); //Hardcoded for now
     }
 

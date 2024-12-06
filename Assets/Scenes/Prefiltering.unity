@@ -228,6 +228,7 @@ MonoBehaviour:
   textureView: {fileID: 4800000, guid: 75aa6effcf9d1ca4d9f99526dd6385d1, type: 3}
   tex: {fileID: 2800000, guid: 6e5aca1d76d41b04698fbf2c9f3bd782, type: 3}
   renderTexture: {fileID: 0}
+  viewLinear: 1
 --- !u!114 &58558331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -409,12 +410,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 698cde802f7bd7c4ba1b126bd3b7ca0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: Blaubeuren
   computeShader: {fileID: 7200000, guid: 040ef6bcf2cef2242a37c551b22b6d41, type: 3}
   environmentMap: {fileID: 2800000, guid: fd1d5183266929543ae894ae79d9199c, type: 3}
-  debugTex: {fileID: 2800000, guid: 8b34f420d733d42469d3e67a20a8aa43, type: 3}
-  mipMapLevel: 0
-  numSamples: 8192
-  roughness: 0.33
+  mipMapLevel: 5
+  numSamples: 32768
   numSpecularFilterLevels: 6
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

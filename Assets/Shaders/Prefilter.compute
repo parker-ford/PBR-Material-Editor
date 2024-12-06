@@ -1,16 +1,38 @@
 #pragma kernel CS_PrefilterSpecular
 #pragma kernel CS_IntegrateBRDF
 #pragma kernel CS_Greyscale
+#pragma kernel CS_AverageHorizontal
+#pragma kernel CS_AverageVertical
+#pragma kernel CS_Divide
+#pragma kernel CS_CDFMarginalInverse
+#pragma kernel CS_CDFConditionalInverse
+#pragma kernel CS_PrefilterEnvironment
 
 #include "UnityCG.cginc"
 #include "./ParkerUtils.cginc"
 #include "./ParkerPBR.cginc"
+
+RWTexture2D<float4> _A;
+int _A_Width, _A_Height;
+
+RWTexture2D<float4> _B;
+int _B_Width, _B_Height;
 
 RWTexture2D<float4> _Target;
 
 Texture2D<float4> _EnvironmentMap;
 SamplerState sampler_EnvironmentMap;
 
+Texture2D<float4> _CDFInvY;
+SamplerState sampler_CDFInvY;
+
+Texture2D<float4> _CDFInvX;
+SamplerState sampler_CDFInvX;
+
+Texture2D<float4> _JointPDF;
+SamplerState sampler_JointPDF;
+
+//TODO: Replace these with _Target
 RWTexture2D<float4> _FilteredMap;
 RWTexture2D<float4> _IntegratedBRDF;
 RWTexture2DArray<float4> _FilteredSpecularMap;
@@ -22,6 +44,34 @@ int _Samples;
 float _MipMapLevel;
 int _CurrentFilterLevel;
 float _NumSpecularFilterLevels;
+int _Debug;
+
+// from http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
+// Hacker's Delight, Henry S. Warren, 2001
+float radicalInverse(uint bits) {
+    bits = (bits << 16u) | (bits >> 16u);
+    bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
+    bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
+    bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
+    bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
+    return float(bits) * 2.3283064365386963e-10; // / 0x100000000
+}
+
+float2 hammersley(uint n, uint N) {
+    return float2(float(n) / float(N), radicalInverse(n));
+}
+  
+float halton(uint base, uint index) {
+    float result = 0.0;
+    float digitWeight = 1.0;
+    while (index > 0u) {
+        digitWeight = digitWeight / float(base);
+        uint nominator = index % base; // compute the remainder with the modulo operation
+        result += float(nominator) * digitWeight;
+        index = index / base; 
+    }
+    return result;
+}
 
 float3 random_pcg3d(uint3 v) {
     v = v * 1664525u + 1013904223u;
@@ -35,6 +85,10 @@ float3 random_pcg3d(uint3 v) {
     v.z += v.x * v.y;
 
     return float3(v) * (1.0 / float(0xffffffffu));
+}
+
+float circle(float2 pos, float2 center, float radius) {
+    return length(pos - center) < radius ? 1.0 : 0.0;
 }
 
 float3x3 getTBNMatrix(float3 normal){
@@ -57,61 +111,6 @@ float G1_GGX_Schlick(float NoV, float roughness) {
   float G_Smith(float NoV, float NoL, float roughness) {
     return G1_GGX_Schlick(NoL, roughness) * G1_GGX_Schlick(NoV, roughness);
   }
-
-float3 prefilterEnvironmentMapDiffuse_compute(Texture2D<float4> environmentMap, SamplerState samplerState, uint2 id, float2 size){
-    float2 uv = float2(pixelToTexture(id.x, size.x), pixelToTexture(id.y, size.y));
-
-    float3 normal = textureToSphericalDirection(uv);
-    float3x3 tbn = getTBNMatrix(normal);
-    float3 result = 0;
-
-    uint N = uint(_Samples);
-    for(uint n = 0u; n < N; n++){
-        float3 random = random_pcg3d(uint3(id, n));
-        float phi = 2.0 * PI * random.x;
-        float theta = asin(sqrt(random.y)); // Lambertian Diffuse
-        float3 localPos = float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
-        float3 worldPos = mul(localPos, tbn);
-        float2 samplePos = directionToSphericalTexture(worldPos);
-        float3 sample = gammaToLinear(environmentMap.SampleLevel(samplerState, samplePos, _MipMapLevel).rgb);
-        result += sample;
-    }
-    result = result / float(N);
-    return result;
-}
-
-float3 prefilterEnvironmentMapSpecular_compute(Texture2D<float4> environmentMap, SamplerState samplerState, uint2 id, float2 size, float roughness, float mipLevel){
-    float2 uv = float2(pixelToTexture(id.x, size.x), pixelToTexture(id.y, size.y));
-
-    float3 normal = textureToSphericalDirection(uv);
-    float3x3 tbn = getTBNMatrix(normal);
-
-    float3 v = normal;
-
-    float3 result = 0.0;
-    float totalWeigth = 0.0;
-
-    uint N = uint(_Samples);
-    for(uint n = 0u; n < N; n++){
-        float3 random = random_pcg3d(uint3(id, n));
-        float phi = 2.0 * PI * random.x;
-        float u = random.y;
-        float alpha = roughness * roughness;
-        float theta = acos(sqrt((1.0 - u) / (1.0 + (alpha * alpha - 1.0) * u))); // GGX Normal Distribution
-        float3 localPos = float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
-        float3 h = mul(localPos, tbn);
-        float3 l = 2.0 * dot(v, h) * h - v; //reflect(-V, H);
-        float nDotL = dot(normal, l);
-        if(nDotL > 0.0){        
-            float2 samplePos = directionToSphericalTexture(l);
-            float3 sample = gammaToLinear(environmentMap.SampleLevel(samplerState, samplePos, mipLevel).rgb);
-            result += sample * nDotL;
-            totalWeigth += nDotL;
-        }
-    }
-    result = result / totalWeigth;
-    return result;
-}
 
 float2 integrateBRDF(uint2 id, float roughness, float nDotV){
     
@@ -149,7 +148,91 @@ float2 integrateBRDF(uint2 id, float roughness, float nDotV){
 }
 
 float rgbToGreyscale(float3 col){
-    return 0.5;
+    return dot(float3(0.2126, 0.7152, 0.0722), col);
+}
+
+float3 prefilterEnvironmentMapDiffuse_compute(Texture2D<float4> environmentMap, SamplerState samplerState, uint2 id, float2 size){
+    float2 uv = float2(pixelToTexture(id.x, size.x), pixelToTexture(id.y, size.y));
+    float3 normal = textureToSphericalDirection(uv);
+    float3 result = 0;
+    uint N = uint(_Samples);
+    for(uint n = 1u; n <= N; n++){
+
+        // Samples favor stronger light sources
+        // float3 random = random_pcg3d(uint3(id, n));
+        // float2 random = hammersley(n, N);
+        float2 random = float2(halton(2u, n), halton(3u, n));
+        float sampleY = _CDFInvY.SampleLevel(sampler_CDFInvY, float2(0.5, random.y), 0.0).r;
+        float sampleX = _CDFInvX.SampleLevel(sampler_CDFInvX, float2(random.x, sampleY), 0.0).r;
+        float2 sampleLocation = float2(sampleX, sampleY);
+
+        if(_Debug){
+            result.r += circle(uv, sampleLocation, 0.003);
+        }
+        else {
+
+            // Importance sample the environment map;
+            float3 radiance = environmentMap.SampleLevel(samplerState, sampleLocation, 0.0).rgb;
+            float pdf = _JointPDF.SampleLevel(sampler_JointPDF, sampleLocation, 0.0).r;
+
+            // Light Direction
+            float3 posWorld = textureToSphericalDirection(sampleLocation);
+
+            // nDotL
+            float cosTheta = dot(normal, posWorld);
+
+            // Only account for frontside light and non-zero probability
+            if(cosTheta > 0.0 && pdf > 0.0){
+                float theta = PI * (1.0 - sampleLocation.y);
+                result += 2.0 * PI * radiance * cosTheta * sin(theta) / pdf;
+            }
+        }
+    }
+
+    if(_Debug) {
+        float3 background = min(0.2, environmentMap.SampleLevel(samplerState, uv, 0.0).rgb);
+        result = lerp(background, result, result.r);
+    }
+    else {
+        result = result / float(N);
+    }
+
+    return result;
+}
+
+float3 prefilterEnvironmentMapSpecular_compute(Texture2D<float4> environmentMap, SamplerState samplerState, uint2 id, float2 size, float roughness, float mipLevel){
+    float2 uv = float2(pixelToTexture(id.x, size.x), pixelToTexture(id.y, size.y));
+
+    float3 normal = textureToSphericalDirection(uv);
+    float3x3 tbn = getTBNMatrix(normal);
+
+    float3 v = normal;
+
+    float3 result = 0.0;
+    float totalWeigth = 0.0;
+
+    uint N = uint(_Samples);
+    for(uint n = 1u; n <= N; n++){
+        // float3 random = random_pcg3d(uint3(id, n));
+        float2 random = hammersley(n, N);
+        // float2 random = float2(halton(2u, n), halton(3u, n));
+        float phi = 2.0 * PI * random.x;
+        float u = random.y;
+        float alpha = roughness * roughness;
+        float theta = acos(sqrt((1.0 - u) / (1.0 + (alpha * alpha - 1.0) * u))); // GGX Normal Distribution
+        float3 localPos = float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
+        float3 h = mul(localPos, tbn);
+        float3 l = 2.0 * dot(v, h) * h - v; //reflect(-V, H);
+        float nDotL = dot(normal, l);
+        if(nDotL > 0.0){        
+            float2 samplePos = directionToSphericalTexture(l);
+            float3 sample = ( environmentMap.SampleLevel(samplerState, samplePos, mipLevel).rgb);
+            result += sample * nDotL;
+            totalWeigth += nDotL;
+        }
+    }
+    result = result / totalWeigth;
+    return result;
 }
 
 [numthreads(8,8,1)]
@@ -163,16 +246,94 @@ void CS_IntegrateBRDF(uint3 id : SV_DispatchThreadID)
 void CS_PrefilterSpecular(uint3 id : SV_DispatchThreadID)
 {
     float roughness = float(id.z) * 1.0 / float(_NumSpecularFilterLevels - 1.0);
-    float3 color = prefilterEnvironmentMapSpecular_compute(_EnvironmentMap, sampler_EnvironmentMap, id.xy, float2(_Width, _Height), roughness, id.z);
-    _FilteredSpecularMap[id] = float4(color, 1.0);
-
+    // float3 color = prefilterEnvironmentMapSpecular_compute(_EnvironmentMap, sampler_EnvironmentMap, id.xy, float2(_Width, _Height), _Roughness, id.z == 0 ? 0 : _MipMapLevel);
+    float3 color = prefilterEnvironmentMapSpecular_compute(_EnvironmentMap, sampler_EnvironmentMap, id.xy, float2(_Width, _Height), _Roughness, _CurrentFilterLevel == 0 ? 0 : _MipMapLevel);
+    // _FilteredSpecularMap[uint3(id)] = float4(color, 1.0);
+    _FilteredSpecularMap[uint3(id.xy, _CurrentFilterLevel)] = float4(color, 1.0);
 }
 
+[numthreads(8,8,1)]
+void CS_PrefilterEnvironment(uint3 id : SV_DispatchThreadID)
+{   
+    float3 color = prefilterEnvironmentMapDiffuse_compute(_EnvironmentMap, sampler_EnvironmentMap, id.xy, float2(_Width, _Height));
+    _Target[id.xy] = float4(color, 1.0);
+}
 
 [numthreads(8,8,1)]
 void CS_Greyscale(uint3 id : SV_DispatchThreadID)
 {
     float2 uv = float2(pixelToTexture(id.x, _Width), pixelToTexture(id.y, _Height));
     float3 color = _EnvironmentMap.SampleLevel(sampler_EnvironmentMap, uv, _MipMapLevel).rgb;
+    color = rgbToGreyscale(color);
     _Target[id.xy] = float4(color, 1.0);
+}
+
+[numthreads(1,1,1)]
+void CS_AverageHorizontal(uint3 id : SV_DispatchThreadID)
+{
+    float sum = 0;
+    for(int x = 0; x < _Width; x++){
+        float col = _EnvironmentMap[uint2(x, id.y)];
+        sum += col;
+    }
+    sum /= _Width;
+    _Target[id.xy] = float4(sum, sum, sum, 1);
+}
+
+[numthreads(1,1,1)]
+void CS_AverageVertical(uint3 id : SV_DispatchThreadID)
+{
+    float sum = 0;
+    for(int y = 0; y < _Height; y++){
+        float col = _EnvironmentMap[uint2(id.x, y)];
+        sum += col;
+    }
+    sum /= _Height;
+    _Target[id.xy] = float4(sum, sum, sum, 1);
+}
+
+[numthreads(1,1,1)]
+void CS_CDFMarginalInverse(uint3 id : SV_DispatchThreadID)
+{
+    float sum = 0;
+    float u = pixelToTexture(id.y, _Height);
+    int y;
+    for(y = 0; y < _Height; y++){
+        float col = _EnvironmentMap[uint2(id.x, y)].r;
+        sum += col / _Height;
+        if(sum >= u){
+            break;
+        }
+    }
+    float cdfYInv = pixelToTexture(float(y), _Height);
+    _Target[id.xy] = float4(cdfYInv, cdfYInv, cdfYInv, 1);
+}
+
+[numthreads(8,8,1)]
+void CS_CDFConditionalInverse(uint3 id : SV_DispatchThreadID)
+{
+    float sum = 0;
+    float u = pixelToTexture(id.x, _Width);
+    int x;
+    for(x = 0; x < _Width; x++){
+        float col = _EnvironmentMap[uint2(x, id.y)].r;
+        sum += col / _Width;
+        if(sum >= u){
+            break;
+        }
+    }
+    float cdfXInv = pixelToTexture(float(x), _Width);
+    _Target[id.xy] = float4(cdfXInv, cdfXInv, cdfXInv, 1);
+}
+
+[numthreads(8,8,1)]
+void CS_Divide(uint3 id : SV_DispatchThreadID)
+{
+    float a = _A[uint2(id.x % _A_Width, id.y % _A_Height)];
+    float b = _B[uint2(id.x % _B_Width, id.y % _B_Height)];
+    float c = 0;
+    if(abs(b) > 0.0001){
+        c = a / b;
+    }
+    _Target[id.xy] = float4(c,c,c,1);
 }
