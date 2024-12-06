@@ -60,7 +60,6 @@ Shader "Parker/PBR"
             sampler2D _IntegratedBRDF;
 
             sampler2D _FilteredDiffuseMap;
-            int _EnvironmentMapSet;
 
             UNITY_DECLARE_TEX2DARRAY(_FilteredSpecularMap);
             int _SpecularMipLevels;
@@ -80,11 +79,13 @@ Shader "Parker/PBR"
             float _SheenTint;
             float _Clearcoat;
             float _ClearcoatGloss;
+            float _Metallic;
 
             int _UseDisplacementMap;
             int _UseNormalMap;
             int _UseDiffuseMap;
             int _UseRoughnessMap;
+            int _UseEnvironmentLighting;
 
             int _NDF;
             int _Geometry;
@@ -183,9 +184,9 @@ Shader "Parker/PBR"
                 // float3 lightIn =  _LightColor.rgb * _LightIntensity;
                 // float3 lightOut = lightIn * (brdf.specular + brdf.diffuse) * ndotl;
                 float3 lightOut = 0;
-                if(_EnvironmentMapSet){
+                if(_UseEnvironmentLighting){
                     float3 diffuseIBL = diffuseColor * diffuseImageBasedLighting(n);
-                    //TODO: Specular Gloss?
+                    //TODO: Specular Tint?
                     // float3 specularIBL = specularImageBasedLighting(_Reflectance, _Roughness, n, v) * lerp(float3(1,1,1), diffuseColor, 1.0);
                     float3 specularIBL = specularImageBasedLighting(_Reflectance, _Roughness, n, v);
                     float3 clearcoatIBL = 0.25 * _Clearcoat * specularImageBasedLighting(0.5, 1.0 - _ClearcoatGloss, n, v);
@@ -193,16 +194,8 @@ Shader "Parker/PBR"
                 }
                 else{
                     brdfResult brdf = PBR_BRDF(n,l,v, params, settings);
-
-                }
-                
-
-                if(_EnvironmentMapSet){
-                    // float3 f0 = 0.16 * (_Reflectance * _Reflectance);
-                    // float2 envUV = directionToSphericalTexture(n);
-                    // lightOut = diffuseColor * lightIn;
-                    // lightIn = tex2D(_EnvironmentMap, envUV).rgb;
-                    
+                    float3 lightIn =  _LightColor.rgb * _LightIntensity;
+                    lightOut = lightIn * (brdf.specular + brdf.diffuse) * ndotl;
                 }
 
 

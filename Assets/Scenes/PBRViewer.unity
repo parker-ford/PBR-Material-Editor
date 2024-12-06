@@ -168,7 +168,7 @@ MonoBehaviour:
   sun: {fileID: 1585609542}
   defaultModelObject: {fileID: 11400000, guid: f4513f4d4d704ab4c8dc25dbf1f0e718, type: 2}
   defaultTextureObject: {fileID: 11400000, guid: 12792c6812a020c45ba8d0ac204cf4a6, type: 2}
-  defaultEnvironmentObject: {fileID: 11400000, guid: 8cd231f6c1bc51f418522f5696f6b8b0, type: 2}
+  defaultEnvironmentObject: {fileID: 11400000, guid: 791a84bb202bf9b4db44554a9a71dc3f, type: 2}
   defaultNDF: 2
   defaultGeometry: 1
   defaultDiffuse: 0
@@ -180,6 +180,7 @@ MonoBehaviour:
   defaultSheenTint: 0
   defaultClearcoat: 0
   defaultClearcoatGloss: 0
+  defaultMetallic: 0
   defaultDiffuseColor: {r: 0.8867924, g: 0.59398353, b: 0.59398353, a: 1}
   defaultDisplacementStrength: 0.05
   defaultNormalMapStrength: 1

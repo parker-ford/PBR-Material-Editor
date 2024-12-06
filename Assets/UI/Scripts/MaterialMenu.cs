@@ -23,6 +23,7 @@ public class MaterialMenu : VisualElement
     public MaterialToggle normalMapToggle;
     public MaterialToggle displacementMapToggle;
     public MaterialToggle roughnessMapToggle;
+    public MaterialToggle environmentLightingToggle;
 
 
 
@@ -46,6 +47,15 @@ public class MaterialMenu : VisualElement
 
         displacementMapStrengthSlider = textureProperties.CreateChild<MaterialSlider>();
         displacementMapStrengthSlider.label.text = "Displacement Strength";
+
+        /*
+        *   Lighting Properties
+        */
+        var lightingProperties = materialScrollView.CreateChild<MaterialPropertyGroup>();
+        lightingProperties.label.text = "Lighting Settings";
+
+        environmentLightingToggle = lightingProperties.CreateChild<MaterialToggle>();
+
 
         /*
         *   Diffuse Properties

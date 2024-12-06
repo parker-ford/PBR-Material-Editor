@@ -63,6 +63,7 @@ public class PBRController : MonoBehaviour
     [Range(0, 1)] public float defaultSheenTint;
     [Range(0, 1)] public float defaultClearcoat;
     [Range(0, 1)] public float defaultClearcoatGloss;
+    [Range(0, 1)] public float defaultMetallic;
     public Color defaultDiffuseColor;
     public float defaultDisplacementStrength;
     public float defaultNormalMapStrength;
@@ -72,6 +73,7 @@ public class PBRController : MonoBehaviour
     public bool defaultUseRoughnessMap;
     public bool defaultRotateModel;
     public bool defaultRotateLight;
+    public bool defaultUseEnironmentLighting;
     public Texture2D integratedBRDF;
 
     private GameObject model;
@@ -86,6 +88,7 @@ public class PBRController : MonoBehaviour
     private float sheenTint;
     private float clearcoat;
     private float clearcoatGloss;
+    private float metallic;
     private Color diffuseColor;
     private NormalDistributionFunction ndf;
     private GeometryAttenuationFunction geometry;
@@ -99,6 +102,7 @@ public class PBRController : MonoBehaviour
     private bool useRoughnessMap;
     private bool rotateModel;
     private bool rotateLight;
+    private bool useEnvironmentLighting;
     private List<ModelObject> modelObjects;
     private List<TextureObject> textureObjects;
     private List<EnvironmentObject> environmentObjects;
@@ -118,6 +122,7 @@ public class PBRController : MonoBehaviour
         sheenTint = defaultSheenTint;
         clearcoat = defaultClearcoat;
         clearcoatGloss = defaultClearcoatGloss;
+        metallic = defaultMetallic;
         modelObject = defaultModelObject;
         textureObject = defaultTextureObject;
         environmentObject = defaultEnvironmentObject;
@@ -129,6 +134,7 @@ public class PBRController : MonoBehaviour
         useRoughnessMap = defaultUseRoughnessMap;
         rotateModel = defaultRotateModel;
         rotateLight = defaultRotateLight;
+        useEnvironmentLighting = defaultUseEnironmentLighting;
         material = new Material(pbrShader);
         ndf = defaultNDF;
         geometry = defaultGeometry;
@@ -224,6 +230,7 @@ public class PBRController : MonoBehaviour
         BindSlider(view.materialMenu.sheenTintSlider, newValue => sheenTint = newValue);
         BindSlider(view.materialMenu.clearcoatSlider, newValue => clearcoat = newValue);
         BindSlider(view.materialMenu.clearcoatGlossSlider, newValue => clearcoatGloss = newValue);
+        BindSlider(view.materialMenu.metallicSlider, newValue => metallic = newValue);
 
         // Bind Color Pickers
         BindColorPicker(view.materialMenu.diffuseColorPicker, newColor => diffuseColor = newColor);
@@ -239,6 +246,7 @@ public class PBRController : MonoBehaviour
         BindToggle(view.materialMenu.diffuseMapToggle, newValue => useDiffuseMap = newValue);
         BindToggle(view.materialMenu.normalMapToggle, newValue => useNormalMap = newValue);
         BindToggle(view.materialMenu.roughnessMapToggle, newValue => useRoughnessMap = newValue);
+        BindToggle(view.materialMenu.environmentLightingToggle, newValue => { useEnvironmentLighting = newValue; SetEnvironment(); });
 
     }
 
@@ -331,12 +339,18 @@ public class PBRController : MonoBehaviour
 
     void SetEnvironment()
     {
-        material.SetInt("_EnvironmentMapSet", 1);
-        material.SetTexture("_FilteredDiffuseMap", environmentObject.filteredDiffuseMap);
-        material.SetTexture("_IntegratedBRDF", integratedBRDF);
-        material.SetTexture("_FilteredSpecularMap", environmentObject.filteredSpecularMap);
-        material.SetInt("_SpecularMipLevels", 6); //Hardcoded for now
-        RenderSettings.skybox = environmentObject.skyboxMaterial;
+        if (useEnvironmentLighting)
+        {
+            material.SetTexture("_FilteredDiffuseMap", environmentObject.filteredDiffuseMap);
+            material.SetTexture("_IntegratedBRDF", integratedBRDF);
+            material.SetTexture("_FilteredSpecularMap", environmentObject.filteredSpecularMap);
+            material.SetInt("_SpecularMipLevels", 6); //Hardcoded for now
+            RenderSettings.skybox = environmentObject.skyboxMaterial;
+        }
+        else
+        {
+            RenderSettings.skybox = null;
+        }
     }
 
     void UpdateMaterialParameters()
@@ -355,6 +369,7 @@ public class PBRController : MonoBehaviour
         material.SetFloat("_SheenTint", sheenTint);
         material.SetFloat("_Clearcoat", clearcoat);
         material.SetFloat("_ClearcoatGloss", clearcoatGloss);
+        material.SetFloat("_Metallic", metallic);
 
         material.SetInt("_NDF", (int)ndf);
         material.SetInt("_Geometry", (int)geometry);
@@ -371,6 +386,7 @@ public class PBRController : MonoBehaviour
         material.SetInt("_UseDiffuseMap", useDiffuseMap ? 1 : 0);
         material.SetInt("_UseNormalMap", useNormalMap ? 1 : 0);
         material.SetInt("_UseRoughnessMap", useRoughnessMap ? 1 : 0);
+        material.SetInt("_UseEnvironmentLighting", useEnvironmentLighting ? 1 : 0);
     }
 
     void OnDisable()
