@@ -25,6 +25,10 @@ public class MaterialMenu : VisualElement
     public MaterialToggle displacementMapToggle;
     public MaterialToggle roughnessMapToggle;
     public MaterialToggle environmentLightingToggle;
+    public MaterialToggle objectRotateToggle;
+    public MaterialToggle lightRotateToggle;
+    public MaterialColorPickerRGB lightColorPicker;
+    public MaterialSlider lightIntensitySlider;
 
 
 
@@ -56,6 +60,21 @@ public class MaterialMenu : VisualElement
         lightingProperties.label.text = "Lighting Settings";
 
         environmentLightingToggle = lightingProperties.CreateChild<MaterialToggle>();
+        environmentLightingToggle.label.text = "Environment Lighting";
+
+        lightRotateToggle = lightingProperties.CreateChild<MaterialToggle>();
+        lightRotateToggle.label.text = "Rotate Light";
+
+        lightColorPicker = lightingProperties.CreateChild<MaterialColorPickerRGB>();
+        lightColorPicker.label.text = "Light Color";
+
+        lightIntensitySlider = lightingProperties.CreateChild<MaterialSlider>();
+        lightIntensitySlider.label.text = "Light Intensity";
+        lightIntensitySlider.slider.highValue = 5;
+
+        objectRotateToggle = lightingProperties.CreateChild<MaterialToggle>();
+        objectRotateToggle.label.text = "Rotate Object";
+
 
 
         /*
@@ -148,7 +167,15 @@ public class MaterialMenu : VisualElement
         float normalMapStrength,
         float displacementMapStrength,
         float sheen,
-        float sheenTint
+        float sheenTint,
+        float clearcoat,
+        float clearcoatGloss,
+        float metallic,
+        bool useEnvironmentLighting,
+        bool rotateLight,
+        bool rotateObject,
+        Color lightColor,
+        float lightIntensity
     )
     {
         reflectanceSlider.SetCurrentValue(reflectance);
@@ -167,6 +194,14 @@ public class MaterialMenu : VisualElement
         displacementMapStrengthSlider.SetCurrentValue(displacementMapStrength);
         sheenSlider.SetCurrentValue(sheen);
         sheenTintSlider.SetCurrentValue(sheenTint);
+        clearcoatSlider.SetCurrentValue(clearcoat);
+        clearcoatGlossSlider.SetCurrentValue(clearcoatGloss);
+        metallicSlider.SetCurrentValue(metallic);
+        environmentLightingToggle.SetCurrentValue(useEnvironmentLighting);
+        lightRotateToggle.SetCurrentValue(rotateLight);
+        objectRotateToggle.SetCurrentValue(rotateObject);
+        lightColorPicker.SetCurrentValue(lightColor);
+        lightIntensitySlider.SetCurrentValue(lightIntensity);
     }
 
     public void SetAllEnabled(bool state)

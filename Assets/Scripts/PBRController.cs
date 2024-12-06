@@ -77,6 +77,8 @@ public class PBRController : MonoBehaviour
     public bool defaultRotateLight;
     public bool defaultUseEnironmentLighting;
     public Texture2D integratedBRDF;
+    public float defaultLightIntensity;
+    public Color defaultLightColor;
 
     private GameObject model;
     private Material material;
@@ -106,6 +108,8 @@ public class PBRController : MonoBehaviour
     private bool rotateModel;
     private bool rotateLight;
     private bool useEnvironmentLighting;
+    private float lightIntensity;
+    private Color lightColor;
     private List<ModelObject> modelObjects;
     private List<TextureObject> textureObjects;
     private List<EnvironmentObject> environmentObjects;
@@ -144,6 +148,8 @@ public class PBRController : MonoBehaviour
         geometry = defaultGeometry;
         diffuse = defaultDiffuse;
         debug = defaultDebug;
+        lightIntensity = defaultLightIntensity;
+        lightColor = defaultLightColor;
 
         InstantiateModel();
         UpdateMaterialParameters();
@@ -215,10 +221,12 @@ public class PBRController : MonoBehaviour
         BindSlider(view.materialMenu.clearcoatSlider, newValue => clearcoat = newValue);
         BindSlider(view.materialMenu.clearcoatGlossSlider, newValue => clearcoatGloss = newValue);
         BindSlider(view.materialMenu.metallicSlider, newValue => metallic = newValue);
+        BindSlider(view.materialMenu.lightIntensitySlider, newValue => lightIntensity = newValue);
         // BindSlider(view.materialMenu.anisotropicSlider, newValue => anisotropic = newValue);
 
         // Bind Color Pickers
         BindColorPicker(view.materialMenu.diffuseColorPicker, newColor => diffuseColor = newColor);
+        BindColorPicker(view.materialMenu.lightColorPicker, newColor => lightColor = newColor);
 
         // Bind Dropdown
         BindDropdown(view.materialMenu.normalDistributionModelDropdown, newValue => ndf = (NormalDistributionFunction)newValue);
@@ -233,6 +241,8 @@ public class PBRController : MonoBehaviour
         });
 
         // Bind Toggle
+        BindToggle(view.materialMenu.lightRotateToggle, newValue => rotateLight = newValue);
+        BindToggle(view.materialMenu.objectRotateToggle, newValue => rotateModel = newValue);
         BindToggle(view.materialMenu.displacementMapToggle, newValue => useDisplacementMap = newValue);
         BindToggle(view.materialMenu.diffuseMapToggle, newValue => useDiffuseMap = newValue);
         BindToggle(view.materialMenu.normalMapToggle, newValue => useNormalMap = newValue);
@@ -278,7 +288,15 @@ public class PBRController : MonoBehaviour
             normalMapStrength,
             displacementMapStrength,
             sheen,
-            sheenTint
+            sheenTint,
+            clearcoat,
+            clearcoatGloss,
+            metallic,
+            useEnvironmentLighting,
+            rotateLight,
+            rotateModel,
+            lightColor,
+            lightIntensity
         );
     }
 
@@ -409,8 +427,8 @@ public class PBRController : MonoBehaviour
         material.SetInt("_Diffuse", (int)diffuse);
         material.SetInt("_DebugView", (int)debug);
 
-        material.SetColor("_LightColor", sun.color);
-        material.SetFloat("_LightIntensity", sun.intensity);
+        material.SetColor("_LightColor", lightColor);
+        material.SetFloat("_LightIntensity", lightIntensity);
 
         material.SetFloat("_DisplacementStrength", displacementMapStrength);
         material.SetFloat("_NormalStrength", normalMapStrength);
