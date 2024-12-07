@@ -43,55 +43,48 @@ public class MaterialMenu : VisualElement
         var materialScrollView = materialEditorMenu.CreateChild<ScrollView>("material-scrollview");
 
         /*
-        *   Texture Properties
+        *   Material Models
         */
-        var textureProperties = materialScrollView.CreateChild<MaterialPropertyGroup>();
-        textureProperties.label.text = "Texture Properties";
+        var materialModels = materialScrollView.CreateChild<MaterialPropertyGroup>();
+        materialModels.label.text = "Texture Properties";
 
-        normalMapStrengthSlider = textureProperties.CreateChild<MaterialSlider>();
-        normalMapStrengthSlider.label.text = "Normal Strength";
-
-        displacementMapStrengthSlider = textureProperties.CreateChild<MaterialSlider>();
-        displacementMapStrengthSlider.label.text = "Displacement Strength";
-
-        /*
-        *   Lighting Properties
-        */
-        var lightingProperties = materialScrollView.CreateChild<MaterialPropertyGroup>();
-        lightingProperties.label.text = "Lighting Settings";
-
-        environmentLightingToggle = lightingProperties.CreateChild<MaterialToggle>();
-        environmentLightingToggle.label.text = "Environment Lighting";
-
-        lightRotateToggle = lightingProperties.CreateChild<MaterialToggle>();
-        lightRotateToggle.label.text = "Rotate Light";
-
-        lightColorPicker = lightingProperties.CreateChild<MaterialColorPickerRGB>();
-        lightColorPicker.label.text = "Light Color";
-
-        lightIntensitySlider = lightingProperties.CreateChild<MaterialSlider>();
-        lightIntensitySlider.label.text = "Light Intensity";
-        lightIntensitySlider.slider.highValue = 5;
-
-        objectRotateToggle = lightingProperties.CreateChild<MaterialToggle>();
-        objectRotateToggle.label.text = "Rotate Object";
-
-        backgroundColorPicker = lightingProperties.CreateChild<MaterialColorPickerRGB>();
-        backgroundColorPicker.label.text = "Background Color";
-
-
-
-        /*
-        *   Diffuse Properties
-        */
-        var diffuseProperties = materialScrollView.CreateChild<MaterialPropertyGroup>();
-        diffuseProperties.label.text = "Diffuse Properties";
-
-        diffuseModelDropdown = diffuseProperties.CreateChild<MaterialDropdown>();
+        diffuseModelDropdown = materialModels.CreateChild<MaterialDropdown>();
         diffuseModelDropdown.label.text = "Diffuse Model";
 
-        diffuseColorPicker = diffuseProperties.CreateChild<MaterialColorPickerRGB>();
-        diffuseColorPicker.label.text = "Diffuse Color";
+        normalDistributionModelDropdown = materialModels.CreateChild<MaterialDropdown>();
+        normalDistributionModelDropdown.label.text = "Normal Distribution Model";
+
+        geometryAttenuationModelDropdown = materialModels.CreateChild<MaterialDropdown>();
+        geometryAttenuationModelDropdown.label.text = "Geometry Attenuation Model";
+
+
+        /*
+        *   Specular Parameters
+        */
+        var specularParamters = materialScrollView.CreateChild<MaterialPropertyGroup>();
+        specularParamters.label.text = "Specular Properties";
+
+        roughnessSlider = specularParamters.CreateChild<MaterialSlider>();
+        roughnessSlider.label.text = "Roughness";
+
+        reflectanceSlider = specularParamters.CreateChild<MaterialSlider>();
+        reflectanceSlider.label.text = "Reflectance";
+
+        clearcoatSlider = specularParamters.CreateChild<MaterialSlider>();
+        clearcoatSlider.label.text = "Clearcoat";
+
+        clearcoatGlossSlider = specularParamters.CreateChild<MaterialSlider>();
+        clearcoatGlossSlider.label.text = "Clearcoat Gloss";
+
+        // anisotropicSlider = specularProperties.CreateChild<MaterialSlider>();
+        // anisotropicSlider.label.text = "Anisotropic";
+
+        /*
+        *   Diffuse Parameters
+        */
+
+        var diffuseProperties = materialScrollView.CreateChild<MaterialPropertyGroup>();
+        diffuseProperties.label.text = "Diffuse Properties";
 
         subsurfaceSlider = diffuseProperties.CreateChild<MaterialSlider>();
         subsurfaceSlider.label.text = "Subsurface";
@@ -105,32 +98,46 @@ public class MaterialMenu : VisualElement
         metallicSlider = diffuseProperties.CreateChild<MaterialSlider>();
         metallicSlider.label.text = "Metallic";
 
+        diffuseColorPicker = diffuseProperties.CreateChild<MaterialColorPickerRGB>();
+        diffuseColorPicker.label.text = "Diffuse Color";
+
         /*
-        *   Specular Properties
+        *   Lighting Properties
         */
-        var specularProperties = materialScrollView.CreateChild<MaterialPropertyGroup>();
-        specularProperties.label.text = "Specular Properties";
+        var lightingProperties = materialScrollView.CreateChild<MaterialPropertyGroup>();
+        lightingProperties.label.text = "Lighting Settings";
 
-        normalDistributionModelDropdown = specularProperties.CreateChild<MaterialDropdown>();
-        normalDistributionModelDropdown.label.text = "Normal Distribution Model";
+        environmentLightingToggle = lightingProperties.CreateChild<MaterialToggle>();
+        environmentLightingToggle.label.text = "Environment Lighting";
 
-        geometryAttenuationModelDropdown = specularProperties.CreateChild<MaterialDropdown>();
-        geometryAttenuationModelDropdown.label.text = "Geometry Attenuation Model";
+        lightRotateToggle = lightingProperties.CreateChild<MaterialToggle>();
+        lightRotateToggle.label.text = "Rotate Light";
 
-        roughnessSlider = specularProperties.CreateChild<MaterialSlider>();
-        roughnessSlider.label.text = "Roughness";
+        objectRotateToggle = lightingProperties.CreateChild<MaterialToggle>();
+        objectRotateToggle.label.text = "Rotate Object";
 
-        reflectanceSlider = specularProperties.CreateChild<MaterialSlider>();
-        reflectanceSlider.label.text = "Reflectance";
+        lightIntensitySlider = lightingProperties.CreateChild<MaterialSlider>();
+        lightIntensitySlider.label.text = "Light Intensity";
+        lightIntensitySlider.slider.highValue = 5;
 
-        clearcoatSlider = specularProperties.CreateChild<MaterialSlider>();
-        clearcoatSlider.label.text = "Clearcoat";
+        lightColorPicker = lightingProperties.CreateChild<MaterialColorPickerRGB>();
+        lightColorPicker.label.text = "Light Color";
 
-        clearcoatGlossSlider = specularProperties.CreateChild<MaterialSlider>();
-        clearcoatGlossSlider.label.text = "Clearcoat Gloss";
+        backgroundColorPicker = lightingProperties.CreateChild<MaterialColorPickerRGB>();
+        backgroundColorPicker.label.text = "Background Color";
 
-        // anisotropicSlider = specularProperties.CreateChild<MaterialSlider>();
-        // anisotropicSlider.label.text = "Anisotropic";
+        /*
+        *   Texture Properties
+        */
+        var textureProperties = materialScrollView.CreateChild<MaterialPropertyGroup>();
+        textureProperties.label.text = "Texture Properties";
+
+        normalMapStrengthSlider = textureProperties.CreateChild<MaterialSlider>();
+        normalMapStrengthSlider.label.text = "Normal Strength";
+
+        displacementMapStrengthSlider = textureProperties.CreateChild<MaterialSlider>();
+        displacementMapStrengthSlider.label.text = "Displacement Strength";
+
 
         /*
         *   Debug Views
