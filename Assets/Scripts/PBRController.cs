@@ -189,15 +189,15 @@ public class PBRController : MonoBehaviour
         view.textureButton.text = "Texture: " + textureObject.id;
 
         // Setting Overlay Choices
-        view.modelOverlay.SetImages(modelObjects.Select(obj => obj.GetPath()).ToList());
-        view.modelOverlay.OnOverlaySelection += (index) =>
-        {
-            modelObject = modelObjects[index];
-            view.modelButton.text = "Model: " + modelObject.id;
-            InstantiateModel();
-        };
+        // view.modelOverlay.SetImages(modelObjects.Select(obj => obj.GetPath()).ToList());
+        // view.modelOverlay.OnOverlaySelection += (index) =>
+        // {
+        //     modelObject = modelObjects[index];
+        //     view.modelButton.text = "Model: " + modelObject.id;
+        //     InstantiateModel();
+        // };
 
-        view.textureOverlay.SetImages(textureObjects.Select(obj => obj.displayImage).ToList());
+        view.textureOverlay.SetImages(textureObjects.Select(obj => obj.displayImage).ToList(), textureObjects.Select(obj => obj.id).ToList());
         view.textureOverlay.OnOverlaySelection += (index) =>
         {
             textureObject = textureObjects[index];
@@ -205,7 +205,7 @@ public class PBRController : MonoBehaviour
             SetTextureMaps();
         };
 
-        view.environmentOverlay.SetImages(environmentObjects.Select(obj => obj.displayImage).ToList());
+        view.environmentOverlay.SetImages(environmentObjects.Select(obj => obj.displayImage).ToList(), environmentObjects.Select(obj => obj.id).ToList());
         view.environmentOverlay.OnOverlaySelection += (index) =>
         {
             environmentObject = environmentObjects[index];
@@ -277,6 +277,7 @@ public class PBRController : MonoBehaviour
             view.materialMenu.lightRotateToggle.SetEnabled(!useEnvironmentLighting);
             view.materialMenu.lightColorPicker.SetEnabled(!useEnvironmentLighting);
             view.materialMenu.lightIntensitySlider.SetEnabled(!useEnvironmentLighting);
+            view.materialMenu.backgroundColorPicker.SetEnabled(!useEnvironmentLighting);
 
         });
 

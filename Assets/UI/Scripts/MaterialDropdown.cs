@@ -12,7 +12,7 @@ public class MaterialDropdown : VisualElement
     public Action<int> OnChoiceChanged = delegate { };
     public MaterialDropdown()
     {
-        this.AddClass("material-dropdown");
+        this.AddClass("material-dropdown", "material-property");
 
         var left = this.CreateChild("left");
         var right = this.CreateChild("right");

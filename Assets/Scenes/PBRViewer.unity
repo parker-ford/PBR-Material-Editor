@@ -190,11 +190,12 @@ MonoBehaviour:
   defaultUseNormalMap: 1
   defaultUseRoughnessMap: 1
   defaultRotateModel: 1
-  defaultRotateLight: 0
-  defaultUseEnironmentLighting: 0
+  defaultRotateLight: 1
+  defaultUseEnironmentLighting: 1
   integratedBRDF: {fileID: 2800000, guid: 980c6109143fc7a45b1b65c52fedb458, type: 2}
   defaultLightIntensity: 1
   defaultLightColor: {r: 1, g: 1, b: 1, a: 1}
+  defaultBackgroundColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1585609541
 GameObject:
   m_ObjectHideFlags: 0
