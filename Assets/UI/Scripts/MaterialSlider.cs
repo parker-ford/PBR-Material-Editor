@@ -51,7 +51,7 @@ public class MaterialSlider : VisualElement
         OnMaterialSliderChanged.Invoke(currentValue);
 
         slider.UnregisterValueChangedCallback(OnSliderChanged);
-        slider.value = Mathf.Clamp(currentValue, 0.0f, 1.0f);
+        slider.value = Mathf.Clamp(currentValue, 0.0f, slider.highValue);
         slider.RegisterValueChangedCallback(OnSliderChanged);
     }
 
@@ -67,7 +67,7 @@ public class MaterialSlider : VisualElement
         slider.UnregisterValueChangedCallback(OnSliderChanged);
         floatField.UnregisterValueChangedCallback(OnFloatFieldChanged);
 
-        slider.value = Mathf.Clamp(newValue, 0.0f, 1.0f);
+        slider.value = Mathf.Clamp(newValue, 0.0f, slider.highValue);
         floatField.value = newValue;
 
         slider.RegisterValueChangedCallback(OnSliderChanged);
