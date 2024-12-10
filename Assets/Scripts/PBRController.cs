@@ -350,9 +350,12 @@ public class PBRController : MonoBehaviour
     {
         Destroy(model);
         model = new GameObject("Model");
-        model.AddComponent<MeshFilter>().mesh = modelObject.GetMesh();
-        modelObject.SetToTransform(model.transform);
-        model.AddComponent<MeshRenderer>().material = material;
+        GameObject mesh = new GameObject("mesh");
+        mesh.transform.parent = model.transform;
+
+        mesh.AddComponent<MeshFilter>().mesh = modelObject.GetMesh();
+        modelObject.SetToTransform(mesh.transform);
+        mesh.AddComponent<MeshRenderer>().material = material;
     }
 
     void SetTextureMaps()

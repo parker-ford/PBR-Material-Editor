@@ -10,4 +10,5 @@ public class TextureObject : ScriptableObject
     public Texture2D normalMap;
     public Texture2D displacementMap;
     public Texture2D roughnessMap;
+    public Texture2D metallicMap;
 }

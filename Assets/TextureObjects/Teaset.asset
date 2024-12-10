@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e60204aa5325eb8488a6bef90ac5bd82, type: 3}
+  m_Name: Teaset
+  m_EditorClassIdentifier: 
+  id: Teaset
+  displayImage: {fileID: 2800000, guid: ae433d668ae60304788307c45fd05bed, type: 3}
+  diffuseMap: {fileID: 2800000, guid: ae433d668ae60304788307c45fd05bed, type: 3}
+  normalMap: {fileID: 2800000, guid: 3b8e7d326987e7743b704b202fd70380, type: 3}
+  displacementMap: {fileID: 0}
+  roughnessMap: {fileID: 2800000, guid: 564e14131b264cf4483961f5d1f06f4d, type: 3}
+  metallicMap: {fileID: 2800000, guid: 54ed07f5b2c32034da53b317f90add14, type: 3}
