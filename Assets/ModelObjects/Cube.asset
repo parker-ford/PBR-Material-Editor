@@ -17,4 +17,4 @@ MonoBehaviour:
   position: {x: 0, y: 0, z: 0}
   scale: {x: 0.74999994, y: 0.74999994, z: 0.74999994}
   rotation: {x: 0, y: -0.13052624, z: 0, w: 0.9914449}
-  displayImagePath: Assets/Resources/DisplayImages/Cube.png
+  displayImage: {fileID: 2800000, guid: dcb25d94616f9144b855bfeb799fe4fd, type: 2}

@@ -17,4 +17,4 @@ MonoBehaviour:
   position: {x: 0, y: -0.34, z: 0}
   scale: {x: 0.15, y: 0.15, z: 0.15}
   rotation: {x: -0.13052624, y: 0, z: 0, w: 0.9914449}
-  displayImagePath: Assets/Resources/DisplayImages/Plane.png
+  displayImage: {fileID: 2800000, guid: 485b058a285d42e44b029ba6fe61d9ae, type: 2}

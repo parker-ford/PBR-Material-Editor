@@ -4,11 +4,11 @@ using UnityEngine;
 public class ModelObject : ScriptableObject
 {
     public string id;
-    [SerializeField] private Mesh mesh;
-    [SerializeField] private Vector3 position = Vector3.zero;
-    [SerializeField] private Vector3 scale = Vector3.one;
-    [SerializeField] private Quaternion rotation = Quaternion.identity;
-    [SerializeField] private string displayImagePath = "";
+    public Mesh mesh;
+    public Vector3 position = Vector3.zero;
+    public Vector3 scale = Vector3.one;
+    public Quaternion rotation = Quaternion.identity;
+    public Texture2D displayImage;
 
     public void SetToTransform(Transform transform)
     {
@@ -49,15 +49,6 @@ public class ModelObject : ScriptableObject
     {
         rotation = _rotation;
     }
-    public string GetPath()
-    {
-        return displayImagePath;
-    }
-    public void SetPath(string _path)
-    {
-        displayImagePath = _path;
-    }
-
 
 }
 

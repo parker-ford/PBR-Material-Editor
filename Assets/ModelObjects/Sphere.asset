@@ -17,4 +17,4 @@ MonoBehaviour:
   position: {x: 0, y: 0, z: 0}
   scale: {x: 1, y: 1, z: 1}
   rotation: {x: 0, y: 0, z: 0, w: 1}
-  displayImagePath: Assets/Resources/DisplayImages/Sphere.png
+  displayImage: {fileID: 2800000, guid: 64cb57726ba3d154598d096a0dd1e8ab, type: 2}

@@ -189,13 +189,13 @@ public class PBRController : MonoBehaviour
         view.textureButton.text = "Texture: " + textureObject.id;
 
         // Setting Overlay Choices
-        // view.modelOverlay.SetImages(modelObjects.Select(obj => obj.GetPath()).ToList());
-        // view.modelOverlay.OnOverlaySelection += (index) =>
-        // {
-        //     modelObject = modelObjects[index];
-        //     view.modelButton.text = "Model: " + modelObject.id;
-        //     InstantiateModel();
-        // };
+        view.modelOverlay.SetImages(modelObjects.Select(obj => obj.displayImage).ToList(), modelObjects.Select(obj => obj.id).ToList());
+        view.modelOverlay.OnOverlaySelection += (index) =>
+        {
+            modelObject = modelObjects[index];
+            view.modelButton.text = "Model: " + modelObject.id;
+            InstantiateModel();
+        };
 
         view.textureOverlay.SetImages(textureObjects.Select(obj => obj.displayImage).ToList(), textureObjects.Select(obj => obj.id).ToList());
         view.textureOverlay.OnOverlaySelection += (index) =>
