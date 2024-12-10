@@ -168,7 +168,7 @@ public class PBRController : MonoBehaviour
         {
             model.transform.Rotate(new Vector3(0, Time.deltaTime * 4.0f, 0));
         }
-        if (defaultRotateLight)
+        if (rotateLight)
         {
             sun.transform.Rotate(new Vector3(0, Time.deltaTime * -15.0f, 0), Space.World);
         }
