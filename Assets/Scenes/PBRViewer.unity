@@ -167,14 +167,14 @@ MonoBehaviour:
   pbrShader: {fileID: 4800000, guid: 46f53897b4d38a840a18ef7e7e18e93e, type: 3}
   sun: {fileID: 1585609542}
   defaultModelObject: {fileID: 11400000, guid: f4513f4d4d704ab4c8dc25dbf1f0e718, type: 2}
-  defaultTextureObject: {fileID: 11400000, guid: 12792c6812a020c45ba8d0ac204cf4a6, type: 2}
+  defaultTextureObject: {fileID: 11400000, guid: ee9acabe839bcf6459ffb8bf7a33bc94, type: 2}
   defaultEnvironmentObject: {fileID: 11400000, guid: 791a84bb202bf9b4db44554a9a71dc3f, type: 2}
   defaultNDF: 0
   defaultGeometry: 1
   defaultDiffuse: 2
   defaultDebug: 0
-  defaultReflectance: 1
-  defaultRoughness: 0.5
+  defaultReflectance: 0
+  defaultRoughness: 1
   defaultSubsurface: 0
   defaultSheen: 0
   defaultSheenTint: 0

@@ -146,7 +146,8 @@ Shader "Parker/PBR"
 
                 float2 uv = i.uv;
                 if(_DisplacementMapSet && _UseDisplacementMap){
-                    uv = parallaxMap(uv, mul(v, float3x3(tangent, bitangent, normal)), _DisplacementMap, _DisplacementStrength);
+                    // uv = parallaxMap(uv, mul(v, float3x3(tangent, bitangent, normal)), _DisplacementMap, _DisplacementStrength);
+                    uv = parallaxMap(uv, transformToTangentSpace(v, normal, tangent, bitangent), _DisplacementMap, _DisplacementStrength);
                 }
 
                 if(_DebugView == DEBUG_VIEW_DIFFUSE_MAP) return (_DiffuseMapSet && _UseDiffuseMap) ? tex2D(_DiffuseMap, uv) : float4(1,1,1,1);

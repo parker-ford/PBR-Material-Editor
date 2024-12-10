@@ -109,6 +109,16 @@ float3x3 getTBNMatrix(float3 normal){
     return float3x3(tangent, bitangent, normal);
 }
 
+float3 transformToTangentSpace(float3 v, float3 worldNormal, float3 worldTangent, float3 worldBitangent) {
+    float3x3 worldToTangent = float3x3(
+        worldTangent,
+        worldBitangent,
+        worldNormal
+    );
+    
+    return mul(worldToTangent, v);
+}
+
 // float2 directionToSphericalTexture(float3 dir) {
 //     float phi = atan2(dir.y, dir.x);
 //     float theta = acos(dir.z);

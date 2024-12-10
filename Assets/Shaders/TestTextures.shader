@@ -74,6 +74,18 @@ Shader "Unlit/TestTextures"
                 return result;
             }
 
+            float3 CalculateTangentSpaceViewDir(float3 worldViewDir, float3 worldNormal, float3 worldTangent, float3 worldBitangent) {
+                // Create a matrix to transform from world to tangent space
+                float3x3 worldToTangent = float3x3(
+                    worldTangent,
+                    worldBitangent,
+                    worldNormal
+                );
+                
+                // Transform view direction to tangent space
+                return mul(worldToTangent, worldViewDir);
+            }
+
             v2f vert (appdata v)
             {
                 v2f o;
@@ -87,12 +99,9 @@ Shader "Unlit/TestTextures"
                 return o;
             }
 
-            //TODO: Blue noise offset?
-            //TODO: Try these: https://github.com/panthuncia/webgl_test/blob/main/index.html
-            // https://developer.nvidia.com/gpugems/gpugems2/part-i-geometric-complexity/chapter-8-pixel-displacement-mapping-distance-functions
             float2 ParallaxMap(float2 uv, float3 viewDirection){
-                const int minSteps = 128;
-                const int maxSteps = 128;
+                const int minSteps = 256;
+                const int maxSteps = 256;
                 viewDirection = normalize(viewDirection);
                 int numSteps = lerp(maxSteps, minSteps, clampedDot(float3(0,0,1), viewDirection));
                 float depthPerStep = 1.0 / (float)numSteps;
@@ -113,7 +122,7 @@ Shader "Unlit/TestTextures"
 
                 float afterStep = currDepth - currStep;
                 float beforeStep = 1.0 - tex2D(_DisplacementTex, prevUV).r - currStep + depthPerStep;
-
+                
                 return lerp(currUV, prevUV, afterStep / (afterStep - beforeStep));
 
             }
@@ -127,8 +136,18 @@ Shader "Unlit/TestTextures"
                 float3 normal = normalize(i.normal);
                 float3 tangent = normalize(i.tangent);
                 float3 bitangent = cross(normal, tangent) * i.tangent.w * unity_WorldTransformParams.w;
+
+                float3 viewDirTangentSpace = CalculateTangentSpaceViewDir(
+                    v, 
+                    normal, 
+                    tangent, 
+                    bitangent
+                );
                 
-                float2 uv = ParallaxMap(i.uv, mul(v, float3x3(tangent, bitangent, normal)));
+                float2 uv = i.uv;
+                // uv = abs(i.uv - ParallaxMap(i.uv, viewDirTangentSpace));
+                uv = ParallaxMap(i.uv, viewDirTangentSpace);
+                // return float4(uv, 0.0, 1.0);
 
                 float3 tangentSpaceNormal = 0;
                 tangentSpaceNormal.xy = tex2D(_NormalTex, uv).wy * 2 - 1;

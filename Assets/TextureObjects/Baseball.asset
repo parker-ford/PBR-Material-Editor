@@ -16,6 +16,6 @@ MonoBehaviour:
   displayImage: {fileID: 2800000, guid: 26635261bfab03d45991136870a7813e, type: 3}
   diffuseMap: {fileID: 2800000, guid: 26635261bfab03d45991136870a7813e, type: 3}
   normalMap: {fileID: 2800000, guid: 1b6aab52ba24e4141831461143242595, type: 3}
-  displacementMap: {fileID: 2800000, guid: 8098cf9cac2837241b818c19c7e87b4f, type: 3}
+  displacementMap: {fileID: 0}
   roughnessMap: {fileID: 2800000, guid: 364ef937a5fe08e408c34d9794d6d368, type: 3}
   metallicMap: {fileID: 0}

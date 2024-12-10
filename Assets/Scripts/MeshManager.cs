@@ -13,13 +13,16 @@ public class MeshManager : MonoBehaviour
     public int meshSize = 100;
     public float normalStrength = 1.0f;
     public float displacementStrength = 1.0f;
+    public Mesh mesh;
     void Start()
     {
         MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        meshFilter.mesh = ProceduralMesh.Plane(meshSize, meshSize);
+        // meshFilter.mesh = ProceduralMesh.Plane(meshSize, meshSize);
+        meshFilter.mesh = mesh;
         meshRenderer.material = material;
-        transform.localScale = new Vector3(1.0f / meshSize, 1.0f, 1.0f / meshSize);
+        // transform.localScale = new Vector3(500, 500, 500);
+
         // transform.Rotate(new Vector3(-90, 0, 0));
 
     }
