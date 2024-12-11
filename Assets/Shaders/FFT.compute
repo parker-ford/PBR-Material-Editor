@@ -1,0 +1,140 @@
+#include "./common.cginc"
+#include "./complex.cginc"
+
+#pragma kernel CS_HorzontalStepFFT
+#pragma kernel CS_VerticalStepFFT
+#pragma kernel CS_HorzontalStepIFFT
+#pragma kernel CS_VerticalStepIFFT
+#pragma kernel CS_PostProcess
+#pragma kernel CS_PreProcess
+#pragma kernel CS_BloomKernel
+#pragma kernel CS_Convolve
+
+//TODO: Figure out how to change this dynamically
+#define SIZE 256
+#define LOG_SIZE 8
+
+static uint Size = SIZE;
+
+RWTexture2D<float4> _Displacement;
+RWTexture2D<float4> _Target;
+RWTexture2D<float4> _Kernel;
+bool _Scale, _Permute, _Inverse;
+uint _MapSize, _Step, _LogSize;
+
+groupshared float4 buffer[2][SIZE];
+
+void ButterflyValues(uint step, uint index, out uint2 indices, out float2 twiddle)
+{
+    const float twoPi = 6.28318530718;
+    uint b = Size >> (step + 1);
+    uint w = b * (index / b);
+    uint i = (w + index) % Size;
+    sincos(-twoPi / Size * w, twiddle.y, twiddle.x);
+    if (_Inverse){
+        twiddle.y = -twiddle.y;
+    }
+    indices = uint2(i, i + b);
+}
+
+float4 DoFft(uint threadIndex, float4 input)
+{
+    buffer[0][threadIndex] = input;
+    GroupMemoryBarrierWithGroupSync();
+    bool flag = false;
+    
+    [unroll(LOG_SIZE)]
+    for (uint step = 0; step < LOG_SIZE; step++)
+    {
+        uint2 inputsIndices;
+        float2 twiddle;
+        ButterflyValues(step, threadIndex, inputsIndices, twiddle);
+        
+        float4 v = buffer[flag][inputsIndices.y];
+        buffer[!flag][threadIndex] = buffer[flag][inputsIndices.x]
+		    + float4(ComplexMult(twiddle, v.xy), ComplexMult(twiddle, v.zw));
+        flag = !flag;
+        GroupMemoryBarrierWithGroupSync();
+    }
+    
+    return buffer[flag][threadIndex];
+}
+
+float rgbToGreyscale(float3 col){
+    return dot(float3(0.2126, 0.7152, 0.0722), col);
+}
+
+
+[numthreads(SIZE,1,1)]
+void CS_HorzontalStepIFFT(uint3 id : SV_DispatchThreadID)
+{
+	// _Target[id.xy] = FFT(id.x, _Target[id.xy], true);
+    _Target[id.xy] = DoFft(id.x, _Target[id.xy]);
+
+}
+
+[numthreads(SIZE,1,1)]
+void CS_VerticalStepIFFT(uint3 id : SV_DispatchThreadID)
+{
+	// _Target[id.yx] = FFT(id.x, _Target[id.yx], true);
+    _Target[id.yx] = DoFft(id.x, _Target[id.yx]);
+}
+
+[numthreads(SIZE,1,1)] 
+void CS_HorzontalStepFFT(uint3 id : SV_DispatchThreadID)
+{
+	// _Target[id.xy] = FFT(id.x, _Target[id.xy], false);
+    _Target[id.xy] = DoFft(id.x, _Target[id.xy]);
+}
+
+[numthreads(SIZE,1,1)]
+void CS_VerticalStepFFT(uint3 id : SV_DispatchThreadID)
+{
+	// _Target[id.yx] = FFT(id.x, _Target[id.yx], false);
+    _Target[id.yx] = DoFft(id.x, _Target[id.yx]);
+}
+
+[numthreads(8, 8, 1)]
+void CS_PostProcess(uint3 id : SV_DispatchThreadID)
+{
+	float4 val = _Target[id.xy];
+	if(_Scale){
+		val /= (float)(SIZE) * (float)(SIZE);
+	}
+	if(_Permute){
+		val *= 1.0 - 2.0 * ((id.x + id.y) % 2);
+	}
+    _Target[id.xy] = val;
+}
+
+[numthreads(8, 8, 1)]
+void CS_PreProcess(uint3 id : SV_DispatchThreadID)
+{
+
+	// float grey = rgbToGreyscale(_Target[id.xy].rgb);
+    // float4 val = float4(grey, grey, grey, grey);
+    // float4 val = float4(grey, grey, 0, 0);
+    float4 val = _Target[id.xy];
+    if(_Permute){
+        val *= 1.0 - 2.0 * ((id.x + id.y) % 2);
+    }
+    _Target[id.xy] = val;
+}
+
+[numthreads(8, 8, 1)]
+void CS_BloomKernel(uint3 id : SV_DispatchThreadID)
+{
+    float2 center = float2(Size / 2, Size / 2);
+    float dist = length(center - id.xy);
+    float4 result = float4(0,0,0,0);
+    if(dist < 20){
+        result = float4(1,1,1,1);
+    }
+    _Target[id.xy] = result;
+}
+
+[numthreads(8, 8, 1)]
+void CS_Convolve(uint3 id : SV_DispatchThreadID)
+{
+    _Target[id.xy] = _Target[id.xy] * _Kernel[id.xy];
+}

@@ -410,9 +410,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 698cde802f7bd7c4ba1b126bd3b7ca0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectID: SunsetFairway
+  objectID: TeatroMassimo
   computeShader: {fileID: 7200000, guid: 040ef6bcf2cef2242a37c551b22b6d41, type: 3}
-  environmentMap: {fileID: 2800000, guid: c839c5ad11dbaed4cb88b77928d17902, type: 3}
+  environmentMap: {fileID: 2800000, guid: 1d18ca2bbf3baf64e81d3364ab7cd51c, type: 3}
   mipMapLevel: 5
   numSamples: 32768
   numSpecularFilterLevels: 6
