@@ -1,8 +1,10 @@
+
 using UnityEditor;
 using UnityEngine;
 
 public static class Saver
 {
+#if UNITY_EDITOR
     public static void SaveRenderTextureAsEXR(RenderTexture renderTexture, string filePath)
     {
         // Convert RenderTexture to Texture2D
@@ -31,12 +33,10 @@ public static class Saver
 
     public static void SaveAsAsset(Object asset, string assetPath)
     {
-#if UNITY_EDITOR
         UnityEditor.AssetDatabase.CreateAsset(asset, assetPath);
         UnityEditor.AssetDatabase.SaveAssets();
         UnityEditor.AssetDatabase.Refresh();
         Debug.Log("Saved Asset to " + assetPath);
-#endif
     }
 
     public static string GetPathWithPostfix(Object obj, string postfix)
@@ -54,4 +54,5 @@ public static class Saver
         return filePath;
 
     }
+#endif
 }

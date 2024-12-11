@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class PrefilterManager : MonoBehaviour
 {
+#if UNITY_EDITOR
     [SerializeField] private string objectID;
     [SerializeField] private ComputeShader computeShader;
     [SerializeField] private Texture2D environmentMap;
@@ -24,43 +25,44 @@ public class PrefilterManager : MonoBehaviour
 
     void Start()
     {
-        KERNEL_PREFILTER_SPECULAR = computeShader.FindKernel("CS_PrefilterSpecular");
-        KERNEL_INTEGRATE_BRDF = computeShader.FindKernel("CS_IntegrateBRDF");
-        KERNEL_GREYSCALE = computeShader.FindKernel("CS_Greyscale");
-        KERNEL_AVERAGE_HORIZONTAL = computeShader.FindKernel("CS_AverageHorizontal");
-        KERNEL_AVERAGE_VERTICAL = computeShader.FindKernel("CS_AverageVertical");
-        KERNEL_DIVIDE = computeShader.FindKernel("CS_Divide");
-        KERNEL_CDF_MARGINAL_INVERSE = computeShader.FindKernel("CS_CDFMarginalInverse");
-        KERNEL_CDF_CONDITIONAL_INVERSE = computeShader.FindKernel("CS_CDFConditionalInverse");
-        KERNEL_PREFILTER_DIFFUSE = computeShader.FindKernel("CS_PrefilterEnvironment");
+        // KERNEL_PREFILTER_SPECULAR = computeShader.FindKernel("CS_PrefilterSpecular");
+        // KERNEL_GREYSCALE = computeShader.FindKernel("CS_Greyscale");
+        // KERNEL_AVERAGE_HORIZONTAL = computeShader.FindKernel("CS_AverageHorizontal");
+        // KERNEL_AVERAGE_VERTICAL = computeShader.FindKernel("CS_AverageVertical");
+        // KERNEL_DIVIDE = computeShader.FindKernel("CS_Divide");
+        // KERNEL_CDF_MARGINAL_INVERSE = computeShader.FindKernel("CS_CDFMarginalInverse");
+        // KERNEL_CDF_CONDITIONAL_INVERSE = computeShader.FindKernel("CS_CDFConditionalInverse");
+        // KERNEL_PREFILTER_DIFFUSE = computeShader.FindKernel("CS_PrefilterEnvironment");
 
-        // New texture without mip maps for panoramic skybox (original enivornment map has visible seam)
-        Texture2D panorama = new Texture2D(environmentMap.width, environmentMap.height, environmentMap.format, false);
-        panorama.SetPixels(environmentMap.GetPixels());
-        panorama.Apply();
-        Saver.SaveAsAsset(panorama, Saver.GetPathWithPostfix(environmentMap, "_panorama.asset"));
+        // // New texture without mip maps for panoramic skybox (original enivornment map has visible seam)
+        // Texture2D panorama = new Texture2D(environmentMap.width, environmentMap.height, environmentMap.format, false);
+        // panorama.SetPixels(environmentMap.GetPixels());
+        // panorama.Apply();
+        // Saver.SaveAsAsset(panorama, Saver.GetPathWithPostfix(environmentMap, "_panorama.asset"));
 
-        // Skybox
-        Material skybox = new Material(Shader.Find("Skybox/Panoramic"));
-        skybox.SetTexture("_MainTex", panorama);
-        Saver.SaveAsAsset(skybox, Saver.GetPathWithPostfix(environmentMap, "_skybox.asset"));
+        // // Skybox
+        // Material skybox = new Material(Shader.Find("Skybox/Panoramic"));
+        // skybox.SetTexture("_MainTex", panorama);
+        // Saver.SaveAsAsset(skybox, Saver.GetPathWithPostfix(environmentMap, "_skybox.asset"));
 
-        // Filtered Env Maps
-        Texture2D filteredDiffuse = GeneratePrefilteredDiffuse();
-        Texture2DArray filteredSpecular = GeneratePrefilteredSpecular();
-        Saver.SaveAsAsset(filteredDiffuse, Saver.GetPathWithPostfix(environmentMap, "_filteredDiffuse.asset"));
-        Saver.SaveAsAsset(filteredSpecular, Saver.GetPathWithPostfix(environmentMap, "_filteredSpecular.asset"));
+        // // Filtered Env Maps
+        // Texture2D filteredDiffuse = GeneratePrefilteredDiffuse();
+        // Texture2DArray filteredSpecular = GeneratePrefilteredSpecular();
+        // Saver.SaveAsAsset(filteredDiffuse, Saver.GetPathWithPostfix(environmentMap, "_filteredDiffuse.asset"));
+        // Saver.SaveAsAsset(filteredSpecular, Saver.GetPathWithPostfix(environmentMap, "_filteredSpecular.asset"));
 
-        // Environment Map
-        EnvironmentObject obj = new EnvironmentObject();
-        obj.id = objectID;
-        obj.displayImage = environmentMap;
-        obj.skyboxMaterial = skybox;
-        obj.filteredDiffuseMap = filteredDiffuse;
-        obj.filteredSpecularMap = filteredSpecular;
-        Saver.SaveAsAsset(obj, "Assets/EnvironmentObject/" + objectID + ".asset");
+        // // Environment Map
+        // EnvironmentObject obj = new EnvironmentObject();
+        // obj.id = objectID;
+        // obj.displayImage = environmentMap;
+        // obj.skyboxMaterial = skybox;
+        // obj.filteredDiffuseMap = filteredDiffuse;
+        // obj.filteredSpecularMap = filteredSpecular;
+        // Saver.SaveAsAsset(obj, "Assets/Resources/EnvironmentObject/" + objectID + ".asset");
 
-        Debug.Log("Done Saving " + objectID);
+        // Debug.Log("Done Saving " + objectID);
+
+        IntegrateBRDF();
 
     }
     Texture2D GeneratePrefilteredDiffuse()
@@ -233,21 +235,9 @@ public class PrefilterManager : MonoBehaviour
 
     void IntegrateBRDF()
     {
+        KERNEL_INTEGRATE_BRDF = computeShader.FindKernel("CS_IntegrateBRDF");
         const int size = 512;
-        RenderTexture integratedBRDF = new RenderTexture(
-            size,
-            size,
-            0,
-            RenderTextureFormat.ARGBFloat,
-            RenderTextureReadWrite.Linear
-        );
-        integratedBRDF.filterMode = FilterMode.Bilinear;
-        integratedBRDF.wrapMode = TextureWrapMode.Clamp;
-        integratedBRDF.enableRandomWrite = true;
-        integratedBRDF.useMipMap = false;
-        integratedBRDF.autoGenerateMips = false;
-        integratedBRDF.anisoLevel = 16;
-        integratedBRDF.Create();
+        RenderTexture integratedBRDF = CreateRenderTexture(size, size);
 
         computeShader.SetTexture(KERNEL_INTEGRATE_BRDF, "_IntegratedBRDF", integratedBRDF);
         computeShader.SetFloat("_Width", size);
@@ -350,4 +340,5 @@ public class PrefilterManager : MonoBehaviour
 
         return texture;
     }
+#endif
 }

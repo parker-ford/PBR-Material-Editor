@@ -123,9 +123,15 @@ public class PBRController : MonoBehaviour
 
     void Start()
     {
+#if UNITY_EDITOR
         modelObjects = Loader.LoadScriptableObjects<ModelObject>();
         textureObjects = Loader.LoadScriptableObjects<TextureObject>();
         environmentObjects = Loader.LoadScriptableObjects<EnvironmentObject>();
+#else
+        modelObjects = Loader.LoadScriptableObjectsRuntime<ModelObject>();
+        textureObjects = Loader.LoadScriptableObjectsRuntime<TextureObject>();
+        environmentObjects = Loader.LoadScriptableObjectsRuntime<EnvironmentObject>();
+#endif
 
         roughness = defaultRoughness;
         reflectance = defaultReflectance;

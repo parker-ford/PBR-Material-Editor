@@ -30,8 +30,8 @@ float3 linearToGamma(float3 col){
 // https://developer.nvidia.com/gpugems/gpugems2/part-i-geometric-complexity/chapter-8-pixel-displacement-mapping-distance-functions
 // view Direction should be passed in as tangent space
 float2 parallaxMap(float2 uv, float3 viewDirection, sampler2D displacementTex, float displacementStrength){
-    const int minSteps = 128;
-    const int maxSteps = 128;
+    const int minSteps = 64;
+    const int maxSteps = 64;
     viewDirection = normalize(viewDirection);
     int numSteps = lerp(maxSteps, minSteps, clampedDot(float3(0,0,1), viewDirection));
     float depthPerStep = 1.0 / (float)numSteps;
@@ -53,7 +53,7 @@ float2 parallaxMap(float2 uv, float3 viewDirection, sampler2D displacementTex, f
     float afterStep = currDepth - currStep;
     float beforeStep = 1.0 - tex2D(displacementTex, prevUV).r - currStep + depthPerStep;
 
-    return lerp(currUV, prevUV, afterStep / (afterStep - beforeStep));
+    return lerp(currUV, prevUV, afterStep / (afterStep - beforeStep + 0.0001));
 }
 
 float3 normalMap(float3 normal, float3 tangent, float3 bitangent, float2 uv, sampler2D normalTex, float normalStrength){

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class DisplayImageCreator : MonoBehaviour
 {
+#if UNITY_EDITOR
     private Material material;
     private List<ModelObject> models;
     private GameObject displayModel;
@@ -103,4 +104,5 @@ public class DisplayImageCreator : MonoBehaviour
         File.WriteAllBytes(path, bytes);
         Debug.Log(path + " saved");
     }
+#endif
 }

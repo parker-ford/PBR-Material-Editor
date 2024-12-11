@@ -412,7 +412,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectID: TeatroMassimo
   computeShader: {fileID: 7200000, guid: 040ef6bcf2cef2242a37c551b22b6d41, type: 3}
-  environmentMap: {fileID: 2800000, guid: 1d18ca2bbf3baf64e81d3364ab7cd51c, type: 3}
+  environmentMap: {fileID: 2800000, guid: 62f6cb26c2440ee439c5dfcd61ec7570, type: 3}
   mipMapLevel: 5
   numSamples: 32768
   numSpecularFilterLevels: 6

@@ -4,5 +4,9 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/PBRViewer.unity
+    guid: 842f7bfcda90c4b42a049644365f78ba
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0
