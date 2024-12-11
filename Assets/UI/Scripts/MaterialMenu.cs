@@ -39,6 +39,11 @@ public class MaterialMenu : VisualElement
 
         var materialEditorMenu = this.CreateChild<Foldout>("material-menu-foldout");
         materialEditorMenu.text = "Material Properties";
+        // materialEditorMenu.RemoveManipulator(materialEditorMenu);
+
+        // materialEditorMenu.unregisterCallback<KeyDownEvent>(materialEditorMenu.defaultKeyboardControl);
+        // materialEditorMenu.UnregisterCallback<KeyDownEvent>((Event) => Debug.Log("hello"));
+        // Foldout foldout;
 
         var materialScrollView = materialEditorMenu.CreateChild<ScrollView>("material-scrollview");
 
