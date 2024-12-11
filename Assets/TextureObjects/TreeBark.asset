@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e60204aa5325eb8488a6bef90ac5bd82, type: 3}
+  m_Name: TreeBark
+  m_EditorClassIdentifier: 
+  id: Tree Bark
+  displayImage: {fileID: 2800000, guid: af4b39f31651c0a468f8648167e8b14a, type: 3}
+  diffuseMap: {fileID: 2800000, guid: af4b39f31651c0a468f8648167e8b14a, type: 3}
+  normalMap: {fileID: 2800000, guid: f331e8048245e9f4c84ed3632db94138, type: 3}
+  displacementMap: {fileID: 2800000, guid: 79aa5a0ffb0b4524b843fdc49fd2b7cc, type: 3}
+  roughnessMap: {fileID: 2800000, guid: fd0ce2f97ee21b84a85cea3bbf869459, type: 3}
+  metallicMap: {fileID: 0}

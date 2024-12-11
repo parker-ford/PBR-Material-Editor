@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e60204aa5325eb8488a6bef90ac5bd82, type: 3}
+  m_Name: WoodDeck
+  m_EditorClassIdentifier: 
+  id: Wood Deck
+  displayImage: {fileID: 2800000, guid: 0f9edd48b118e18498e71bcf0dcbbc7c, type: 3}
+  diffuseMap: {fileID: 2800000, guid: 0f9edd48b118e18498e71bcf0dcbbc7c, type: 3}
+  normalMap: {fileID: 2800000, guid: 0a8325e75aa119248839bf7625f0f2d4, type: 3}
+  displacementMap: {fileID: 2800000, guid: c7f317de06f922040b3205f7a55a23fc, type: 3}
+  roughnessMap: {fileID: 2800000, guid: da8893c02c772654792f605fb4a7d7f6, type: 3}
+  metallicMap: {fileID: 0}

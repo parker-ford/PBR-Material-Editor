@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e60204aa5325eb8488a6bef90ac5bd82, type: 3}
+  m_Name: Leather
+  m_EditorClassIdentifier: 
+  id: Leather
+  displayImage: {fileID: 2800000, guid: 4eca87e940f2cf64fba0c14882bdbd99, type: 3}
+  diffuseMap: {fileID: 2800000, guid: 4eca87e940f2cf64fba0c14882bdbd99, type: 3}
+  normalMap: {fileID: 2800000, guid: f6bbdc011adb7de418692b915bcb1a7e, type: 3}
+  displacementMap: {fileID: 2800000, guid: b87e0626e1e18694ba528f5b53d7499e, type: 3}
+  roughnessMap: {fileID: 2800000, guid: 444d6aff5d846a94e9c900859d38583e, type: 3}
+  metallicMap: {fileID: 0}
