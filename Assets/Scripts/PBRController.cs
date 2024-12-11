@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PBRController : MonoBehaviour
 {
@@ -80,6 +81,7 @@ public class PBRController : MonoBehaviour
     public float defaultLightIntensity;
     public Color defaultLightColor;
     public Color defaultBackgroundColor;
+    public float defaultTextureTiling = 1;
 
     private GameObject model;
     private Material material;
@@ -115,6 +117,8 @@ public class PBRController : MonoBehaviour
     private List<ModelObject> modelObjects;
     private List<TextureObject> textureObjects;
     private List<EnvironmentObject> environmentObjects;
+    private bool hideUI = false;
+    private float textureTiling;
 
 
     void Start()
@@ -153,6 +157,7 @@ public class PBRController : MonoBehaviour
         lightIntensity = defaultLightIntensity;
         lightColor = defaultLightColor;
         backgroundColor = defaultBackgroundColor;
+        textureTiling = defaultTextureTiling;
 
         InstantiateModel();
         UpdateMaterialParameters();
@@ -173,6 +178,22 @@ public class PBRController : MonoBehaviour
             sun.transform.Rotate(new Vector3(0, Time.deltaTime * -15.0f, 0), Space.World);
         }
         material.SetVector("_LightDirection", -sun.transform.forward);
+
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            hideUI = !hideUI;
+
+            if (hideUI)
+            {
+                view.container.style.display = DisplayStyle.None;
+            }
+            else
+            {
+                view.container.style.display = DisplayStyle.Flex;
+            }
+        }
+
+
     }
 
     void InstantiateUI()
@@ -225,6 +246,7 @@ public class PBRController : MonoBehaviour
         BindSlider(view.materialMenu.clearcoatGlossSlider, newValue => clearcoatGloss = newValue);
         BindSlider(view.materialMenu.metallicSlider, newValue => metallic = newValue);
         BindSlider(view.materialMenu.lightIntensitySlider, newValue => lightIntensity = newValue);
+        BindSlider(view.materialMenu.textureTilingSlider, newValue => textureTiling = newValue);
         // BindSlider(view.materialMenu.anisotropicSlider, newValue => anisotropic = newValue);
 
         // Bind Color Pickers
@@ -307,7 +329,8 @@ public class PBRController : MonoBehaviour
             rotateModel,
             lightColor,
             lightIntensity,
-            backgroundColor
+            backgroundColor,
+            textureTiling
         );
     }
 
@@ -437,6 +460,7 @@ public class PBRController : MonoBehaviour
         material.SetFloat("_Metallic", metallic);
         material.SetFloat("_Anisotropic", anisotropic);
         material.SetColor("_AmbientColor", backgroundColor);
+        material.SetFloat("_TextureTiling", textureTiling);
 
         material.SetInt("_NDF", (int)ndf);
         material.SetInt("_Geometry", (int)geometry);

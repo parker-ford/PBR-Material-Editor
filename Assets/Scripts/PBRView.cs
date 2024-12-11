@@ -8,7 +8,7 @@ public class PBRView : MonoBehaviour
     [SerializeField] private StyleSheet style;
 
     private VisualElement root;
-    private VisualElement container;
+    public VisualElement container;
     public MaterialMenu materialMenu;
 
     public PBROverlaySelector modelOverlay;

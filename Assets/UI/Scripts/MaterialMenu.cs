@@ -30,6 +30,7 @@ public class MaterialMenu : VisualElement
     public MaterialColorPickerRGB lightColorPicker;
     public MaterialSlider lightIntensitySlider;
     public MaterialColorPickerRGB backgroundColorPicker;
+    public MaterialSlider textureTilingSlider;
 
 
 
@@ -39,11 +40,6 @@ public class MaterialMenu : VisualElement
 
         var materialEditorMenu = this.CreateChild<Foldout>("material-menu-foldout");
         materialEditorMenu.text = "Material Properties";
-        // materialEditorMenu.RemoveManipulator(materialEditorMenu);
-
-        // materialEditorMenu.unregisterCallback<KeyDownEvent>(materialEditorMenu.defaultKeyboardControl);
-        // materialEditorMenu.UnregisterCallback<KeyDownEvent>((Event) => Debug.Log("hello"));
-        // Foldout foldout;
 
         var materialScrollView = materialEditorMenu.CreateChild<ScrollView>("material-scrollview");
 
@@ -143,6 +139,10 @@ public class MaterialMenu : VisualElement
         displacementMapStrengthSlider = textureProperties.CreateChild<MaterialSlider>();
         displacementMapStrengthSlider.label.text = "Displacement Strength";
 
+        textureTilingSlider = textureProperties.CreateChild<MaterialSlider>();
+        textureTilingSlider.label.text = "Texture Tiling";
+        textureTilingSlider.slider.highValue = 5;
+
 
         /*
         *   Debug Views
@@ -192,7 +192,8 @@ public class MaterialMenu : VisualElement
         bool rotateObject,
         Color lightColor,
         float lightIntensity,
-        Color backgroundColor
+        Color backgroundColor,
+        float textureTiling
     )
     {
         reflectanceSlider.SetCurrentValue(reflectance);
@@ -220,6 +221,7 @@ public class MaterialMenu : VisualElement
         lightColorPicker.SetCurrentValue(lightColor);
         lightIntensitySlider.SetCurrentValue(lightIntensity);
         backgroundColorPicker.SetCurrentValue(backgroundColor);
+        textureTilingSlider.SetCurrentValue(textureTiling);
     }
 
     public void SetAllEnabled(bool state)

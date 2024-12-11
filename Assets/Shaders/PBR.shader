@@ -82,6 +82,7 @@ Shader "Parker/PBR"
             float _ClearcoatGloss;
             float _Metallic;
             float _Anisotropic;
+            float _TextureTiling;
 
             int _UseDisplacementMap;
             int _UseNormalMap;
@@ -144,7 +145,7 @@ Shader "Parker/PBR"
                 float3 tangent = normalize(i.tangent);
                 float3 bitangent = getBitangent(normal, tangent, i.tangent.w);
 
-                float2 uv = i.uv;
+                float2 uv = i.uv * _TextureTiling;
                 if(_DisplacementMapSet && _UseDisplacementMap){
                     // uv = parallaxMap(uv, mul(v, float3x3(tangent, bitangent, normal)), _DisplacementMap, _DisplacementStrength);
                     uv = parallaxMap(uv, transformToTangentSpace(v, normal, tangent, bitangent), _DisplacementMap, _DisplacementStrength);
