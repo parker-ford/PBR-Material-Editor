@@ -193,6 +193,11 @@ public class PBRController : MonoBehaviour
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+
 
     }
 
