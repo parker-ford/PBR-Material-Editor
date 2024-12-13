@@ -4,12 +4,12 @@
 
 A real-time rendering application showcasing several physically based BRDF implementations, complete with flexible lighting and material configuration options.
 
+![PBR Showcase](./images/Showcase.gif)
+
 ## Links
 
 - [Video Demo](https://www.youtube.com/watch?v=z6hTcYY6oB0)
 - [Download (1.52GB)](https://drive.google.com/file/d/1hVonq3XQPNJjInFDGg9NX7X75FO9qYM2/view?usp=sharing)
-
-![PBR Showcase](./images/Showcase.gif)
 
 ## Features
 
