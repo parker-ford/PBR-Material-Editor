@@ -6,7 +6,6 @@ A real-time rendering application showcasing several physically based BRDF imple
 
 ## Links
 
-- [GitHub](https://github.com/parker-ford/PBR-Material-Editor)
 - [Video Demo](https://www.youtube.com/watch?v=z6hTcYY6oB0)
 - [Download (1.52GB)](https://drive.google.com/file/d/1hVonq3XQPNJjInFDGg9NX7X75FO9qYM2/view?usp=sharing)
 
