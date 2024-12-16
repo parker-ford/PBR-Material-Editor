@@ -147,7 +147,6 @@ Shader "Parker/PBR"
 
                 float2 uv = i.uv * _TextureTiling;
                 if(_DisplacementMapSet && _UseDisplacementMap){
-                    // uv = parallaxMap(uv, mul(v, float3x3(tangent, bitangent, normal)), _DisplacementMap, _DisplacementStrength);
                     uv = parallaxMap(uv, transformToTangentSpace(v, normal, tangent, bitangent), _DisplacementMap, _DisplacementStrength);
                 }
 
@@ -193,13 +192,9 @@ Shader "Parker/PBR"
                 settings.debug = _DebugView;
 
 
-                // float3 lightIn =  _LightColor.rgb * _LightIntensity;
-                // float3 lightOut = lightIn * (brdf.specular + brdf.diffuse) * ndotl;
                 float3 lightOut = 0;
                 if(_UseEnvironmentLighting){
                     float3 diffuseIBL = diffuseColor * diffuseImageBasedLighting(n) * (1.0 - _Metallic);
-                    //TODO: Specular Tint?
-                    // float3 specularIBL = specularImageBasedLighting(_Reflectance, _Roughness, n, v) * lerp(float3(1,1,1), diffuseColor, 1.0);
                     float3 specularIBL = specularImageBasedLighting(_Reflectance, _Roughness, diffuseColor, _Metallic, n, v);
                     float3 clearcoatIBL = 0.25 * _Clearcoat * specularImageBasedLighting(0.5, 1.0 - _ClearcoatGloss, float3(1,1,1), 0.0, n, v);
                     lightOut =  diffuseIBL + specularIBL + clearcoatIBL; 

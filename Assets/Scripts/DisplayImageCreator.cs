@@ -46,7 +46,7 @@ public class DisplayImageCreator : MonoBehaviour
             currentModel.SetRotation(displayModel.transform.rotation);
 
             string savePath = path + currentModel.id + ".asset";
-            currentModel.displayImage = SaveScreenShotAsAsset(savePath);
+            currentModel.displayImage = Saver.SaveScreenShotAsAsset(savePath);
 
             EditorUtility.SetDirty(currentModel);
             AssetDatabase.SaveAssets();
@@ -62,47 +62,6 @@ public class DisplayImageCreator : MonoBehaviour
             }
 
         }
-    }
-
-    Texture2D SaveScreenShotAsAsset(string path)
-    {
-        RenderTexture renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
-        Camera.main.targetTexture = renderTexture;
-        Camera.main.Render();
-
-        RenderTexture.active = renderTexture;
-        Texture2D texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-        texture.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
-        texture.Apply();
-
-        RenderTexture.active = null;
-        Camera.main.targetTexture = null;
-        Destroy(renderTexture);
-
-        Saver.SaveAsAsset(texture, path);
-
-        return texture;
-    }
-
-    void SaveDisplayImage(string path)
-    {
-        RenderTexture renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
-        Camera.main.targetTexture = renderTexture;
-        Camera.main.Render();
-
-        RenderTexture.active = renderTexture;
-        Texture2D texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-        texture.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
-        texture.Apply();
-
-        RenderTexture.active = null;
-        Camera.main.targetTexture = null;
-        Destroy(renderTexture);
-
-        byte[] bytes = texture.EncodeToPNG();
-
-        File.WriteAllBytes(path, bytes);
-        Debug.Log(path + " saved");
     }
 #endif
 }

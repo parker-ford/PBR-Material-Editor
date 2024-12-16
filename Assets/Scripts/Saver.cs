@@ -7,16 +7,13 @@ public static class Saver
 #if UNITY_EDITOR
     public static void SaveRenderTextureAsEXR(RenderTexture renderTexture, string filePath)
     {
-        // Convert RenderTexture to Texture2D
         Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGBAFloat, false);
 
-        // Copy the RenderTexture content to the Texture2D
         RenderTexture.active = renderTexture;
         texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
         texture.Apply();
         RenderTexture.active = null;
 
-        // Save as EXR
         byte[] exrData = texture.EncodeToEXR(Texture2D.EXRFlags.OutputAsFloat); // CompressZIP for lossless compression
         System.IO.File.WriteAllBytes(filePath, exrData);
 
@@ -53,6 +50,25 @@ public static class Saver
 
         return filePath;
 
+    }
+
+    public static Texture2D SaveScreenShotAsAsset(string path)
+    {
+        RenderTexture renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
+        Camera.main.targetTexture = renderTexture;
+        Camera.main.Render();
+
+        RenderTexture.active = renderTexture;
+        Texture2D texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+        texture.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+        texture.Apply();
+
+        RenderTexture.active = null;
+        Camera.main.targetTexture = null;
+
+        SaveAsAsset(texture, path);
+
+        return texture;
     }
 #endif
 }

@@ -27,29 +27,6 @@ public class PBROverlaySelector : VisualElement
         center = overlayExit.CreateChild<ScrollView>("center");
     }
 
-    // public void SetImages(List<string> paths)
-    // {
-    //     int index = 0;
-    //     VisualElement row = null;
-    //     foreach (string path in paths)
-    //     {
-    //         if (index % 3 == 0)
-    //         {
-    //             row = center.CreateChild("overlay-row");
-    //         }
-
-    //         var button = row.CreateChild<Button>("image-container");
-    //         button.style.backgroundImage = Loader.LoadImage(path);
-    //         int localIndex = index;
-    //         button.clicked += () =>
-    //         {
-    //             OnOverlaySelection.Invoke(localIndex);
-    //             this.style.display = DisplayStyle.None;
-    //         };
-    //         index++;
-    //     }
-    // }
-
     public void SetImages(List<Texture2D> images, List<string> ids)
     {
         int index = 0;

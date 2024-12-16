@@ -3,38 +3,13 @@ using UnityTemplateProjects;
 
 public class CameraOrbit : MonoBehaviour
 {
-    // public float orbitSpeed = 10f;
-    // public Vector3 orbitCenter = Vector3.zero;
-
-    // private void Update()
-    // {
-    //     float angle = orbitSpeed * Time.deltaTime;
-    //     Vector3 offset = transform.position - orbitCenter;
-    //     Quaternion rotation = Quaternion.Euler(0, angle, 0);
-
-    //     if (Input.GetKey(KeyCode.LeftArrow))
-    //     {
-    //         transform.position = orbitCenter + rotation * offset;
-
-    //         transform.LookAt(orbitCenter);
-    //     }
-    //     if (Input.GetKey(KeyCode.RightArrow))
-    //     {
-    //         transform.position = orbitCenter - rotation * offset;
-
-    //         transform.LookAt(orbitCenter);
-    //     }
-
-    // }
-
-    public Transform target; // Reference to the sphere
+    public Transform target;
     public float rotationSpeed = 5f;
     private Vector3 initialOffset;
     private SimpleCameraController controller;
 
     void Start()
     {
-        // Calculate the initial offset from the sphere to the camera
         initialOffset = transform.position - target.position;
         controller = Camera.main.GetComponent<SimpleCameraController>();
     }
