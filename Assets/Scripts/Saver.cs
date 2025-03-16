@@ -49,7 +49,6 @@ public static class Saver
         string filePath = System.IO.Path.Combine(directoryPath, fileName);
 
         return filePath;
-
     }
 
     public static Texture2D SaveScreenShotAsAsset(string path)

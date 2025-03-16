@@ -56,6 +56,7 @@ float2 parallaxMap(float2 uv, float3 viewDirection, sampler2D displacementTex, f
     return lerp(currUV, prevUV, afterStep / (afterStep - beforeStep + 0.0001));
 }
 
+// Assumes DXT5nm normal map
 float3 normalMap(float3 normal, float3 tangent, float3 bitangent, float2 uv, sampler2D normalTex, float normalStrength){
     float3 tangentSpaceNormal = 0;
     tangentSpaceNormal.xy = tex2D(normalTex, uv).wy * 2 - 1;
